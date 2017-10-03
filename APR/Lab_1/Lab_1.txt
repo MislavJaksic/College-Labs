@@ -1,20 +1,15 @@
-Prva domaca zadaca:
-implementiraj razred Matrica koja omogucuje lakse rukovanje matricama.
-  inspiracija: numpy, Python!
-  funkcionalnosti: ispis podataka o matrici (dimenzije, pretty print sadrzaja)
-                   konstruktor i destruktor.
-                   mijenjanje dimenzija matrice.
-                   pridruzivanje matrice matrici (A = B)
-                   citanje tekst datoteke i sastavljanje matrice (jedan red u fileu je jedan red u matrici). 
-                     broj elemenata reda odreduje broj stupaca, broj redova filea odreduje broj redova matrice
-                     podaci odvojeni razmakom ili tab
-                   pisanje matrice u file u isti text format
-                   postavljanje i dohvat elementa matrice
-                   +, -, *, transponiranje matrica (Python Data Models? Maybe they are the solution)
-                   +=, -= matrica
-                   mnozenje matrice skalarom
-                   usporedba matrica s ==
-                   dinamicki zauzeti elementi matrice tipa double??? (Python to radi automatski, napravi u double)
-                   smjestaj sadrzaja matrice u memoriju treba biti proizvoljan, uz dinamicko zauzimanje memorije??? (Python to radi automatski)
-
- 
+First lab:
+  implement a Matrix class which will allows you to more easily manipulate with matrices.
+  functionalities:
+    constructor. -> __init__
+    deconstructor. -> del
+    access an element's value. -> __getitem__ with [] notation
+    set an element's value. -> __setitem__ with [] notation
+    pretty print a matrix and its dimensions. -> __str__
+    add, subtract, multiply and transpose. -> __add__, __sub__, __mul__, #transpose
+    #increment and decrement. -> __iadd__, __isub__
+    #multiply with a scalar value. -> scale
+    #check equality. -> __eg__
+    #read matrix from a file. -> fromFile
+    #output matrix to a file. -> toFile
+    
