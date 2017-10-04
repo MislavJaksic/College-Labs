@@ -7,9 +7,12 @@ First lab:
     set an element's value. -> __setitem__ with [] notation
     pretty print a matrix and its dimensions. -> __str__
     add, subtract, multiply and transpose. -> __add__, __sub__, __mul__, #transpose
-    #increment and decrement. -> __iadd__, __isub__
-    #multiply with a scalar value. -> scale
-    #check equality. -> __eg__
-    #read matrix from a file. -> fromFile
-    #output matrix to a file. -> toFile
-    
+    increment and decrement. -> __iadd__, __isub__
+    multiply with a scalar value. -> scale
+    check equality. -> __eg__
+    read matrix from a file. -> fromFile
+    output matrix to a file. -> toFile
+
+Task 1:
+  compare two double values.
+  

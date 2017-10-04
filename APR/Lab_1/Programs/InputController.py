@@ -38,7 +38,14 @@ class InputController(object):
   
   @staticmethod
   def IsInt(param):
-    """Checks if the paramater is a string."""
+    """Checks if the paramater is an integer."""
     if type(param) is types.IntType:
+      return True
+    return False
+  
+  @staticmethod
+  def IsFloat(param):
+    """Checks if the paramater is a floating point number."""
+    if type(param) is types.FloatType:
       return True
     return False

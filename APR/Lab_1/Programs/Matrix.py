@@ -8,7 +8,7 @@ from types import TupleType, IntType
 class Matrix(object):
   """'Private' methods are prefixed with an underscore (_).
      'Public' methods have a lowercase first letter.
-     __method__ are data objects (or "magic methods") that overrride or add Python functionalities.
+     __method__ are Python data models (or "magic methods") that overrride or add Python functionalities.
      CamelCase.
      Designed to support problem domain abstractions. Indexed from 1 to n/m.
      i1,j1  i1,j2  i1,j3
@@ -16,33 +16,34 @@ class Matrix(object):
      i3,j1  i3,j2  i3,j3
      """
      
-  def __init__(self, *values):
-    """*values is a tuple.
-       If given dimensions i_rows, j_columns -> Construct an zeroes matrix.
-       If given a single list in a list      -> Construct a matrix with a single row.
-       If given many lists in a list         -> Construct a matrix made up of many rows."""
-    if self._IsGivenMatrixDimensions(values):
-      rows = values[0]
-      columns = values[1]
-      matrix = self._CreateZeroesMatrix(rows, columns)
+  def __init__(self, *input):
+    if self._IsGivenMatrixDimensions(input):
+      rows, columns = self._ExtractDimensions(input)
+      listOfLists = self._CreateZeroesListOfLists(rows, columns)
       
-    elif self._IsGivenListOfLists(self._UnwrapTuple(values)):
-      matrix = deepcopy(self._UnwrapTuple(values))
+    elif self._IsGivenListOfLists(self._UnwrapTuple(input)):
+      listOfLists = self._UnwrapTuple(input)
       
     else:
-      raise Exception(u"Create Matrix with dimensions rows, columns -> Matrix(rows, columns) or \n"
-                      u"Create Matrix with list of lists            -> Matrix([ [_num, _num], [_num, _num] ])")
+      raise Exception(u"Create Matrix with dimensions    -> Matrix(rows, columns) or \n"
+                      u"Create Matrix with list of lists -> Matrix([ [_num, _num], [_num, _num] ])")
     
-    self._matrix = matrix 
-    self.n_rows = self._CountRows()
-    self.m_columns = self._CountColumns()
+    self._SetMatrixAndDimensions(listOfLists)
        
     """Python data models: every object has: an identity: never changes; compared with 'is'; id() returns an integer representing identity
                                              a type: never changes; determines the operations the object supports and values the object can have; type() returns type
                                              a value: may change (mutable) or it may not (immutable);
                                              """
-                                             
-  def _CreateZeroesMatrix(self, rows, columns):
+  
+  def _IsGivenMatrixDimensions(self, dimensions):
+    if self._IsValidKeyValues(dimensions):
+      return True
+    return False
+  
+  def _ExtractDimensions(self, tuple):
+    return tuple[0], tuple[1]
+  
+  def _CreateZeroesListOfLists(self, rows, columns):
     zeroesListOfLists = []
     zeroesList = []
     for count in range(columns):
@@ -52,16 +53,11 @@ class Matrix(object):
     
     return zeroesListOfLists
     
-  def _IsGivenMatrixDimensions(self, dimensions):
-    if self._IsValidKeyValues(dimensions):
-      return True
-    return False
-    
   def _IsGivenListOfLists(self, matrix):
     if not self._IsListOfLists(matrix):
-      raise Exception(u"Given something other then a list")
+      return False
     if not self._IsListsSameLength(matrix):
-      raise Exception(u"Unequal number of elements in lists")
+      return False
     return True
     
   def _IsListOfLists(self, matrix):
@@ -83,70 +79,40 @@ class Matrix(object):
   
   def _UnwrapTuple(self, tuple):
     return tuple[0]
-    
+  
+  
   def _CountRows(self):
     return len(self._matrix)
     
   def _CountColumns(self):
     return len(self._matrix[0])
   
+  
   def __str__(self):
+    """print A or str(A)
+       """
     pretty_matrix = ""
     for row in self._matrix:
       pretty_matrix += str(row)
       pretty_matrix += "\n"
-    pretty_matrix += "i_rows: " + str(self.n_rows) + ", "
-    pretty_matrix += "j_columns: " + str(self.m_columns)
+    pretty_matrix += "rows: " + str(self.n_rows) + ", "
+    pretty_matrix += "columns: " + str(self.m_columns)
     return pretty_matrix
   
+  
   def __getitem__(self, key):
-    """Called to implement evaluation of matrix[key].
-       A[(i, j)] returns element in row i and column j."""
+    """A[(row, column)] returns an element
+       """
     if not self._IsValidKey(key):
       raise TypeError
     if not self._IsKeyInRange(key):
       raise IndexError
       
-    i, j = self._ijKey(key)
+    i, j = self._GetZeroIndexes(key)
     
-    row = self._matrix[i]
-    element = row[j]
-    return copy(element)
-  
-  def __setitem__(self, key, value):
-    """Called to implement matrix[key] = value"""
-    if not self._IsValidKey(key):
-      raise TypeError
-    # if not self._IsValueNumeric(value): TODO
-      # raise TypeError 
-      
-    i, j = self._ijKey(key)
-    self._matrix[i][j] = copy(value)
-    print self._matrix
+    element = self._matrix[i][j]
+    return element
     
-  def _IsValidKey(self, key):
-    """Valid key -> tuple (i, j) where i and j are integers"""
-    if InputController.IsTuple(key):
-      if not self._IsValidKeyValues(key):
-        return False
-    else:
-      return False
-    
-    return True
-    
-  def _IsValidKeyValues(self, key):
-    """There has to be two integer values in a tuple."""
-    countValues = 0
-    for value in key:
-      if not InputController.IsInt(value):
-        return False
-      countValues += 1
-    
-    if (countValues != 2):
-      return False
-      
-    return True
-  
   def _IsKeyInRange(self, key):
     rows = key[0]
     columns = key[1]
@@ -157,34 +123,79 @@ class Matrix(object):
         return False
     else:
       return False
+  
+  def __setitem__(self, key, value):
+    """A[(row, column)] = value
+       """
+    if not self._IsValidKey(key):
+      raise TypeError
+    if not self._IsValueNumeric(value):
+      raise TypeError 
       
-  def _ijKey(self, key):
-    """Transform (rows, columns) -> (1 to n, 1 to m)
-       to        (i, j) -> (0 to n-1, 0 to m-1)
-       to conform with 0 indexed lists"""
+    i, j = self._GetZeroIndexes(key)
+    self._matrix[i][j] = value
+    
+  def _IsValidKey(self, key):
+    """Valid key -> (row, columns) where row and columns are integers
+       """
+    if InputController.IsTuple(key):
+      if not self._IsValidKeyValues(key):
+        return False
+    else:
+      return False
+    
+    return True
+  
+  def _IsValueNumeric(self, value):
+    if InputController.IsInt(value):
+      return True
+    if InputController.IsFloat(value):
+      return True
+      
+    return False
+  
+  def _GetZeroIndexes(self, key):
+    """(rows, columns)  -> (i, j)
+       (1 to n, 1 to m) -> (0 to n-1, 0 to m-1)
+       """
     i = key[0] - 1
     j = key[1] - 1
     return i, j
     
+  def _IsValidKeyValues(self, key):
+    """There has to be only two integer values in a tuple
+       """
+    countValues = 0
+    for value in key:
+      if not InputController.IsInt(value):
+        return False
+      countValues += 1
+      
+    if (countValues != 2):
+      return False
+      
+    return True
+  
+  
   def __add__(self, other):
     # if not self._IsSameDimension(other): TODO
       # raise Exception(u"Matrices are not of the same dimnsion.")
-    matrix = Matrix(self.n_rows, self.m_columns)
+    zeroesMatrix = Matrix(self.n_rows, self.m_columns)
     
-    for row in range(1, self._CountRows()+1):
-      for column in range(1, self._CountColumns()+1):
-        matrix[(row, column)] = self._matrix[row-1][column-1] + other[(row, column)]
-    return matrix
+    for row in range(1, self.n_rows+1):
+      for column in range(1, self.m_columns+1):
+        zeroesMatrix[(row, column)] = self[(row, column)] + other[(row, column)]
+    return zeroesMatrix
     
   def __sub__(self, other):
     # if not self._IsSameDimension(other): TODO
       # raise Exception(u"Matrices are not of the same dimnsion.")
-    matrix = Matrix(self.n_rows, self.m_columns)
+    zeroesMatrix = Matrix(self.n_rows, self.m_columns)
     
-    for row in range(1, self._CountRows()+1):
-      for column in range(1, self._CountColumns()+1):
-        matrix[(row, column)] = self._matrix[row-1][column-1] - other[(row, column)]
-    return matrix
+    for row in range(1, self.n_rows+1):
+      for column in range(1, self.m_columns+1):
+        zeroesMatrix[(row, column)] = self[(row, column)] - other[(row, column)]
+    return zeroesMatrix
     
   def __mul__(self, other):
     """       |
@@ -193,14 +204,13 @@ class Matrix(object):
        """
     
     mulRows, mulColumns = self._GetMulDimensions(other)
-    matrix = Matrix(mulRows, mulColumns)
+    zeroesMatrix = Matrix(mulRows, mulColumns)
     
     for row in range(1, mulRows+1):
       for column in range(1, mulColumns+1):
         result = self._MulRowWithColumn(self._GetMatrixRow(row), other._GetMatrixColumn(column))
-        print result
-        matrix[(row, column)] = result
-    return matrix
+        zeroesMatrix[(row, column)] = result
+    return zeroesMatrix
     
   def _GetMulDimensions(self, other):
     if not self._IsMulDimension(other):
@@ -227,25 +237,107 @@ class Matrix(object):
     for index in range(len(rowList)):
       sum += rowList[index] * columnList[index]
     return sum
+  
+  
+  def transpose(self):
+    """A(ij) -> swap row and column value (and indexes) -> A(ji)
+       Graphical solution: find the main diagonal and swap elements across it.
+                   t   [1 5]
+       [1 2 3 4]  -->  [2 6]
+       [5 6 7 8]       [3 7]
+                       [4 8]
+       """
+    tRows = self.m_columns
+    tColumns = self.n_rows
+    zeroesListOfLists = self._CreateZeroesListOfLists(tRows, tColumns)
     
-  def transpose(self, other):
-    pass
+    for row in range(1, self.n_rows+1):
+      for column in range(1, self.m_columns+1):
+        zeroesListOfLists[column-1][row-1] = self[(row, column)]
+    self._SetMatrixAndDimensions(zeroesListOfLists)
+  
+  def _SetMatrixAndDimensions(self, listOfLists):
+    self._matrix = listOfLists 
+    self.n_rows = self._CountRows()
+    self.m_columns = self._CountColumns()
+   
+  def __eq__(self, other):
+    if not self._IsMatricesSameDimension(other):
+      return False
+    for row in range(1, self.n_rows+1):
+      for column in range(1, self.m_columns+1):
+        if not self._IsFloatsEqual(self[(row, column)], other[(row, column)]):
+          return False
+    return True
     
-  # def __eq__(self, other):
+  def _IsFloatsEqual(self, floatOne, floatTwo):
+    """If f1 close to f2 then expand f2 by adding and subtracting a margin of error
+       """
+    error = (0.1)**5
+    if ((floatTwo-error) < floatOne) and (floatOne < (floatTwo+error)):
+      return True
+    return False
+    
+  def _IsMatricesSameDimension(self, other):
+    if not (self.n_rows == other.n_rows):
+      return False
+    if not (self.m_columns == other.m_columns):
+      return False
+    return True
+    
+  def scale(self, scalar_value):
+    for row in range(1, self.n_rows+1):
+      for column in range(1, self.m_columns+1):
+        self[(row, column)] = scalar_value * self[(row, column)]
+    return self
   
+  # def _GetNext_i_j(self):
+    
+    # yield i, j
+    
+  # def _GetNext_row_column(self):
+    
+    # yield row, column
+    
+  def __iadd__(self, other):
+    """A += B"""
+    self = self + other
+    return self
   
-  # def scale(self, scalar_value):
+  def __isub__(self, other):
+    """A -= B"""
+    self = self - other
+    return self
   
-  
-  # def __iadd__(self, other):
-  
-  
-  # def __isub__(self, other):
-  
-  
-  # def fromFile(self, path):
-  
-  
-  # def toFile(self, path):
-  
+  @staticmethod
+  def fromFile(path):
+    listOfLists = []
+    with open(path, "r") as f:
+      for line in f:
+        stringList = line.split(" ")
+        
+        list = []
+        for string in stringList:
+          number = _ConvertToNumber(string)
+          list.append(number)
+          
+        listOfLists.append(list)
+        
+    return Matrix(listOfLists)
+    
+  def toFile(self, path):
+    with open(path, "w") as f:
+      for row in self._matrix:
+        stringRow = []
+        for number in row:
+          stringRow.append(str(number))
+        line = " ".join(stringRow)
+        f.write(line)
+        f.write("\n")
+
+def _ConvertToNumber(string):
+    if string.find("."):
+      return float(string)
+    else:
+      return int(string)
     
