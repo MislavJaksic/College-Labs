@@ -210,13 +210,31 @@ def test_Matrix_toFile_fromFile():
   newMatrix = Matrix.fromFile("output.txt")
   assert newMatrix == matrix
   
-# def test_Matrix__str__(MatrixDull):
-  # print MatrixDull
-  # str(MatrixDull)
   
-# def test_Matrix__str__(MatrixDull):
-  # print MatrixDull
-  # str(MatrixDull)
+def test_Matrix_LU():
+  list = [[2,3,1,5],
+          [6,13,5,19],
+          [2,19,10,23],
+          [4,10,11,31],
+          ]
+  LU = [[2,3,1,5],
+        [3,4,2,4],
+        [1,4,1,2],
+        [2,1,7,3],
+        ]
+  matrix = Matrix(list)
+  assert matrix.LU() == Matrix(LU)
   
-
-  
+def test_Matrix_LUP():
+  list = [[2,3,1,5],
+          [6,13,5,19],
+          [2,19,10,23],
+          [4,10,11,31],
+          ]
+  LUP = [[2,3,1,5],
+        [3,4,2,4],
+        [1,4,1,2],
+        [2,1,7,3],
+        ]
+  matrix = Matrix(list)
+  assert matrix.LUP() == Matrix(LUP)

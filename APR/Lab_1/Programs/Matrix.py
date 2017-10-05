@@ -255,6 +255,7 @@ class Matrix(object):
       for column in range(1, self.m_columns+1):
         zeroesListOfLists[column-1][row-1] = self[(row, column)]
     self._SetMatrixAndDimensions(zeroesListOfLists)
+    return self
   
   def _SetMatrixAndDimensions(self, listOfLists):
     self._matrix = listOfLists 
@@ -334,9 +335,57 @@ class Matrix(object):
         line = " ".join(stringRow)
         f.write(line)
         f.write("\n")
+        
+  
+  def LU(self):
+    for k in range(1, self.n_rows):
+      self._SubtractRowFromRows(k)
+    return self
+    
+  def LUP(self):
+    P = self._CreateP()
+    for k in range(1, self.n_rows):
+      l = self._SwapCurrentRowWithRowWithTheLargestValueInCurrentColumn(k)
+      
+      guardian = deepcopy(P._GetMatrixRow(k))
+      P._matrix[k-1] = deepcopy(P._GetMatrixRow(l))      
+      P._matrix[l-1] = guardian
+        
+      self._SubtractRowFromRows(k)
+    return self
+  
+  def _SubtractRowFromRows(self, k):
+    for i in range(k+1, self.n_rows+1):
+      if self._IsFloatsEqual(self[(k, k)], 0.0):
+        #can recover only if the new result is kept in a seperate matrix
+        raise Exception(u"Found an extremly small value: " + str(self[(k, k)]))
+      self[(i, k)] = self[(i, k)] / float(self[(k, k)])
+      for j in range(k+1, self.n_rows+1):
+        self[(i, j)] = self[(i, j)] - self[(i, k)] * self[(k, j)]
+  
+  def _SwapCurrentRowWithRowWithTheLargestValueInCurrentColumn(self, k):
+    pivot = 0.0
+    for i in range(k, self.n_rows+1):
+      if (abs(self[(i, k)]) > pivot):
+        pivot = abs(self[(i, k)])
+        l = i
+    if self._IsFloatsEqual(pivot, 0.0):
+      raise Exception(u"Matrix is singular")
+    
+    for j in range(1, self.n_rows+1):
+      guardian = self[(k, j)]
+      self[(k, j)] = self[(l ,j)]
+      self[(l ,j)] = guardian
+    return l
+  
+  def _CreateP(self):
+    P = Matrix(self.n_rows, self.n_rows)
+    for i in range(1, self.n_rows+1):
+      P[(i, i)] = 1
+    return P
 
 def _ConvertToNumber(string):
-    if string.find("."):
+    if (string.find(".") != -1):
       return float(string)
     else:
       return int(string)
