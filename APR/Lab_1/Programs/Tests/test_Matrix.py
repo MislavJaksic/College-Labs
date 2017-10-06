@@ -26,13 +26,21 @@ def Matrix1234():
                    [3, 4],
                   ])
 	return matrix
-
+  
 @pytest.fixture(scope='function')
 def Matrix2468():
 	matrix = Matrix([[2, 4],
                    [6, 8],
                   ])
 	return matrix
+
+@pytest.fixture(scope='function')
+def Matrix120():
+  matrix = Matrix([[1, 2, 0],
+                   [3, 5, 4],
+                   [5, 6, 3],
+                  ])
+  return matrix
 
 def test_Matrix__init__Dimensions():
   matrix = Matrix(3,3)
@@ -216,25 +224,86 @@ def test_Matrix_LU():
           [6,13,5,19],
           [2,19,10,23],
           [4,10,11,31],
-          ]
+         ]
   LU = [[2,3,1,5],
         [3,4,2,4],
         [1,4,1,2],
         [2,1,7,3],
-        ]
+       ]
+  LTrue = [[1,0,0,0],
+       [3,1,0,0],
+       [1,4,1,0],
+       [2,1,7,1],
+      ]
+  UTrue = [[2,3,1,5],
+       [0,4,2,4],
+       [0,0,1,2],
+       [0,0,0,3],
+      ]
   matrix = Matrix(list)
-  assert matrix.LU() == Matrix(LU)
+  L, U = matrix.LU()
+  print L
+  print U
+  assert matrix == Matrix(LU)
+  assert L == Matrix(LTrue)
+  assert U == Matrix(UTrue)
   
-def test_Matrix_LUP():
-  list = [[2,3,1,5],
-          [6,13,5,19],
-          [2,19,10,23],
-          [4,10,11,31],
-          ]
-  LUP = [[2,3,1,5],
-        [3,4,2,4],
-        [1,4,1,2],
-        [2,1,7,3],
+def test_Matrix_LUP(Matrix120):
+  LUP = [[5, 6, 3],
+        [3/5., 7/5., 11/5.],
+        [1/5., 4/7., -13/7.],
         ]
-  matrix = Matrix(list)
-  assert matrix.LUP() == Matrix(LUP)
+  LTrue = [[1, 0, 0],
+       [3/5., 1, 0],
+       [1/5., 4/7., 1],
+      ]
+  UTrue = [[5, 6, 3],
+       [0, 7/5., 11/5.],
+       [0, 0, -13/7.],
+      ]
+  PTrue = [[0, 0, 1],
+       [0, 1, 0],
+       [1, 0, 0],
+      ]
+  L, U, P = Matrix120.LUP()
+  assert Matrix120 == Matrix(LUP)
+  assert L == Matrix(LTrue)
+  assert U == Matrix(UTrue)
+  assert P == Matrix(PTrue)
+  
+def test_Matrix_solveLyPb(Matrix120):
+  b = Matrix([[0.1],
+              [12.5],
+              [10.3]])
+  L, U = Matrix120.LU()
+  P = Matrix120._CreateP()
+  y = Matrix120._solveLyPb(L, P, b)
+  assert y == Matrix([[0.1], [12.2], [-39]])
+  x = Matrix120._solveUxy(U, y)
+  assert x == Matrix([[0.5], [-0.2], [3]])
+  
+def test_Matrix_solveUxy(Matrix120):
+  b = Matrix([[0.1],
+              [12.5],
+              [10.3]])
+  L, U, P = Matrix120.LUP()
+  y = Matrix120._solveLyPb(L, P, b)
+  assert y == Matrix([[10.3], [6.319999], [-5.571428]])
+  x = Matrix120._solveUxy(U, y)
+  assert x == Matrix([[0.5], [-0.2], [3]])
+  
+def test_Matrix_solveAxbWithLU(Matrix120):
+  b = Matrix([[0.1],
+              [12.5],
+              [10.3]])
+  x, y = Matrix120.solveAxbWithLU(Matrix120, b)
+  assert y == Matrix([[0.1], [12.2], [-39]])
+  assert x == Matrix([[0.5], [-0.2], [3]])
+  
+def test_Matrix_solveAxbWithLUP(Matrix120):
+  b = Matrix([[0.1],
+              [12.5],
+              [10.3]])
+  x, y = Matrix120.solveAxbWithLUP(Matrix120, b)
+  assert y == Matrix([[10.3], [6.319999], [-5.571428]])
+  assert x == Matrix([[0.5], [-0.2], [3]])

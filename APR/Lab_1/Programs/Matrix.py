@@ -11,6 +11,8 @@ class Matrix(object):
      __method__ are Python data models (or "magic methods") that overrride or add Python functionalities.
      CamelCase.
      Designed to support problem domain abstractions. Indexed from 1 to n/m.
+     Exceptions are raised as soon as possible, but outside _Is boolean functions. This is because returning
+       a large number of error codes would complicate code more then dealing with exceptions at runtime.
      i1,j1  i1,j2  i1,j3
      i2,j1  i2,j2  i2,j3
      i3,j1  i3,j2  i3,j3
@@ -202,7 +204,6 @@ class Matrix(object):
        ---> * |
               V
        """
-    
     mulRows, mulColumns = self._GetMulDimensions(other)
     zeroesMatrix = Matrix(mulRows, mulColumns)
     
@@ -274,7 +275,7 @@ class Matrix(object):
   def _IsFloatsEqual(self, floatOne, floatTwo):
     """If f1 close to f2 then expand f2 by adding and subtracting a margin of error
        """
-    error = (0.1)**5
+    error = (0.1)**6
     if ((floatTwo-error) < floatOne) and (floatOne < (floatTwo+error)):
       return True
     return False
@@ -338,52 +339,108 @@ class Matrix(object):
         
   
   def LU(self):
-    for k in range(1, self.n_rows):
-      self._SubtractRowFromRows(k)
-    return self
+    for pivotCoord in range(1, self.n_rows):
+      self._DivideBelow(pivotCoord)
+      self._SubBelowAndRightOf(pivotCoord)
+    
+    L, U = self._CreateLU()
+    return L, U
     
   def LUP(self):
     P = self._CreateP()
-    for k in range(1, self.n_rows):
-      l = self._SwapCurrentRowWithRowWithTheLargestValueInCurrentColumn(k)
+    for pivotCoord in range(1, self.n_rows):
+      l = self._FindRowWithLargestValueInColumn(pivotCoord)
       
-      guardian = deepcopy(P._GetMatrixRow(k))
-      P._matrix[k-1] = deepcopy(P._GetMatrixRow(l))      
-      P._matrix[l-1] = guardian
+      self._SwapRows(pivotCoord, l)
+      
+      P._SwapRows(pivotCoord, l)
         
-      self._SubtractRowFromRows(k)
-    return self
+      self._DivideBelow(pivotCoord)
+      self._SubBelowAndRightOf(pivotCoord)
+      
+    L, U = self._CreateLU()
+    return L, U, P
   
-  def _SubtractRowFromRows(self, k):
+  def _DivideBelow(self, k):
     for i in range(k+1, self.n_rows+1):
       if self._IsFloatsEqual(self[(k, k)], 0.0):
-        #can recover only if the new result is kept in a seperate matrix
-        raise Exception(u"Found an extremly small value: " + str(self[(k, k)]))
+        raise ZeroDivisionError
       self[(i, k)] = self[(i, k)] / float(self[(k, k)])
+  
+  def _SubBelowAndRightOf(self, k):
+    for i in range(k+1, self.n_rows+1):
       for j in range(k+1, self.n_rows+1):
         self[(i, j)] = self[(i, j)] - self[(i, k)] * self[(k, j)]
   
-  def _SwapCurrentRowWithRowWithTheLargestValueInCurrentColumn(self, k):
+  def _FindRowWithLargestValueInColumn(self, k):
     pivot = 0.0
     for i in range(k, self.n_rows+1):
       if (abs(self[(i, k)]) > pivot):
         pivot = abs(self[(i, k)])
         l = i
     if self._IsFloatsEqual(pivot, 0.0):
-      raise Exception(u"Matrix is singular")
-    
-    for j in range(1, self.n_rows+1):
-      guardian = self[(k, j)]
-      self[(k, j)] = self[(l ,j)]
-      self[(l ,j)] = guardian
+      raise ZeroDivisionError
     return l
+  
+  def _SwapRows(self, rowOne, rowTwo):
+    i = rowOne - 1
+    j = rowTwo - 1
+    guardian = deepcopy(self._matrix[i])
+    self._matrix[i] = deepcopy(self._matrix[j])
+    self._matrix[j] = guardian
   
   def _CreateP(self):
     P = Matrix(self.n_rows, self.n_rows)
     for i in range(1, self.n_rows+1):
       P[(i, i)] = 1
     return P
+  
+  def _CreateLU(self):
+    L = Matrix(self.n_rows, self.n_rows)
+    U = Matrix(self.n_rows, self.n_rows)
+    for row in range(1, self.n_rows+1):
+      for column in range(1, self.n_rows+1):
+        if (column >= row):
+          U[(row, column)] = self[row, column]
+        else:
+          L[(row, column)] = self[row, column]
+        if (column == row):
+          L[(row, column)] = 1
+    return L, U
 
+    
+  def _solveLyPb(self, L, P, b):
+    """Inplace Foward Substitution, L*y=P*b"""
+    b = P * b
+    y = deepcopy(b)
+    for i in range(1, self.n_rows):
+      for j in range(i+1, self.n_rows+1):
+        y[(j, 1)] -= L[(j, i)] * y[(i, 1)]
+    return y
+  
+  def _solveUxy(self, U, y):
+    """Inplace Backward Substitution, U*x=y"""
+    x = deepcopy(y)
+    for i in range(self.n_rows, 0, -1):
+      x[(i, 1)] /= float(U[(i, i)])
+      for j in range(1, i):
+        x[(j, 1)] -= U[(j, i)] * x[(i, 1)]
+    return x
+        
+  def solveAxbWithLU(self, A, b):
+    L, U = A.LU()
+    P = self._CreateP()
+    y = self._solveLyPb(L, P, b)
+    x = self._solveUxy(U, y)
+    return x, y
+    
+  def solveAxbWithLUP(self, A, b):
+    L, U, P = A.LUP()
+    y = self._solveLyPb(L, P, b)
+    x = self._solveUxy(U, y)
+    return x, y
+    
+    
 def _ConvertToNumber(string):
     if (string.find(".") != -1):
       return float(string)
