@@ -13,6 +13,4 @@ First lab:
     read matrix from a file. -> fromFile
     output matrix to a file. -> toFile
 
-Task 1:
-  compare two double values.
-  
+The Matrix class should implement forward and back substitution as well as both LU and LUP decomposition.

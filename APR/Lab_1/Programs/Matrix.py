@@ -338,39 +338,50 @@ class Matrix(object):
         f.write("\n")
         
   
-  def LU(self):
-    for pivotCoord in range(1, self.n_rows):
-      self._DivideBelow(pivotCoord)
-      self._SubBelowAndRightOf(pivotCoord)
+  @staticmethod
+  def LU(matrix):
+    A = deepcopy(matrix)
+    for pivotCoord in range(1, A.n_rows):
+      A._DivideBelow(pivotCoord)
+      A._SubBelowAndRightOf(pivotCoord)
     
-    L, U = self._CreateLU()
+    L, U = A._CreateLU()
     return L, U
-    
-  def LUP(self):
-    P = self._CreateP()
-    for pivotCoord in range(1, self.n_rows):
-      l = self._FindRowWithLargestValueInColumn(pivotCoord)
+  
+  @staticmethod  
+  def LUP(matrix):
+    A = deepcopy(matrix)
+    P = A._CreateP()
+    for pivotCoord in range(1, A.n_rows):
+      l = A._FindRowWithLargestValueInColumn(pivotCoord)
       
-      self._SwapRows(pivotCoord, l)
+      A._SwapRows(pivotCoord, l)
       
       P._SwapRows(pivotCoord, l)
+      print "Swapped rows:" + str(pivotCoord) + " and "+ str(l)
+      print A
         
-      self._DivideBelow(pivotCoord)
-      self._SubBelowAndRightOf(pivotCoord)
+      A._DivideBelow(pivotCoord)
+      A._SubBelowAndRightOf(pivotCoord)
       
-    L, U = self._CreateLU()
+    L, U = A._CreateLU()
     return L, U, P
   
   def _DivideBelow(self, k):
-    for i in range(k+1, self.n_rows+1):
+    for i in range(k+1, self.n_rows+1): #if the last pivot element is a zero, is the method unsuitable?
       if self._IsFloatsEqual(self[(k, k)], 0.0):
+        print "Element" + "(" + str(k) + str(k) + ")" + "is very close to zero:" + str(self[(k, k)])
         raise ZeroDivisionError
       self[(i, k)] = self[(i, k)] / float(self[(k, k)])
+    print "Divided below the pivot element:"
+    print self
   
   def _SubBelowAndRightOf(self, k):
     for i in range(k+1, self.n_rows+1):
       for j in range(k+1, self.n_rows+1):
         self[(i, j)] = self[(i, j)] - self[(i, k)] * self[(k, j)]
+    print "Subtracted below and right of the pivot element:"
+    print self
   
   def _FindRowWithLargestValueInColumn(self, k):
     pivot = 0.0
@@ -379,6 +390,7 @@ class Matrix(object):
         pivot = abs(self[(i, k)])
         l = i
     if self._IsFloatsEqual(pivot, 0.0):
+      print "Largest pivot" + "(" + str(i) + str(k) + ")" + "is very close to zero:" + str(pivot)
       raise ZeroDivisionError
     return l
   
@@ -409,6 +421,31 @@ class Matrix(object):
     return L, U
 
     
+  @staticmethod
+  def solveAxbWithLU(A, b):
+    L, U = Matrix.LU(A)
+    print "L:"
+    print L
+    print "U:"
+    print U
+    P = A._CreateP()
+    y = A._solveLyPb(L, P, b)
+    x = A._solveUxy(U, y)
+    return x, y
+  
+  @staticmethod  
+  def solveAxbWithLUP(A, b):
+    L, U, P = Matrix.LUP(A)
+    print "L:"
+    print L
+    print "U:"
+    print U
+    print "P:"
+    print P
+    y = A._solveLyPb(L, P, b)
+    x = A._solveUxy(U, y)
+    return x, y  
+    
   def _solveLyPb(self, L, P, b):
     """Inplace Foward Substitution, L*y=P*b"""
     b = P * b
@@ -419,26 +456,18 @@ class Matrix(object):
     return y
   
   def _solveUxy(self, U, y):
-    """Inplace Backward Substitution, U*x=y"""
+    """Inplace Back Substitution, U*x=y"""
     x = deepcopy(y)
     for i in range(self.n_rows, 0, -1):
+      if self._IsFloatsEqual(U[(i, i)], 0.0):
+        print "Upper(U) element" + "(" + str(i) + str(i) + ")" + "is very close to zero:" + str(U[(i, i)])
+        raise ZeroDivisionError
       x[(i, 1)] /= float(U[(i, i)])
       for j in range(1, i):
         x[(j, 1)] -= U[(j, i)] * x[(i, 1)]
     return x
-        
-  def solveAxbWithLU(self, A, b):
-    L, U = A.LU()
-    P = self._CreateP()
-    y = self._solveLyPb(L, P, b)
-    x = self._solveUxy(U, y)
-    return x, y
-    
-  def solveAxbWithLUP(self, A, b):
-    L, U, P = A.LUP()
-    y = self._solveLyPb(L, P, b)
-    x = self._solveUxy(U, y)
-    return x, y
+  
+  
     
     
 def _ConvertToNumber(string):

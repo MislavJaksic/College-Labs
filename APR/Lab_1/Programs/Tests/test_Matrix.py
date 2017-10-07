@@ -241,14 +241,18 @@ def test_Matrix_LU():
        [0,0,0,3],
       ]
   matrix = Matrix(list)
-  L, U = matrix.LU()
-  print L
-  print U
-  assert matrix == Matrix(LU)
+  L, U = Matrix.LU(matrix)
+  assert matrix == Matrix(list)
+  
+  #assert matrix == Matrix(LU)
   assert L == Matrix(LTrue)
   assert U == Matrix(UTrue)
   
 def test_Matrix_LUP(Matrix120):
+  list = [[1, 2, 0],
+          [3, 5, 4],
+          [5, 6, 3],
+         ]
   LUP = [[5, 6, 3],
         [3/5., 7/5., 11/5.],
         [1/5., 4/7., -13/7.],
@@ -265,17 +269,19 @@ def test_Matrix_LUP(Matrix120):
        [0, 1, 0],
        [1, 0, 0],
       ]
-  L, U, P = Matrix120.LUP()
-  assert Matrix120 == Matrix(LUP)
+  L, U, P = Matrix.LUP(Matrix120)
+  assert Matrix120 == Matrix(list)
+  #assert Matrix120 == Matrix(LUP)
   assert L == Matrix(LTrue)
   assert U == Matrix(UTrue)
   assert P == Matrix(PTrue)
+  
   
 def test_Matrix_solveLyPb(Matrix120):
   b = Matrix([[0.1],
               [12.5],
               [10.3]])
-  L, U = Matrix120.LU()
+  L, U = Matrix.LU(Matrix120)
   P = Matrix120._CreateP()
   y = Matrix120._solveLyPb(L, P, b)
   assert y == Matrix([[0.1], [12.2], [-39]])
@@ -286,7 +292,7 @@ def test_Matrix_solveUxy(Matrix120):
   b = Matrix([[0.1],
               [12.5],
               [10.3]])
-  L, U, P = Matrix120.LUP()
+  L, U, P = Matrix.LUP(Matrix120)
   y = Matrix120._solveLyPb(L, P, b)
   assert y == Matrix([[10.3], [6.319999], [-5.571428]])
   x = Matrix120._solveUxy(U, y)
@@ -296,7 +302,7 @@ def test_Matrix_solveAxbWithLU(Matrix120):
   b = Matrix([[0.1],
               [12.5],
               [10.3]])
-  x, y = Matrix120.solveAxbWithLU(Matrix120, b)
+  x, y = Matrix.solveAxbWithLU(Matrix120, b)
   assert y == Matrix([[0.1], [12.2], [-39]])
   assert x == Matrix([[0.5], [-0.2], [3]])
   
@@ -304,6 +310,6 @@ def test_Matrix_solveAxbWithLUP(Matrix120):
   b = Matrix([[0.1],
               [12.5],
               [10.3]])
-  x, y = Matrix120.solveAxbWithLUP(Matrix120, b)
+  x, y = Matrix.solveAxbWithLUP(Matrix120, b)
   assert y == Matrix([[10.3], [6.319999], [-5.571428]])
   assert x == Matrix([[0.5], [-0.2], [3]])
