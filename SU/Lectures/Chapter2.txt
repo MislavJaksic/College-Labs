@@ -1,0 +1,48 @@
+## Poglavlje 2: Nadzirano ucenje
+
+Nadzirano ucenje: klasifikacija i regresija.
+
+Klasifikacija: pridruzi klasu, diskretnu ili norminalnu vrijednost nekom primjeru.
+
+Regresija: pridruzi kontinuiranu vrijednosti nekom primjeru.
+
+### Osnovni pojmovi 
+
+Dimenzija vektora n
+Vektor znacajki (x1, x2, ..., xn)
+Primjer x = (x1, x2, ..., xn), a.k.a. ulazni prostor/prostor primjera
+Skup svih primjera X
+Oznaka klase y
+
+Klasa C
+
+Ukupan broj primjera za ucenje N
+Indeks primjera i
+Primjer za ucenje (x, y)
+Skup primjera za ucenje D = {xi, yi}, gdje i = (1 do N)
+Broj klasa K
+Vektor klasa (y1, y2, ..., yk)
+
+Model ili prostor hipoteza H
+
+Pretpostavka svih algoritama za strojno ucenje: primjeri u X su nezavisno uzrokovani i iz iste distribucije P(x, y).
+                                                skraceno, idd (eng. independent and identically distributed).
+
+Nadzirano ucenje: poznato je kojem x pripada koji y.
+
+Klasifikacija: odreci C koji pripada x.
+                 binarna
+                 vise klasna (eng. multiclass classification)
+                 s vise strukim oznakama (eng. multilabel classification)
+
+Hipoteza: zadace klasifikacije je napraviti hipotezu i time odrediti pripada li x C-u.
+            h(x)= 0 -> pripada C-u    -> tada x zadovoljava hipotezu
+            h(x)= 1 -> ne pripada C-u  
+          konzistentna s (x, y) akko h(x)= y, tj. ako algoritam predvidi kao sto pise u podacima.
+          
+Model: ili prostor hipoteza je skup mogucih postupaka odlucivanja o pripadnosti x-a y-onu.
+       ucenje se svodi na pretrazivanje H i nalazenje najbolje hipoteze. 
+            
+
+
+               

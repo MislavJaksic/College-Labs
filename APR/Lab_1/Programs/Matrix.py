@@ -5,6 +5,8 @@ from InputController import InputController
 from copy import copy, deepcopy
 from types import TupleType, IntType
 
+ERROR = (0.1)**7
+
 class Matrix(object):
   """'Private' methods are prefixed with an underscore (_).
      'Public' methods have a lowercase first letter.
@@ -31,11 +33,6 @@ class Matrix(object):
                       u"Create Matrix with list of lists -> Matrix([ [_num, _num], [_num, _num] ])")
     
     self._SetMatrixAndDimensions(listOfLists)
-       
-    """Python data models: every object has: an identity: never changes; compared with 'is'; id() returns an integer representing identity
-                                             a type: never changes; determines the operations the object supports and values the object can have; type() returns type
-                                             a value: may change (mutable) or it may not (immutable);
-                                             """
   
   def _IsGivenMatrixDimensions(self, dimensions):
     if self._IsValidKeyValues(dimensions):
@@ -82,6 +79,11 @@ class Matrix(object):
   def _UnwrapTuple(self, tuple):
     return tuple[0]
   
+  
+  def _SetMatrixAndDimensions(self, listOfLists):
+    self._matrix = listOfLists 
+    self.n_rows = self._CountRows()
+    self.m_columns = self._CountColumns()
   
   def _CountRows(self):
     return len(self._matrix)
@@ -180,20 +182,20 @@ class Matrix(object):
   
   
   def __add__(self, other):
-    # if not self._IsSameDimension(other): TODO
-      # raise Exception(u"Matrices are not of the same dimnsion.")
+    if not self._IsMatricesSameDimension(other):
+      raise Exception(u"Matrices are not of the same dimnsion.")
+      
     zeroesMatrix = Matrix(self.n_rows, self.m_columns)
-    
     for row in range(1, self.n_rows+1):
       for column in range(1, self.m_columns+1):
         zeroesMatrix[(row, column)] = self[(row, column)] + other[(row, column)]
     return zeroesMatrix
     
   def __sub__(self, other):
-    # if not self._IsSameDimension(other): TODO
-      # raise Exception(u"Matrices are not of the same dimnsion.")
+    if not self._IsMatricesSameDimension(other):
+      raise Exception(u"Matrices are not of the same dimnsion.")
+      
     zeroesMatrix = Matrix(self.n_rows, self.m_columns)
-    
     for row in range(1, self.n_rows+1):
       for column in range(1, self.m_columns+1):
         zeroesMatrix[(row, column)] = self[(row, column)] - other[(row, column)]
@@ -215,7 +217,7 @@ class Matrix(object):
     
   def _GetMulDimensions(self, other):
     if not self._IsMulDimension(other):
-      raise Exception(u"Matrices are not of the dimnsions that they can be multiplied.")
+      raise Exception(u"Cannot multiply matricies.Inner dimensions are wrong:" + str(self.n_rows) + str(self.m_columns) + " " + str(other.n_rows) + str(other.m_columns))
     return self.n_rows, other.m_columns
     
   def _IsMulDimension(self, other):
@@ -258,11 +260,7 @@ class Matrix(object):
     self._SetMatrixAndDimensions(zeroesListOfLists)
     return self
   
-  def _SetMatrixAndDimensions(self, listOfLists):
-    self._matrix = listOfLists 
-    self.n_rows = self._CountRows()
-    self.m_columns = self._CountColumns()
-   
+  
   def __eq__(self, other):
     if not self._IsMatricesSameDimension(other):
       return False
@@ -275,8 +273,7 @@ class Matrix(object):
   def _IsFloatsEqual(self, floatOne, floatTwo):
     """If f1 close to f2 then expand f2 by adding and subtracting a margin of error
        """
-    error = (0.1)**6
-    if ((floatTwo-error) < floatOne) and (floatOne < (floatTwo+error)):
+    if ((floatTwo-ERROR) <= floatOne) and (floatOne <= (floatTwo+ERROR)):
       return True
     return False
     
@@ -287,19 +284,13 @@ class Matrix(object):
       return False
     return True
     
+    
   def scale(self, scalar_value):
     for row in range(1, self.n_rows+1):
       for column in range(1, self.m_columns+1):
         self[(row, column)] = scalar_value * self[(row, column)]
     return self
   
-  # def _GetNext_i_j(self):
-    
-    # yield i, j
-    
-  # def _GetNext_row_column(self):
-    
-    # yield row, column
     
   def __iadd__(self, other):
     """A += B"""
@@ -358,7 +349,7 @@ class Matrix(object):
       A._SwapRows(pivotCoord, l)
       
       P._SwapRows(pivotCoord, l)
-      print "Swapped rows:" + str(pivotCoord) + " and "+ str(l)
+      print "Swapped rows:" + str(pivotCoord) + " and " + str(l)
       print A
         
       A._DivideBelow(pivotCoord)
@@ -368,7 +359,7 @@ class Matrix(object):
     return L, U, P
   
   def _DivideBelow(self, k):
-    for i in range(k+1, self.n_rows+1): #if the last pivot element is a zero, is the method unsuitable?
+    for i in range(k+1, self.n_rows+1):
       if self._IsFloatsEqual(self[(k, k)], 0.0):
         print "Element" + "(" + str(k) + str(k) + ")" + "is very close to zero:" + str(self[(k, k)])
         raise ZeroDivisionError
@@ -420,7 +411,28 @@ class Matrix(object):
           L[(row, column)] = 1
     return L, U
 
-    
+        
+  def _solveLyPb(self, L, P, b):
+    """Inplace Foward Substitution, L*y=P*b"""
+    b = P * b
+    y = deepcopy(b)
+    for i in range(1, self.n_rows):
+      for j in range(i+1, self.n_rows+1):
+        y[(j, 1)] -= L[(j, i)] * y[(i, 1)]
+    return y
+  
+  def _solveUxy(self, U, y):
+    """Inplace Back Substitution, U*x=y"""
+    x = deepcopy(y)
+    for i in range(self.n_rows, 0, -1):
+      if self._IsFloatsEqual(U[(i, i)], 0.0):
+        print "Upper(U) element" + "(" + str(i) + str(i) + ")" + "is very close to zero:" + str(U[(i, i)])
+        raise ZeroDivisionError
+      x[(i, 1)] /= float(U[(i, i)])
+      for j in range(1, i):
+        x[(j, 1)] -= U[(j, i)] * x[(i, 1)]
+    return x
+  
   @staticmethod
   def solveAxbWithLU(A, b):
     L, U = Matrix.LU(A)
@@ -445,28 +457,7 @@ class Matrix(object):
     y = A._solveLyPb(L, P, b)
     x = A._solveUxy(U, y)
     return x, y  
-    
-  def _solveLyPb(self, L, P, b):
-    """Inplace Foward Substitution, L*y=P*b"""
-    b = P * b
-    y = deepcopy(b)
-    for i in range(1, self.n_rows):
-      for j in range(i+1, self.n_rows+1):
-        y[(j, 1)] -= L[(j, i)] * y[(i, 1)]
-    return y
-  
-  def _solveUxy(self, U, y):
-    """Inplace Back Substitution, U*x=y"""
-    x = deepcopy(y)
-    for i in range(self.n_rows, 0, -1):
-      if self._IsFloatsEqual(U[(i, i)], 0.0):
-        print "Upper(U) element" + "(" + str(i) + str(i) + ")" + "is very close to zero:" + str(U[(i, i)])
-        raise ZeroDivisionError
-      x[(i, 1)] /= float(U[(i, i)])
-      for j in range(1, i):
-        x[(j, 1)] -= U[(j, i)] * x[(i, 1)]
-    return x
-  
+
   
     
     
