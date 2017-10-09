@@ -40,9 +40,55 @@ Hipoteza: zadace klasifikacije je napraviti hipotezu i time odrediti pripada li 
             h(x)= 1 -> ne pripada C-u  
           konzistentna s (x, y) akko h(x)= y, tj. ako algoritam predvidi kao sto pise u podacima.
           
-Model: ili prostor hipoteza je skup mogucih postupaka odlucivanja o pripadnosti x-a y-onu.
+Model: ili prostor hipoteza H je skup mogucih postupaka odlucivanja o pripadnosti x-a y-onu.
        ucenje se svodi na pretrazivanje H i nalazenje najbolje hipoteze. 
+       koliko dobro h klasificira odreduje empirijska pogreska ili pogrska ucenja (eng. training error)
+         greska = broj netocno klasificiranih primjera / ukupni broj primjera
+         ako greska h je uvijek veca od 0, onda H nije dovoljnog kapaciteta ili slozenosti da bi naucio C
             
-
-
+VC dimenzija: Vapnik-Chervonenkisova; iskazuje kapacitet H kao broj primjera s kojima se H moze nostiti
+                razdjeljivanje (eng. shattering): kada H moze razdvojiti sve konfiguracije + i - primjera kojih je N u prostoru (konfiguracija je 2**N)
+              VC(H) je najveci broj primjera koji H moze razdvojiti
                
+### Induktivna pristranost
+
+Generalizacija: svojstvo hipoteze da predvidi klasifikaciju nevidenog primjera
+
+Induktivna pristranost: skup pretpostavka za induktivno ucenje.
+                        1) definiramo H cime odredujemo koje hipoteze dolaze u obzir
+                        2) definira se nacin odabira h iz H
+                          - ogranicavanjem: odabirmo H ogranicimo moguc izbor h                       
+                          - preferencijom: odaberemo nacin pretrazivanja H i time dajemo prednost nehim h nad nekim drugim
+                        ono sto nedostaje indukciji da bi bila dedukcija
+                        
+Sum: anomalija u podacima
+     onemogucuju pogresku da bude jednaka nuli
+     
+### Regresija
+
+Regresija: ciljana vrijednost je kontinuirana.
+           idealno se uci y = f(x), ali se zbog suma se uci y = f(x) + e
+             - empirijska pogreska: 1/2 * SUM( (yi - h(xi))**2 ), ty kvadratna pogreska.
+           
+Linearna regresija: h(x) = w0 + SUM( w1*xi ) = w0 + w1*x1 + w2*x2 + ...
+                      - wi su parametri
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
