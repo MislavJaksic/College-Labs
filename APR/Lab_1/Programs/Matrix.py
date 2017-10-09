@@ -5,7 +5,8 @@ from InputController import InputController
 from copy import copy, deepcopy
 from types import TupleType, IntType
 
-ERROR = (0.1)**7
+#Testing works for ERROR **6, **5 or less
+ERROR = epsilon = (0.1)**6
 
 class Matrix(object):
   """'Private' methods are prefixed with an underscore (_).
@@ -99,8 +100,8 @@ class Matrix(object):
     for row in self._matrix:
       pretty_matrix += str(row)
       pretty_matrix += "\n"
-    pretty_matrix += "rows: " + str(self.n_rows) + ", "
-    pretty_matrix += "columns: " + str(self.m_columns)
+    #pretty_matrix += "rows: " + str(self.n_rows) + ", "
+    #pretty_matrix += "columns: " + str(self.m_columns)
     return pretty_matrix
   
   
@@ -342,12 +343,11 @@ class Matrix(object):
   @staticmethod  
   def LUP(matrix):
     A = deepcopy(matrix)
-    P = A._CreateP()
+    P = A._CreateI()
     for pivotCoord in range(1, A.n_rows):
       l = A._FindRowWithLargestValueInColumn(pivotCoord)
       
       A._SwapRows(pivotCoord, l)
-      
       P._SwapRows(pivotCoord, l)
       print "Swapped rows:" + str(pivotCoord) + " and " + str(l)
       print A
@@ -392,7 +392,7 @@ class Matrix(object):
     self._matrix[i] = deepcopy(self._matrix[j])
     self._matrix[j] = guardian
   
-  def _CreateP(self):
+  def _CreateI(self):
     P = Matrix(self.n_rows, self.n_rows)
     for i in range(1, self.n_rows+1):
       P[(i, i)] = 1
@@ -440,7 +440,7 @@ class Matrix(object):
     print L
     print "U:"
     print U
-    P = A._CreateP()
+    P = A._CreateI()
     y = A._solveLyPb(L, P, b)
     x = A._solveUxy(U, y)
     return x, y
@@ -457,8 +457,28 @@ class Matrix(object):
     y = A._solveLyPb(L, P, b)
     x = A._solveUxy(U, y)
     return x, y  
-
   
+  
+  def inverse(self):
+    """Solve LUP then solve Ly=Pb and Ux=y,
+    where b is a single column od E, many times
+    """
+    L, U, P = Matrix.LUP(self)
+    E = self._CreateI()
+    
+    for column in range(1, self.n_rows+1):
+      list = E._GetMatrixColumn(column)
+      
+      listOfLists = []
+      for value in list:
+        listOfLists.append([value])
+      EColumn = Matrix(listOfLists)
+      
+      y = self._solveLyPb(L, P, EColumn)
+      x = self._solveUxy(U, y)
+      
+      for row in range(1, self.n_rows+1):
+        self[(row, column)] = x[(row, 1)]
     
     
 def _ConvertToNumber(string):

@@ -83,7 +83,7 @@ def test_Matrix_CountColumns(MatrixDull):
   
 
 def test_Matrix_Print(Matrix1234):
-  string = '[1, 2]\n[3, 4]\nrows: 2, columns: 2'
+  string = '[1, 2]\n[3, 4]\n'
   assert str(Matrix1234) == string
   
  
@@ -282,7 +282,7 @@ def test_Matrix_solveLyPb(Matrix120):
               [12.5],
               [10.3]])
   L, U = Matrix.LU(Matrix120)
-  P = Matrix120._CreateP()
+  P = Matrix120._CreateI()
   y = Matrix120._solveLyPb(L, P, b)
   assert y == Matrix([[0.1], [12.2], [-39]])
   x = Matrix120._solveUxy(U, y)
@@ -313,3 +313,13 @@ def test_Matrix_solveAxbWithLUP(Matrix120):
   x, y = Matrix.solveAxbWithLUP(Matrix120, b)
   assert y == Matrix([[10.3], [6.319999], [-5.571428]])
   assert x == Matrix([[0.5], [-0.2], [3]])
+  
+def test_Matrix_inverse():
+  A = Matrix([[1, 2],
+              [3, 4],
+             ])
+  result = Matrix([[-2, 1],
+                   [3/2., -1/2.],
+                  ])
+  A.inverse()
+  assert A == result
