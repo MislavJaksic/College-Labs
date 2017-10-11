@@ -10,9 +10,10 @@ Regresija: pridruzi kontinuiranu vrijednost primjeru.
 
 Dimenzija vektora:  n
 Vektor znacajki:    (x1, x2, ..., xn)
-Primjer:            x = (x1, x2, ..., xn), a.k.a. ulazni prostor/prostor primjera
-Skup svih primjera: X
+Primjer:            x = (x1, x2, ..., xn), a.k.a. 
+Skup svih primjera: X tj. ulazni prostor/prostor primjera
 Oznaka klase:       y
+Skup oznaka:        Y
 
 Klasa: C
 
@@ -93,12 +94,18 @@ Podnaucenost: (eng. underfitting) H je prejednostavan, lose opisuje podatke iz D
                                            
 Ideja: minimiziraj i varijancu i pristranost.
 
-Unakrsna provjera: (eng. cross-validation) razdvaja D na skup za ucenje (eng. traning set) i skup za provjeru (eng. validation set).
-                   model se uci na skupu za ucenje, a provjerava na skupu za provjeru.
+Unakrsna provjera: (eng. cross-validation) razdvaja D na skup za:
+                     - ucenje (eng. training set) i
+                     - provjeru/ispitivanje (eng. validation/testing set).
+                       - skup je za "provjeru" ako se njime bira model, a zove se za "ispitivanje" ako se njime utvrduje pogreska vec odabranog modela.
                    od modela skrivamo dio primjera da vidimo kako ce se ponasati s nevidenim primjerima
-                     - pogreska generalizacije (eng. off-traning-set error) je greska hipoteze mjerena na skupu s kojim nije naucena.
+                     - pogreska generalizacije (skup za provjeru) (eng. off-traning-set error) je greska hipoteze mjerena na skupu s kojim nije naucena.
+                       - kako slozenost modela raste tako ona prvo pada, pa raste
+                     - empirijska pogreska (skup za ucenje) (eng. train error) je greska 
+                       - kako slozenost modela raste tako ona pada
+                   optimalan model je onaj koji min(pogresku generalizacije)
 
-Ako se unakrsna provjera koristi ne za odabir modela, vec za sutvrdivanje konacne pogreske odabranog modela, skup s kojim se ispituje zove se ispitni skup (eng. test set).                   
+Ako se unakrsna provjera koristi ne za odabir modela, vec za utvrdivanje konacne pogreske odabranog modela, skup s kojim se ispituje zove se ispitni skup (eng. test set).                   
 
 Ispitni skup, skup za provjeru i ispitni skup trebaju biti disjunktni!
 

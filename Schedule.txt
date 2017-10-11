@@ -1,7 +1,4 @@
-Transfer and sync books with your iPad.
 
-09.10.17 English exam, 1600H, A111
-10.10.17
 11.10.17
 12.10.17
 13.10.17
@@ -14,9 +11,9 @@ Transfer and sync books with your iPad.
 20.10.17
 21.10.17
 22.10.17
-23.10.17 APR lab_1 start
+23.10.17 SU lab_1
 24.10.17
-25.10.17
+25.10.17 APR lab_1
 26.10.17
 27.10.17
 28.10.17
@@ -28,16 +25,16 @@ Transfer and sync books with your iPad.
 03.11.17
 04.11.17
 05.11.17
-06.11.17 APR lab_2 start
+06.11.17
 07.11.17
-08.11.17
-09.11.17
+08.11.17 SU lab_2
+09.11.17 APR lab_2
 10.11.17
 11.11.17
 12.11.17
 13.11.17
 14.11.17
-15.11.17
+15.11.17 RZNU lab_1
 16.11.17
 17.11.17
 18.11.17
