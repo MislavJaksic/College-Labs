@@ -10,7 +10,7 @@ Regresija: pridruzi kontinuiranu vrijednost primjeru.
 
 Dimenzija vektora:  n
 Vektor znacajki:    (x1, x2, ..., xn)
-Primjer:            x = (x1, x2, ..., xn), a.k.a. 
+Primjer:            x = (x1, x2, ..., xn)
 Skup svih primjera: X tj. ulazni prostor/prostor primjera
 Oznaka klase:       y
 Skup oznaka:        Y
@@ -96,13 +96,19 @@ Ideja: minimiziraj i varijancu i pristranost.
 
 Unakrsna provjera: (eng. cross-validation) razdvaja D na skup za:
                      - ucenje (eng. training set) i
-                     - provjeru/ispitivanje (eng. validation/testing set).
-                       - skup je za "provjeru" ako se njime bira model, a zove se za "ispitivanje" ako se njime utvrduje pogreska vec odabranog modela.
-                   od modela skrivamo dio primjera da vidimo kako ce se ponasati s nevidenim primjerima
+                     - provjeru (eng. validation set)
+                     - ispitivanje (eng. testing set) (on je isti kao i skup za provjeru ako se ne radi izbor hiperparametara)
+                       - skup za ucenje bira h iz H
+                       - skup za provjeru pronalazi hiperparametre (lasso, regularizacija, itd.)
+                       - skup za ispitivanje od svih mogucih modela (lin., nelin.) bira najtocniji
+                   ideja: od modela skrivamo dio primjera da vidimo kako ce se ponasati s nevidenim primjerima
+                     - empirijska pogreska (skup za ucenje) (eng. training error) je greska hipoteze
+                       - kako slozenost modela raste tako ona pada
                      - pogreska generalizacije (skup za provjeru) (eng. off-traning-set error) je greska hipoteze mjerena na skupu s kojim nije naucena.
                        - kako slozenost modela raste tako ona prvo pada, pa raste
-                     - empirijska pogreska (skup za ucenje) (eng. train error) je greska 
-                       - kako slozenost modela raste tako ona pada
+                       
+Pogledaj zadnje poglavlje za pravo, "full blown", testiranje modela.
+                     
                    optimalan model je onaj koji min(pogresku generalizacije)
 
 Ako se unakrsna provjera koristi ne za odabir modela, vec za utvrdivanje konacne pogreske odabranog modela, skup s kojim se ispituje zove se ispitni skup (eng. test set).                   

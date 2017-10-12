@@ -1,0 +1,60 @@
+x: ulazne, nezavisne, prediktorske varijable
+y: izlazna, zavisna, kriterijska varijabla
+
+Linearna regresija: h(x, w) = w0 + w1*x0 + w2*x2 + ... + wn*xn
+                      - kada je n = 1, w0 + w1*x1, tj pravac
+
+Optimalna hipoteza: izaberi h iz H takav da:
+                      - 
+
+h(x) je vrijednost koju predvida hipoteza.
+
+Funkcija gubitka: (y - h(x))**2
+                  zakaj ne razlika? Zato kaj bi se neg i poz rezultati razlike oduzeli.
+                  zakaj ne abs? Zato kaj ona vise kaznjava one koji jako odstupaju, a ne sve jednako.
+
+Funkcija pogreske: zbroj kvadratnih gubitaka
+                   1/2 * SUM( (yi - h(xi))**2 )
+
+Optimizacijski potupak: minimiziraj funkciju pogreske.
+                          - kako? Tako da se izaberu w0 i w1 tako da je funkcija pogreske najmanja.
+                          - zove metoda najmanjeg kvadrata (eng. ordinery least squares)
+
+Vrste regresije: ovisno o ulaznim varijablama:  jednostavna ili visestruka
+                 ovisno o izlaznim varijablama: univarijantna ili multivarijatna
+
+Dijelovi lin. reg.: model, fun. gubitka i pogreske, optimizacijski postupak
+                    
+Dummy znacajka: x0, koji je uvijek 1
+                  - w0 + w1*x1 ... prelazi u x0*w0 + w1*x1 ...
+
+Metoda najmanjih kvadrata: X je matrica koja se sastoji od stupaca koji su znacajke i redova koji su primjeri
+                             - prvi stupac je dummy varijable x0 = 1 za sve primjere
+                             - zove se matrica dizajna (eng. design matrix)
+                           y je vektor matrica koja ima oznake za svaki primjer
+                           w je vektor matrica koja ima sve hiperparametre w0, w1, ... 
+X * w = y
+w = X**(-1) * y <-> umjesto njega, trazimo priblizno rjesenje metodom najmanjih kvadrata
+
+Priblizno rjesenje: w = (X**T * X)**(-1) * X**T * y = (X**(+)) * y
+
+(X**(+)) je Moore-Penroseov pseudoinverz.
+(X**T * X) je Grahmova matrica.
+
+
+Probabilisticka interpretacija regresije:
+  - zakaj smo funkciju gubitka definirali na nacin na koji smo je definirali? Odgovor slijedi.
+
+f(x) generira podatke.
+yi = f(xi) + epsilon <- dodaje se sum, koja je slucajna varijable
+
+epsilon je slucajna varijabla koja se ponasa po normalnoj (Gaussovoj) razdiobi.
+
+Vjerojatnost da se x pokorava y je N(f(x), sigma**2)
+
+Izglednost (eng. likelyhood) je vjerojatnost podataka za danu hipotezu.
+
+Ako zelimo da je izglednost najveca, onda je to ekvivalentno da zelimo najmanju vrijednost funkcije gubitka.
+
+
+

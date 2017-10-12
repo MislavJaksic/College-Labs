@@ -1,0 +1,216 @@
+Koristi slike iz Drozdek-ove knjige!!!
+
+DSW algoritam:
+kako napraviti savrseno i popunjeno stablo.
+Rotacija cvorova: dijete i roditelja cvora zamjenimo uz ocuvanje redosljeda sve njihove djece.
+  - desna rotacija:
+
+Pazi! RightRotation (gr, par, ch): izrazito je vazan tocan redosljed ispitivanja.
+  - P, Q i R su podstabla, nije bitno koliko je cvorova u njima
+
+LeftRotation je isti kao i RightRotation ali se zamjene mjesta parametrima.
+
+Dvije faze algoritma:
+  1) pretvara binarno stablo u "kraljeznicu": lijevo koso stalno.
+    - na sljedecem lijevom dijetetu se obavi RightRotation i tako dokle god ima lijeve djece.
+  2) pretvaranje kraljenice u savrseno uravnotezeno stablo
+    - zapocinje tako da iz kraljeznice izdvoji cvorove koje ce ostati na dnu stabla () 
+    - kvadratici se rotiraju oko okruglih cvorova (slika na str 52)
+    Algoritam: 
+      - h je broj potpuno popunjenih razina stabla
+      - k daje broj cvorova u punim razinama
+      - (n - k) lijevih rotacija rotacija kvadratica i okruglih cvorova
+
+ALV stabla:
+DSW nije pogodan za strukturu kojoj ce se dodavati i brisati cvorovi.
+
+ALV garantira da nikada stable nece biti lose strukture (ali ce rijetko biti savrseno).
+
+Faktor ravnoteze: FR = visina desnog podstabla - visina lijevog podstabla <- pazi na redosljed
+AVL pravilo: FR je ili 0 ili 1 ili -1.
+U svakom cvoru se moze pisati faktor ravnoteze da se vidi jel je stablo AVL ili ne. 
+Najmanji broj cvorova u AVL stablu: AVL(h) = AVL(h-1) + AVL(h-2) + 1, AVL(0) = 0, AVL(1) = 1, gdje je h visina stabla
+  - h-1 znaci da jedno podstablo moze biti vece ili manje od drugog podstabla
+  - h-2 je analogan h-1, podstablo moze biti za jednu razinu manje ili vece od prvog podstabla
+
+Odnos brzina pretrazivanja:
+U najgorem sluèaju pretraživanje AVL stabla je 44% sporije od savrsenog stable.
+
+Algoritmi:
+ - dodavanje: dodaj kao i u binarnom stablo
+ - pretrazivanje: kao i u binarnom stablo
+ - uravnotezi nakon dodavanja:
+    - krenuvsi od dodanog cvora, penjemo se prema korijenu i izracunamo novi faktor ravnoteze za svaki cvor na putu.
+      - ako je novi faktor 0, onda mozemo prestrati uravnotezavanje stabla jer mozemo garantirati da je sve iznad uravnotezeno.
+      - ako je novi faktor +-1, treba nastavti kontrolu prema gore jer znemamo jel smo nekog uneravnotezili.
+      - ako je novi faktor -2, napravi rotacija ovisno o djetetu
+      - ako je novi faktor 2, napravi rotaciju ovisno o djetetu
+
+Situacije i korektivne radnje kod dodavanja:
+roditelj = P, dijete = Q
+  1) FR(P) = 2, FR(Q) = 1
+    - rotacija Q oko roditelja P
+  2) FR(P) = -2, FR(Q) = -1
+    - rotacija Q oko roditelja P
+  3) FR(P) = 2, FR(Q) = -1
+    - rotacija R oko Q, pa rotacija R oko P 
+  4) FR(P) = -2, FR(Q) = 1
+    - rotacija R oko Q, pa rotacija R oko P
+1) i 2) su simetricne, te su 3) i 4) simetricne.
+
+  - brisanje: "deletion by copying"
+    - uravnotezi nakon brisanja:
+      - ako je novi faktor 0, treba nastaviti kontrolu
+      - ako je novi faktor +-1, onda mozemo stati s kontrolom
+      - ako je novi faktor +-2, vidi situacije
+
+Situacije i korektivne radnje kod brisanja (str 64 ima lijepu sliku):
+  1) FR(P) = 2, FR(Q) = 1
+    - rotacija Q oko roditelja P
+  2) FR(P) = 2, FR(Q) = 0
+    - rotacija Q oko roditelja P
+  3) FR(P) = -2, FR(Q) = -1
+    - rotacija Q oko roditelja P
+  4) FR(P) = -2, FR(Q) = 0
+    - rotacija Q oko roditelja P
+  5) FR(P) = 2, FR(Q) = -1
+    - rotacija R oko Q, pa rotacija R oko P 
+  6) FR(P) = -2, FR(Q) = 1
+    - rotacija R oko Q, pa rotacija R oko P 
+1) i 2) su simetricne, te su 3) i 4) simetricne, te su 5) i 6) simetricne.
+
+Dodavanje i brisanje ima situacije:
+jedna rotacija ako su faktori ravnoteze cvorova istog prednaka, 
+a ako su razlicitnog predznaka, biti ce potrebno dvije rotacija.
+
+B stabla:
+Koriste se u bazama podataka.
+Nisu binarna.
+Nastala zbog tehnoloskih ogranicenja hard diskova, magnetno polje koje glava diska stvori je preveliko da bi se zapisao samo jedan bajt (ili bit).
+
+Blok je najmanja podjela podataka koja se upisuje na disk.
+Kod B stabla cvorovi su veliki da popune cijeli blok na disku s logicki slicnim podacima.
+
+Crtaj si stabla, nemoj uciti sva svojstva napamet.
+
+B stablo je M stablo m-tog reda sa dodatnim svojstvima:
+m/2 + 1 <= k <= m, PAZI! Cjelobrojno je djeljenje.
+k mozes zamisliti kao broj preckica izmedu mogucih clanova.
+  
+  - korijen ima najmanje 2 djece, osim ako je list
+  - svaki cvor osim korijena i lista sadrzi barem k-1 kljuceva i k djece
+  - svi listovi sadrze barem k-1 kljuceva
+  - svi listovi su na istoj razini
+
+Primjer:
+stablo 5-tog reda (red je m iz definicije). (str 72)
+
+Najgora popunjenost je 50%.
+
+Netreba znati programirati! Ali treba znati crtati!
+
+Algoritmi:
+  - pretrazivanje: trazi po cvoru kod ne naides na vrijednost u cvoru koja je veca od vrijednosti koju trazimo.
+  - dodavanje: 
+  - brisanje: 
+
+PISEMO BLIC!!! Sljedeci put.
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
