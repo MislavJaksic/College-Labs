@@ -1,0 +1,82 @@
+## Regresija 2
+Linearna regresija: h(x) = x0*w0 + x1*w1 + x2*w2 + ...
+                    X0 = 1
+
+Nelinearna regresija: nekada se podaci ne rastrkaju linearno
+                      npr. polinom drugog stupnja -> w0 + x1*w1 + (x2**2)*w2
+                      npr. s dvije znacajka, polinom drugog stupnja -> w0 + x1*w1 + x2*w2 + (x1*x2)*w3 + (x1**2)*w4 + (x2**2)*w5
+                        - interacijska znacajka (eng. cross term): x1*x2
+
+Iz linearnog u nelinearni model: ideja: promjeni podatke ne model!
+
+Preslikavanja u prostor znacajki:
+  - prelikaj iz ulaznog prostora u prostor znacajki (eng. from input space into feature space mapping); kao da povecas dimenziju u kojoj gledas podatke
+  - bazne funckije: {phi0, phi1, phi2, ...}
+  - svaka phi(j) uzme jednu znacajku i preslika je u drugu znacajku
+  - funkcija preslikavanja: phi(X) = (1, phi1(x1), phi2(x2), ...)
+  - to radimo kako bi mogli linearno odvojiti podatke (u vecoj dimenziji), inace bi ih trebali odvajati nelinearno slozenijim modelom
+
+Linearan model regresija: h(x, w) = SUM(wj*phi(j)) = wT*phi(X)                          
+                            - PAZI! Nemoj mjesati sa linearnom regresijom...
+                              - Linearna regresija je sadrzana u modelu linearne regresije
+                         
+Primjer: n = 1, parabola prema gore koja ima min u (1,1)
+         pomocu psi preslikaj znacajku x u vise znacajki -> (1, x, x**2) 
+
+Funkcija gubitka: ista, kvadratna pogreska.
+
+Optimizacijski postupak: isti, samo je matrica dizajna veca.
+
+
+
+Prenaucenost: odabir phi, koja ce preslikati znacajke, je hiperparametar!
+              kaj je phi veci, model je slozeniji. To vodi to velikih gresaka u generalizaciji.
+              - rjesenja: vise primjera, koristi unakrsnu provjeru, odaberi samo neke znacajke, smanjivanje dimenzija, regularizacija, Bayesovska regresija.
+
+
+Regularizacija: opazanje: slozeniji model -> velicine parametara w su velike
+                kod ucenja modela, ogranici w-ove tako da preferiras hipoteze s malim w-ovima
+                ideja: kreni od slozenog modela i ogranici ga sputavanjem
+  - rijetki modeli (eng. sparse models) su modeli s w-ovima pritegnutima na nulu
+  - regularizirana funkcija pogreske: E'(w|D) = E(w|D) + lambda*Er(w)
+    - regularizacijski izraz: lambda*Er(w)   
+      - to je norma vektora! Mi koristimo p-normu.
+      - Er(w) = ||w||p = pogledaj tocne oznake na str 2, dno stranice
+      - koristimo 1. i 2. normu, L1 i L2
+
+L2: ||w||2 = sqrt(wT*w)
+    PAZI! Ne regulariziramo w0 pa indeski j pocinju od 1 ne 0.
+    hrbatna regresija (eng. ridge regression)    
+    ideja: postoje dvije "zdjele", jedna za regularizaciju, jedna za optimizaciju i svaka ima minimum (eng. minimize cost, minimize penalty). Zbroj "zdjela" i trazenje njegovog minimuma minimizira oba minimuma odjednom.
+
+L1: ||w||1 = ...
+    daje rijetke modele (za razliku od L2, vidi dolje zakaj)
+    lasso regresija
+   
+L2, zbog kvadrata, male tezine jako malo kaznjava, za razliku od L1.
+L2 je, zbog kvadriranja kaznjavanja, tesko pritegnuti na nulu, kaj znaci da nece dati rijetki model. 
+  
+Zamisli razliku izmedu L1 i L2 kao da L1 i L2 obje imaju zdjele, ali L1 ima karo oblik, a L2 krug koji je zbraja sa zdjelom od optimizacije. 
+
+L0: 
+    odabire znacajke; ako wj nije nula, onda je tezinu w postavlja na 1
+
+Kombinacija L1 i L2: elastic net.
+
+
+L2 regularizirana regresija:
+  - E, neregularizirana funkcija pogreske, metoda najmanjih kvadrata
+  - w s regularizacijom postaje: w = ( (AT*A + lambda*I')**(-1) ) * AT * y
+    - PAZI! I' ima nule cijelom prvog redu, jer se w0 ne regularizira.
+  
+Reg. i kondicija matrice:
+  - znacajke nesmiju biti linearno ovisne
+  - multikolinearnost: ako se lako moze predvidjeti znacajka koristeci druge znacajke
+    - dogodi se da matrica dizajna nema puni rang -> nema inverz, singularna je, rjesenje je nestabilno
+      - nestabilno rjesenje: kada za male promjene u ulazu, postoje ogromne promjene u izlazu
+  - rjesenje: kondicioniranje matrice:
+    - sto je kondicijski broj veci, to je matrica sve blize singularnosti
+    - (eng. ill  conditioned)
+    - naznaka prenaucenosti
+  - regularizacija matrice unistava multikolinearnost jer se razlicite lambde dodaju na razlicita mjesta u matrici i time osiguravaju dobru strukturu.
+    - zove se rekondicioniranje matrice 
