@@ -1,0 +1,70 @@
+6 2 10    2
+2 3 0 x = 5
+0 4 2     4
+
+6   2 10
+1/3 3 0
+0   4 2
+
+6   2       10
+1/3 3-2*1/3 -10/3
+0   4       2
+
+6   2   10
+1/3 7/3 -10/3
+0   4   2
+
+itd...
+Krajnja rjesenja sustava na MI i ZI su uvijek cijeli brojevi.
+
+Nije najgore kada se tijekom LU pojavi nula, vec kada se pojavi broj izrazito blizo nule poput 10**(-20).
+
+U double pamtimo najvise 16-17 znacajnih znamenki.
+
+Treba biti jako jako pazljiv s jako velikim i malim brojevima kod LU dekompozicije.
+Dogadaju se kada se mali broj dodaje ili oduzima od izrazito velikog ili malog broja. (npr. 1 - 10**(20), tu ce se jedinica "izgubiti")
+
+
+Pivotiranje:
+Elementi na glavnoj dijag matrice sustava tijekom dekompozicije nazivaju se stozerni ili pivot elementi.
+1) Moze se dogoditi tijekom dekompozicije da je pivot element jednak nuli.
+2) Ako su stozerni elementi mali po abs vrijednosti, moze doci do velikih pogresaka.
+
+Zamjena redaka/stupaca matrice kako bi za pivot element dobili sto vecu abs vrijednost.
+
+Djelomicno pivotiranje: pivotiranje po stupcima (zamjena redaka).
+Gledaj cijeli stupac ispod pivot elemenata i zamjeni pivot redak s redkom kojima ispod njega ima najveci element.
+
+Zamjena k-tog i r-tog redka. Moramo zamjeniti i redke slobodnog vektora.
+
+Mijenjamao redoslijed varijalbli ako to isto radimo s stupcima.
+
+Potpuno pivotiranje: zamijeni i redak i stupac u matrici tako da se zamjene k-ti i s-ti redak i k-ti i t-ti stupac.
+
+Dovoljno je djelomicno pivotiranje.
+
+LUP:
+LU dekompozicija ali s djelomicnim pivotiranjem po stupcima (zamjena redaka).
+
+Komentari na algoritam:
+A[i, i] == 0 se zapravo pise abs(A[i, i]) < epsilon
+epsilon je jako malo vrijednost, a ovisi o situaciji u matrici. Mi cemo staviti oko 10**(-9).
+Svaka kvadratna matrica moze se svesti na L i U uz barem jednu permutaciju redaka/stupaca.
+P matrica se treba mnoziti s b u supstituciji unatrag. L*y = P*b
+
+
+Invertiranje matrice:
+A*x = b se svede na nesto drugo...
+
+Trazi matricu X tako da  kada se mnozi s A daje E.
+
+A*X = E
+
+X i E mozemo napisati kao skup stupcastih matrica.
+Stupci se zatim razloze na N razlicitih sustava.
+
+Na supstituciju unaprijed salju se stupci permutirane jedinicne matrice P.
+
+Jednom P*A = L*U,
+onda n puta napravi: L*yi = P*ei
+                     i U*x = y

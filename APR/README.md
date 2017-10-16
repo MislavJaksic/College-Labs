@@ -1,4 +1,4 @@
-## APR
+﻿## APR
 
 APR stands for "Analiza i projektiranje računalom" (eng. Computer analysis and design).
 
@@ -12,3 +12,11 @@ Translated from Croatian to English:
 4) state transitions analysis: understand how solids and liquids can be simulated in an "engine". How to quickly calculate what will physically happen.
 5) error analysis: problems occur if the mistake has compounded. Kahn's algorithm.
 6) algorithm complexity: a well known subject.
+
+### Labs
+
+Tasks which I had to solve to pass the course.
+
+### Lectures
+
+A collection of notes I made during the lecture. The lectures are in Croatian and so are the notes.

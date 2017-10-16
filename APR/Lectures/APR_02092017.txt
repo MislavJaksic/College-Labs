@@ -1,0 +1,81 @@
+Pregled gradiva: 
+1) rjesavanje sustava jednadzbi: koriste se u drugim kompliciranijim algoritmima.
+2) postupci nelinearne optimizacije: najveci dio semestra. Postoje problemi koji se nemogu savrseno rijesiti (poput problema crne kutije, nekaj ulazi, nekaj izlazi).
+3) genetski i evolucijski algoritmi: slicni kao 2), ali su oni stohasticki algoritmi.
+4) analiza prijelaznih pojava: demonstracija: "Phun", moze simulirati tekucina ili krutina. Ima svoj "engine" koji nas zanima, necemo se baviti lijepim suceljima.
+                               kako izracunati buducnost sustava dovoljno velikom brzinom.
+5) pogreske u postupcima analize: nastaju problemi kada se greska pocne gomilati.
+                                  demo: Kahunov algoritam, pametno rukuje brojevima koji trebaju imati veliku preciznost, ali su jako veliki ili jako mali pa su nezgrapni.
+6) slozenost algoritama: poznato.
+
+O matricama: na internetu.
+
+Rjesavanja matrica:
+A*x = b
+
+A je kvadratna matrica vrijednosti (n*n)
+x je vektor nepoznanica
+b je slobodni vektor
+
+! je oznaka za inverz.
+
+!A*A*x = !A*b
+I*x = !A*b
+x = !A*b
+
+Izrada inverza je jako skupo. Postoji jeftiniji nacin.
+
+Ako je matrica A nesingularna tada i samo tada postoji jedinstveno rjesenje za bilo koji vektor b.
+Ako je singularna, onda ovisi o b. (parametarsko rjesenje)
+
+Metoda Gaussove eliminacije: svedi matricu na gornju trokutastu, pa se radi supstitucija unatrag, od kraja prema pocetku.
+Supstitucija unatrag: u gornjem redu definirana.
+
+LU dekompozicija: rastavi matricu A na L i U matricu.
+L = A*U
+
+L na glavnoj dijagonali ima jedinice. Iznad nje su samo nule. Ispod neki brojevi.
+U na glavnoj dijagonali ima neke elemente. Iznad su neki brojevi. Ispod su nule.
+
+Nakon dekompozije: A*x = L*U*x = b
+
+U*x = y
+
+A*x = L*y = b
+
+Supstitucija unaprijed: rijesava L*y = b
+                        izgled prvog retka: 1*y1 = b1
+                        izgled drugog retka: l21*y1 + y2 = b2
+                        itd...
+                        implementacija: yn = bn - SUM(from:j=1;until:i-1)(lij*yj)
+                        O(n*n)
+
+Supstitucija unatrag: rijesava U*x = y
+                      slicna dekompozija po retcima
+                      implementacija: x1 = (1/uii)*(yi - SUM(from:j=i+1;until:n)(uij*xj))
+                      O(n*n)                      
+DZ1 je upravo implementacija supstitucija.
+
+Dekompozicija: Gaussova eliminacija -> svedi na trokutastu matricu
+               koristi Shurov komplement
+               implementacija: algoritam koji koristi isti memorijski prostor: pretpostavke: prostor matrice A moze se koristiti za smjestaj matrica L i U
+                                                                                             prostor vektora b moze se koristiti prvo za vektor y, a potom za vektor x
+Algoritam koji se koristi: (vidi stranicu 14, matrice.pdf)
+for od i=1 do n-1
+  for j=i+1 do n
+    A[j,i] /= A[i,i]
+    for k=i+1 do n
+      A[] -= A[] + A[]
+
+Postoje i algoritmi za supstituciju unaprijed i unatrag:
+
+Unaprijed:
+za i=1 do n-1
+  za j=i+1 do n
+    b[j] -= A[j,i] * b[i]
+
+Unatrag:
+za i=n do 1
+  b[i] /= A[i,i]
+  za j=1 do i-1
+    b[j] -= A[j,i] * b[i] 

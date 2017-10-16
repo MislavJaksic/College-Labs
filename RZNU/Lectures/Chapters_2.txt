@@ -1,4 +1,4 @@
-## RZNU
+﻿## RZNU
 
 ### Chapter 2
 
@@ -50,5 +50,3 @@ HTTP messages: made up of a header and body
                               - request-header-value1: 
                               - ...
                     request body: no formal structure
-                    
-### Chapter 3
