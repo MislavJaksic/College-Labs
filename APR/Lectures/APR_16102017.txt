@@ -1,0 +1,179 @@
+Postupci nelinearne optimizacije:
+- trajanje paralelnog algoritma: ako dajes procesore programu, on ce se ubrzati do neke granice nakon koje ce se vrijeme povecavati.
+- dvije GSM antene, cije se jacine signala preklapaju. Trazi gdje se najbolje preklapaju. 
+
+Pokusavaju u najmanji broj ispitivanja doci do najboljeg rjesenja.
+
+Poglavlje 2: Postupci nelinearnog optimiranja
+
+Nelinearni problemi: oni koji se nemogu rjesiti egzaktno, vec priblizno.
+
+Skup varijabli ili parametara koji utjecu na kvalitetu rjesenja.
+  - X vektor, [x1, x2, x3, ..., xn]
+Funkcija cilja je ona koja ce nam reci koliko su izabrani X-evi dobri. Najcesce greska, zelimo naci njen ekstrem.
+  - zelimo je u najmanji broj pokusaja optimirati
+  - na APR-u: samo razmatramo skalarne funkcije
+  - F(X) (eng. cost function)
+
+Zelimo naci Xm vrijednosti koji ce dati optimalnu vrijednost F(Xm).
+
+Funkcije cilja moze se sastojati od vise parcijalnih funkcija cilja fk(t) koje istovremeno moraju biti optimirane.
+F(X) mozemo izgraditi na vise nacina:
+  - suma kvadrata
+  - tezinska suma kvadrata
+  - tezinska suma parnih potencija ili slicne egzoticne funkcije
+  - uzmi maksimalnu vrijednost (one koja najvise "strsi"), pa nju optimiramo
+
+Izgled F(X):
+  - kvadrati izgrade "zdjelu" od mnogo koncentricnih kruznica; derivabilna u svim tockama; gradijent uvijek pokazuje prema ekstremu
+  - apsolutne vrijednosti izgrade "obrnutu piramidu" od mnogo koncentricnih kvardata; kvadrati imaju ostre rubove -> nederivabilni rubovi
+  - ako zelimo daodziv treba biti unutar nekih granica treba se koristiti "uzmi max/min"
+
+Zelimo postici: f(X, parametri) sto blize zadanom zeljenom odzivu.
+
+Formalna definicija minimuma funkcije:
+  - F(X) razvij u red u okolini minimuma; graficki, postavi kuglicu na neko mjesto u (hiper-)ravnini 
+  - pretpostavi min u (x1min, x2min)
+  - radimo Taylorov razvoj F(x1, x2) u okolici tocke (x1min, x2min) uz vrijednosti derivacija u tocki (x1min, x2min)
+  - delta_x = (x1, x2) - (x1min, x2min)
+  - gradijent_F = (prve parcijalne derivacije)
+  - Hesseova matrica, H = (druge parcijalne matrice)
+
+F(x) = F(Xmin) + (gradijent_F**t)*delta_x + 1/2 * (delta_x**t)*H*delta_x
+  - F(Xmin) je minimum f-je f(X) pa mala promjena delta_x u bilo koje smjeru u okolini Xmin ce izazvati prirast funkcije
+  - gradijent_F = 0 akko (delta_x**t)*H > 0
+
+Drugim rjecima, uvjet da ekstrem postoji je:
+  - sve prve parcijalne derivacije su jednake 0
+  - Hessova matrica mora biti:
+    - ako je pozitivno definitna, onda je to minimum -> zdjela
+    - ako neg. definitna, onda je to maksimum -> brijeg
+    - ako je indefinitna (ima i poz. i neg. svojstvene vrijednosti) -> sedlo 
+
+
+
+Ovo sve vrijedi za okolicu tocke, kaj znaci da smo nasli samo lokalni ekstrem.
+
+Unimodalna je ona funkcija koja ima samo jedan lokalni ekstrem.
+Visemodalna je ona funkcija koja ima vise lokalnih ekstrema od kojih je barem jedan globalni ekstrem.
+  - nema jamstva pronalaska globalnog optimuma
+
+U ovom poglavlju: pretpostavka da su funkcije unimodalne ili barem unimodalno promatrano podrucje.
+
+Pronalazak optimuma funkcije s jednom varijablom:
+  - rjesenje je uvijek interval
+  - pocetak: zadana pocetna tocka
+             izrazi pocetni interval
+
+U DZ i ispitima!!!
+U skripti 4.4.4, i postoji na webu!!! Str 103
+  - PAZI! U skripti nije obraden slucaj 3 (F(-h) > F() < F(+h)).
+  - na webu je proslogodisnji algoritam manjkav!
+Pronalazak unimodalnog intervala funkcije jedna varijable:
+  - zadana tocka x0, parametar h (korak)
+  - pomaknemo se lijevo i desno za h od x0 -> F(x0-h), F(x0), F(x0+h)
+    - rezultati: F(-h) > F() > F(+h) -> 
+      - vrtimo i dok F(x0 + (2**i)*h) ne doge do 
+        - tada znamo da se optimum nalazi u intervalu [x0, ]
+
+                 F(-h) < F() < F(+h) UH oH... ne vidim na plocu, SLIKAJ
+                 F(-h) > F() < F(+h)
+                 F(-h) < F() > F(+h) -> nije unimodalna
+
+Primjer: f(x) = x**2 -2, x0 = 100, h = 1
+
+f(x0-h) < f(x0) < f(x0+h) -> izracunali ili rucno ili programski, a na ispitu ce zadaci biti funkcije koje imaju ociti minimum (kao i ovaj) 
+-2h
+-4h
+...
+-64h
+-128h
+-256h -> tek sad pocinje rasti -> interval je [-156,36]
+
+x   ->1 2 4 ...64 128 256
+f(x)->> > >    >  >   <
+
+Primjer: zadana je e(x) uz x0 = 2, h = 1. Postupak pronalazenja intervala dalo je interval [6,18].
+Odredite istinitost sljedechi tvrdnji:
+1) g(1) < g(2)
+2) g(5) > g(10)
+3) g(6) > g(18)
+4) g(11) < g(18)
+ 
+
+x   ->1 2 3 4 6 10 18
+f(x)->> > > > > >  <
+
+Vidimo: 1) nije istina
+        2) istina
+        3) neznamo
+        4) istina
+
+Dobili smo interval, sad ga trebamo smanjiti:
+  - uzmi dvije tocke i postavi ih simetricno na interval (oko 1/3 i 2/3)
+  - izbaci onu granicu intervala (od njih 4) koja ima najvecu vrijednost
+
+Uvjeti: simetricnost.
+        jedna tocka treba biti ponovno iskoristiva.
+        jednoliko smanjenje.
+
+Metoda koja zadovoljava sve uvjete je postupak "Zlatnog reza" (eng. golden section search):
+  - na internetu
+
+Primjer: f(x) = (x - 4)**2, x0 = 0, h = 1, do sirine epsilon <= 1
+
+x    -> -1 0 1 2 4 8
+f(x) ->              -> interval je [2,8]
+
+ai     ci    di    bi
+... i tako racunaj granice u nekoliko redova. Moram imati kalkulator.
+Jednu tocku odbaci, a ostale zadrzi.
+
+Primjer: [-100, 100] koliko iteracija postupaka zlatnog reza je potrebno kako bi se interval smanjio do epsilon <= 0.001
+i0 = 200
+i0 * (k**m) <= epsilon
+k**m <= epsilon/i0
+
+m*log(k) <= log(epsilon/i0)
+
+Iteracija m je potrebno barem 26.
+
+
+Fibonnacijev postupak (nije potrebno implementirati u DZ... ali moze biti na MI!!!):
+  - pocinje od kraja
+  - pretpostavlja zadnji korak i onda koraca unatrag
+    - pocinje od intervala duljine 2, pa onda zna da je sljedeca duljina 3 jer je morao odbaciti jedan od intervala
+    - zatim zna da je interval duljine 1 okruzen s intervalima duljine 2 -> ukupna duljina 5
+    - zatim zna da je nedan od tih intervala koji ga okruzio bio izbacen, on je sad okruzen intervalima duljine 3 -> ukupna duljina 8
+    - ...
+  - redukcija svakog intervala je drugacija, ali limes faktora smanjivanja je zlatni omjer -> brzina algoritama je ista  
+
+Primjer: (x - 4)**2, [-2, 4]
+
+a    c    d    b
+-2   1    3    6
+1    3    4    6
+
+
+U zadnjem koraku ispitujemo vrijednost funckije cilja u tocki blizu sredini intervala.
+  - izvan for petlje
+  - blizu je pod navodnicima, "blizu"
+
+Rezultat: [3, 4,01]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
