@@ -1,24 +1,24 @@
 ## Regresija 2
 Linearna regresija: h(x) = x0*w0 + x1*w1 + x2*w2 + ...
-                    X0 = 1
+                    x0 = 1
 
-Nelinearna regresija: nekada se podaci ne rastrkaju linearno
-                      npr. polinom drugog stupnja -> w0 + x1*w1 + (x2**2)*w2
-                      npr. s dvije znacajka, polinom drugog stupnja -> w0 + x1*w1 + x2*w2 + (x1*x2)*w3 + (x1**2)*w4 + (x2**2)*w5
-                        - interacijska znacajka (eng. cross term): x1*x2
+Nelinearna regresija: nekada se podaci ne rastrkaju linearno.
+                      npr. polinom drugog stupnja s jednom znacajkom -> w0 + x1*w1 + (x2**2)*w2
+                      npr. polinom drugog stupnja s dvije znacajka   -> w0 + x1*w1 + x2*w2 + (x1*x2)*w3 + (x1**2)*w4 + (x2**2)*w5
+                        - interacijska znacajka (eng. cross term)    ->                       x1*x2 znacajka
 
-Iz linearnog u nelinearni model: ideja: promjeni podatke ne model!
+Iz linearnog u nelinearni model: promjeni podatke ne model!
 
 Preslikavanja u prostor znacajki:
-  - prelikaj iz ulaznog prostora u prostor znacajki (eng. from input space into feature space mapping); kao da povecas dimenziju u kojoj gledas podatke
+  - prelikaj iz ulaznog prostora u prostor znacajki (eng. from input space into feature space mapping); kao da povecas dimenziju (broj znacajki) u kojoj gledas podatke.
   - bazne funckije: {phi0, phi1, phi2, ...}
   - svaka phi(j) uzme jednu znacajku i preslika je u drugu znacajku
   - funkcija preslikavanja: phi(X) = (1, phi1(x1), phi2(x2), ...)
-  - to radimo kako bi mogli linearno odvojiti podatke (u vecoj dimenziji), inace bi ih trebali odvajati nelinearno slozenijim modelom
+  - to radimo kako bi mogli linearno odvojiti podatke (u vecoj dimenziji), inace bi ih trebali odvajati nelinearnim (slozenijim) modelom
 
 Linearan model regresija: h(x, w) = SUM(wj*phi(j)) = wT*phi(X)                          
-                            - PAZI! Nemoj mjesati sa linearnom regresijom...
-                              - Linearna regresija je sadrzana u modelu linearne regresije
+                            - PAZI! Linearni model regresije != Linearna regresija
+                              - linearna regresija je sadrzana u modelu linearne regresije
                          
 Primjer: n = 1, parabola prema gore koja ima min u (1,1)
          pomocu psi preslikaj znacajku x u vise znacajki -> (1, x, x**2) 

@@ -2,6 +2,7 @@ from Programs.Matrix import Matrix
 
 def SolveTasks(tasks):
   for task in tasks:
+    print "Solving task:"+task
     TryToSolveATask(task)
     
 def CreateMatricies(path):
@@ -49,7 +50,7 @@ def ShowResults(x, y):
   print "y:"
   print y
 
-baseName = "Task_XY.txt"
+baseName = "Tasks/Task_XY.txt"
 taskNumbers = [4]#2, 3, 4, 5, 6] # <- 
 tasks = []
 

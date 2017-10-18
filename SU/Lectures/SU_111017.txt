@@ -2,22 +2,22 @@ x: ulazne, nezavisne, prediktorske varijable
 y: izlazna, zavisna, kriterijska varijabla
 
 Linearna regresija: h(x, w) = w0 + w1*x0 + w2*x2 + ... + wn*xn
-                      - kada je n = 1, w0 + w1*x1, tj pravac
+                      - kada je n = 1, w0 + w1*x1 odnosno pravac
 
-Optimalna hipoteza: izaberi h iz H takav da:
-                      - 
+Optimalna hipoteza: izaberi h iz H takav da se minimizira empirijska pogreska (pogreska ucenja).
 
-h(x) je vrijednost koju predvida hipoteza.
+h(x) je vrijednost koju predvida hipoteza. PAZI! To nije y.
+  - y je prava vrijednost, a h(x) je predvidena vrijednost
 
-Funkcija gubitka: (y - h(x))**2
-                  zakaj ne razlika? Zato kaj bi se neg i poz rezultati razlike oduzeli.
-                  zakaj ne abs? Zato kaj ona vise kaznjava one koji jako odstupaju, a ne sve jednako.
+Funkcija gubitka: L(x, h(x)) = (y - h(x))**2
+                  Zakaj ne razlika? Zato kaj bi se neg i poz rezultati razlike oduzeli.
+                  Zakaj ne abs? Zato kaj ona vise kaznjava one koji jako odstupaju, a ne sve jednako.
 
 Funkcija pogreske: zbroj kvadratnih gubitaka
                    1/2 * SUM( (yi - h(xi))**2 )
 
 Optimizacijski potupak: minimiziraj funkciju pogreske.
-                          - kako? Tako da se izaberu w0 i w1 tako da je funkcija pogreske najmanja.
+                          - kako? Izaberu se w0 i w1 tako da je funkcija pogreske najmanja.
                           - zove metoda najmanjeg kvadrata (eng. ordinery least squares)
 
 Vrste regresije: ovisno o ulaznim varijablama:  jednostavna ili visestruka
@@ -28,11 +28,11 @@ Dijelovi lin. reg.: model, fun. gubitka i pogreske, optimizacijski postupak
 Dummy znacajka: x0, koji je uvijek 1
                   - w0 + w1*x1 ... prelazi u x0*w0 + w1*x1 ...
 
-Metoda najmanjih kvadrata: X je matrica koja se sastoji od stupaca koji su znacajke i redova koji su primjeri
+Metoda najmanjih kvadrata: X je matrica koja se sastoji od stupaca koji su znacajke i redova koji su primjeri.
                              - prvi stupac je dummy varijable x0 = 1 za sve primjere
-                             - zove se matrica dizajna (eng. design matrix)
+                             - X se zove matrica dizajna (eng. design matrix)
                            y je vektor matrica koja ima oznake za svaki primjer
-                           w je vektor matrica koja ima sve hiperparametre w0, w1, ... 
+                           w je vektor matrica koja ima sve parametre w0, w1, ... 
 X * w = y
 w = X**(-1) * y <-> umjesto njega, trazimo priblizno rjesenje metodom najmanjih kvadrata
 
@@ -55,6 +55,3 @@ Vjerojatnost da se x pokorava y je N(f(x), sigma**2)
 Izglednost (eng. likelyhood) je vjerojatnost podataka za danu hipotezu.
 
 Ako zelimo da je izglednost najveca, onda je to ekvivalentno da zelimo najmanju vrijednost funkcije gubitka.
-
-
-
