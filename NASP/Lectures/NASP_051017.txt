@@ -40,7 +40,7 @@ Pogledaj sam
 
 Rijetko popunjene tablice
 
-Rade nego rezervirati memoriju za rijetko popunjenu 2D tablicu, napravi rijetko popunjenu listu.
+Rade nego rezervirati memoriju za rijetko popunjeno 2D polje (eng. array), napravi rijetko popunjenu listu.
 Dva polja, gdje je svaki element vrh liste (pokazivac) pripadnih podataka.
 Zatim se zamisli talica gdje su stupci jedno, a redovi drugo polje pokazivaca.
 Parovi pokazivaca pokazuju na pripadni skup podataka.

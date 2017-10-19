@@ -47,7 +47,9 @@ Regularizacija: opazanje: slozeniji model -> velicine parametara w su velike
 L2: ||w||2 = sqrt(wT*w)
     PAZI! Ne regulariziramo w0 pa indeski j pocinju od 1 ne 0.
     hrbatna regresija (eng. ridge regression)    
-    ideja: postoje dvije "zdjele", jedna za regularizaciju, jedna za optimizaciju i svaka ima minimum (eng. minimize cost, minimize penalty). Zbroj "zdjela" i trazenje njegovog minimuma minimizira oba minimuma odjednom.
+    ideja: postoje dvije "zdjele", jedna za regularizaciju, jedna za optimizaciju i svaka ima minimum (eng. minimize cost, minimize penalty).
+           zbroj "zdjela" i trazenje njegovog minimuma minimizira oba minimuma odjednom.
+           pogledaj "razlika izmedu L1 i L2 regularizacije" za objasnjenje.
 
 L1: ||w||1 = ...
     daje rijetke modele (za razliku od L2, vidi dolje zakaj)
@@ -56,7 +58,7 @@ L1: ||w||1 = ...
 L2, zbog kvadrata, male tezine jako malo kaznjava, za razliku od L1.
 L2 je, zbog kvadriranja kaznjavanja, tesko pritegnuti na nulu, kaj znaci da nece dati rijetki model. 
   
-Zamisli razliku izmedu L1 i L2 kao da L1 i L2 obje imaju zdjele, ali L1 ima karo oblik, a L2 krug koji je zbraja sa zdjelom od optimizacije. 
+Zamisli razliku izmedu L1 i L2 kao da L1 i L2 obje imaju zdjele, ali L1 ima "karo" oblik, a L2 krug koji je zbraja sa zdjelom od optimizacije. 
 
 L0: 
     odabire znacajke; ako wj nije nula, onda je tezinu w postavlja na 1

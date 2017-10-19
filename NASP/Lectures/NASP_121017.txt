@@ -1,4 +1,4 @@
-Koristi slike iz Drozdek-ove knjige!!!
+Prezentacije koriste slike iz Drozdek-ove knjige.
 
 DSW algoritam:
 kako napraviti savrseno i popunjeno stablo.
