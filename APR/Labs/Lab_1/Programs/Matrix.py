@@ -11,11 +11,13 @@ ERROR = epsilon = (0.1)**6
 class Matrix(object):
   """'Private' methods are prefixed with an underscore (_).
      'Public' methods have a lowercase first letter.
+     CamelCase for both functions and variable names.
      __method__ are Python data models (or "magic methods") that overrride or add Python functionalities.
-     CamelCase.
-     Designed to support problem domain abstractions. Indexed from 1 to n/m.
-     Exceptions are raised as soon as possible, but outside _Is boolean functions. This is because returning
-       a large number of error codes would complicate code more then dealing with exceptions at runtime.
+     
+     When an error if found, an exception is raised as soon the program exits the _Is boolean function.
+       Its less complicated to raise an exception, then to return error codes and ensure robustness.
+     
+     Designed to support problem domain abstractions: indexed from 1.
      i1,j1  i1,j2  i1,j3
      i2,j1  i2,j2  i2,j3
      i3,j1  i3,j2  i3,j3
@@ -94,20 +96,16 @@ class Matrix(object):
   
   
   def __str__(self):
-    """print A or str(A)
-       """
+    """print A or str(A)"""
     pretty_matrix = ""
     for row in self._matrix:
       pretty_matrix += str(row)
       pretty_matrix += "\n"
-    #pretty_matrix += "rows: " + str(self.n_rows) + ", "
-    #pretty_matrix += "columns: " + str(self.m_columns)
     return pretty_matrix
   
   
   def __getitem__(self, key):
-    """A[(row, column)] returns an element
-       """
+    """A[(row, column)] returns an element"""
     if not self._IsValidKey(key):
       raise TypeError
     if not self._IsKeyInRange(key):
@@ -130,8 +128,7 @@ class Matrix(object):
       return False
   
   def __setitem__(self, key, value):
-    """A[(row, column)] = value
-       """
+    """A[(row, column)] = value"""
     if not self._IsValidKey(key):
       raise TypeError
     if not self._IsValueNumeric(value):
@@ -141,14 +138,12 @@ class Matrix(object):
     self._matrix[i][j] = value
     
   def _IsValidKey(self, key):
-    """Valid key -> (row, columns) where row and columns are integers
-       """
+    """Valid key -> (row, columns) where row and columns are integers"""
     if InputController.IsTuple(key):
       if not self._IsValidKeyValues(key):
         return False
     else:
       return False
-    
     return True
   
   def _IsValueNumeric(self, value):
@@ -160,16 +155,13 @@ class Matrix(object):
     return False
   
   def _GetZeroIndexes(self, key):
-    """(rows, columns)  -> (i, j)
-       (1 to n, 1 to m) -> (0 to n-1, 0 to m-1)
-       """
+    """(rows, columns)  -> (i, j)"""
     i = key[0] - 1
     j = key[1] - 1
     return i, j
     
   def _IsValidKeyValues(self, key):
-    """There has to be only two integer values in a tuple
-       """
+    """There can be only two integer values in a tuple"""
     countValues = 0
     for value in key:
       if not InputController.IsInt(value):
@@ -205,8 +197,7 @@ class Matrix(object):
   def __mul__(self, other):
     """       |
        ---> * |
-              V
-       """
+              V"""
     mulRows, mulColumns = self._GetMulDimensions(other)
     zeroesMatrix = Matrix(mulRows, mulColumns)
     
@@ -249,8 +240,7 @@ class Matrix(object):
                    t   [1 5]
        [1 2 3 4]  -->  [2 6]
        [5 6 7 8]       [3 7]
-                       [4 8]
-       """
+                       [4 8]"""
     tRows = self.m_columns
     tColumns = self.n_rows
     zeroesListOfLists = self._CreateZeroesListOfLists(tRows, tColumns)
@@ -272,8 +262,7 @@ class Matrix(object):
     return True
     
   def _IsFloatsEqual(self, floatOne, floatTwo):
-    """If f1 close to f2 then expand f2 by adding and subtracting a margin of error
-       """
+    """If f1 close to f2 then expand f2 by adding and subtracting a margin of error"""
     if ((floatTwo-ERROR) <= floatOne) and (floatOne <= (floatTwo+ERROR)):
       return True
     return False
@@ -303,6 +292,17 @@ class Matrix(object):
     self = self - other
     return self
   
+    
+  def toFile(self, path):
+    with open(path, "w") as f:
+      for row in self._matrix:
+        stringRow = []
+        for number in row:
+          stringRow.append(str(number))
+        line = " ".join(stringRow)
+        f.write(line)
+        f.write("\n")
+  
   @staticmethod
   def fromFile(path):
     listOfLists = []
@@ -317,18 +317,8 @@ class Matrix(object):
           
         listOfLists.append(list)
         
-    return Matrix(listOfLists)
-    
-  def toFile(self, path):
-    with open(path, "w") as f:
-      for row in self._matrix:
-        stringRow = []
-        for number in row:
-          stringRow.append(str(number))
-        line = " ".join(stringRow)
-        f.write(line)
-        f.write("\n")
-        
+    return Matrix(listOfLists)  
+  
   
   @staticmethod
   def LU(matrix):
@@ -461,8 +451,7 @@ class Matrix(object):
   
   def inverse(self):
     """Solve LUP then solve Ly=Pb and Ux=y,
-    where b is a single column od E, many times
-    """
+    where b is a single column od E, many times"""
     L, U, P = Matrix.LUP(self)
     E = self._CreateI()
     

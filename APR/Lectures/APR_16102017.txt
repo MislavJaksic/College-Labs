@@ -72,42 +72,46 @@ U skripti 4.4.4, i postoji na webu!!! Str 103
 Pronalazak unimodalnog intervala funkcije jedna varijable:
   - zadana tocka x0, parametar h (korak)
   - pomaknemo se lijevo i desno za h od x0 -> F(x0-h), F(x0), F(x0+h)
-    - rezultati: F(-h) > F() > F(+h) -> 
-      - vrtimo i dok F(x0 + (2**i)*h) ne doge do 
-        - tada znamo da se optimum nalazi u intervalu [x0, ]
+    - moguci rezultati:
+                 F(-h) > F() > F(+h) -> povecavaj broj; x0+2*h, x0+4*h, ...
+                 F(-h) < F() < F(+h) -> povecavaj broj; x0-2*h, x0-4*h, ...
+                 F(-h) > F() < F(+h) -> interval je [x0-h, x0+h] ??? ???
+                 F(-h) < F() > F(+h) -> nije unimodalna (ima vise lokalnih minimuma)
+    - povecavamo "i" dok F(x0 + (2**i)*h) ne postane veca od (i-1) vrijednosti 
+        - tada znamo da se optimum nalazi u intervalu [x0 + ( 2**(i-2) )*h, x0 + (2**i)*h]
 
-                 F(-h) < F() < F(+h) UH oH... ne vidim na plocu, SLIKAJ
-                 F(-h) > F() < F(+h)
-                 F(-h) < F() > F(+h) -> nije unimodalna
+Na ispitu ce zadaci biti funkcije koje imaju ociti minimum (kao doljnja).
 
-Primjer: f(x) = x**2 -2, x0 = 100, h = 1
-
-f(x0-h) < f(x0) < f(x0+h) -> izracunali ili rucno ili programski, a na ispitu ce zadaci biti funkcije koje imaju ociti minimum (kao i ovaj) 
+Primjer: f(x) = x**2 - 2, x0 = 100, h = 1
+f(x0-h) < f(x0) < f(x0+h) -> izracunali ili rucno ili programski.
 -2h
 -4h
 ...
 -64h
 -128h
--256h -> tek sad pocinje rasti -> interval je [-156,36]
+-256h -> tek sad f pocinje rasti -> interval je [-156,36]
 
+Krace zapisano:
 x   ->1 2 4 ...64 128 256
 f(x)->> > >    >  >   <
+             (i-2)    i
 
-Primjer: zadana je e(x) uz x0 = 2, h = 1. Postupak pronalazenja intervala dalo je interval [6,18].
-Odredite istinitost sljedechi tvrdnji:
+Primjer: zadana je g(x) uz x0 = 2, h = 1. Postupak pronalazenja intervala dalo je interval [6,18].
+Odredite istinitost sljedecih tvrdnji:
 1) g(1) < g(2)
 2) g(5) > g(10)
 3) g(6) > g(18)
 4) g(11) < g(18)
- 
 
 x   ->1 2 3 4 6 10 18
 f(x)->> > > > > >  <
 
 Vidimo: 1) nije istina
         2) istina
-        3) neznamo
+        3) neznamo (jer neznamo koliko je visoko g(18), mozda je ispod g(6), a mozda iznad)
         4) istina
+
+
 
 Dobili smo interval, sad ga trebamo smanjiti:
   - uzmi dvije tocke i postavi ih simetricno na interval (oko 1/3 i 2/3)
@@ -125,9 +129,17 @@ Primjer: f(x) = (x - 4)**2, x0 = 0, h = 1, do sirine epsilon <= 1
 x    -> -1 0 1 2 4 8
 f(x) ->              -> interval je [2,8]
 
-ai     ci    di    bi
-... i tako racunaj granice u nekoliko redova. Moram imati kalkulator.
-Jednu tocku odbaci, a ostale zadrzi.
+A    C    D    B
+2.00 4.29 5.71 8.00
+Izbrisi B, pomakni C,D ->
+2.00 3.42 4.29 5.71
+Izbrisi B, pomakni C,D ->
+2.00 2.87 3.42 4.29
+Izbrisi B, pomakni C,D ->
+2.00 2.54 2.87 3.42
+Izbrisi B, pomakni C,D ->
+...
+Najvecu tocku odbaci (jer trazimo minimum), a ostale zadrzi i pomakni prema rubu.
 
 Primjer: [-100, 100] koliko iteracija postupaka zlatnog reza je potrebno kako bi se interval smanjio do epsilon <= 0.001
 i0 = 200
@@ -160,20 +172,3 @@ U zadnjem koraku ispitujemo vrijednost funckije cilja u tocki blizu sredini inte
   - blizu je pod navodnicima, "blizu"
 
 Rezultat: [3, 4,01]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
