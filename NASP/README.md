@@ -1,6 +1,10 @@
-﻿## SU
+﻿## NASP
 
-SU stands for "Strojno ucenje" (eng. Machine learning).
+NASP stands for "Napredni algoritmi i strukture programiranja" (eng. Advanced algorithms and data structures).
+
+### Data Structures
+
+### Algorithms
 
 ### Labs
 

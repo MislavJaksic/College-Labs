@@ -15,8 +15,8 @@ Translated from Croatian to English:
 
 ### Labs
 
-Tasks which I had to solve to pass the course.
+Tasks which I had to solve and algorithms I had to implement to pass the course.
 
 ### Lectures
 
-A collection of notes I made during the lecture. The lectures are in Croatian and so are the notes.
+A collection of notes I made during the lecture. The notes are written in Croatian.

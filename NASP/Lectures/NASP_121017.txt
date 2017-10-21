@@ -112,6 +112,4 @@ Netreba znati programirati! Ali treba znati crtati!
 Algoritmi:
   - pretrazivanje: trazi po cvoru kod ne naides na vrijednost u cvoru koja je veca od vrijednosti koju trazimo.
   - dodavanje: 
-  - brisanje: 
-
-PISEMO BLIC!!! Sljedeci put.
+  - brisanje:

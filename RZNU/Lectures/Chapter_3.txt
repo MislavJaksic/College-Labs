@@ -1,0 +1,55 @@
+### Chapter 3
+
+Scalability: ability of a system to accommodate growth.
+
+Representational State Transfer: REST, set of design criteria for building scalable distributed hypermedia systems
+                                 RESTful, a property of a system that satisfies the principles of REST
+
+REST constraints:
+  - Network: client-server architecture
+               - for seperation of concerns, servers host and server, while clients format and display
+             layered system
+               - enable network intermediaries to be deployed between the client and server (proxies and gateways)
+                 - proxy: connects applications that speak the same protocol (browser, web server with HTTP)
+                          clients see a proxy as a server and servers see a proxy as a client
+                          may modify the requests and responses
+                          use cases: filtering content, caching, load balancing (proxies are then called surrogates, reverse proxy or server accelerator)
+                 - gateway: connects applications that speak different protocols (browser email server with HTTP and POP)
+               - some intermediaries can intercept communication which enables them to enhance security, cache results, load balance requests and convert between protocols
+  
+  - Content: addressability
+               - Resource Oriented Architecture (ROA), expose an application as a set of resources
+                 - concepts and semantics
+                   - resource is an atom of data (a document, an image or similar)
+                   - resources are access with HTTP as they reside on a server
+                   - each resource has at least one unique resource identifier
+                   - resource representation are data formats send to clients as a response
+                 - implementation
+                   - resource identifiers are Uniform Resource Identifier (URI)
+                     - almost every URI is a URL
+                     - URLs are paths to a resource
+                     - <scheme>://<user>:<pass>@<host>:<port>/<path>;<params>?<query>#<fragment>
+                       - <scheme> specify a protocol to use when accessing a resource on a server (HTTP, HTTPS, ...)
+                       - <user>:<pass> some private servers require them
+                       - <host>:<port> locate the server on which the resource is hosted
+                       - <path> specify the path on a server to a resource
+                       - <params> specify input params (rarely used by HTTP)
+                       - <query> specify name-value pairs
+                       - <fragment> some HTTP documents can be divided into smaller parts
+               - if done correctly, a program will easily be able to access resources
+             
+             connectedness  
+               - resource can have more then one representation; all representations represent the same resource state
+               - resource representations should contain hypermedia links to other resources
+                 - HTML pages often contain links to other pages (human readable)
+                 - XML and JSON are data formats (representations) that are both human and machine readable and can also contain links
+               - HTTP media types are used to distinguish resource representations
+                 - specified in HTTP metadata headers: Content-Type and Content-Length
+                 - Media type syntax (MIME types)
+                   - type / subtype ; [parameter]
+                     - type 
+                     - subtype 
+                     - [parameter]
+                   - http://www.iana.org/assignments/media-types
+
+  - Inteaction: PAGE 79

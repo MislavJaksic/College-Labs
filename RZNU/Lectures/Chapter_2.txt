@@ -1,6 +1,4 @@
-﻿## RZNU
-
-### Chapter 2
+﻿### Chapter 2
 
 World Wide Web: applications and services base don the HTTP protocol
 
