@@ -1,6 +1,8 @@
 # https://github.com/joowani/binarytree/blob/master/binarytree/__init__.py
 # shows the binary tree with ASCII characters routine
 
+#You have to program only a singla task
+
 class ALV(object):
   
   def __init__(self):
