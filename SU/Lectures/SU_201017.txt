@@ -1,0 +1,35 @@
+Perceptron
+
+h(x) = f(wT*x)
+
+Aktivacijska funkcija f, 1 ako x veca od 1, 0 ako manja od nula. Prag!
+
+Model ce zgnjeciti primjere ???
+
+Funkcija gubitka kaznjava ovisno o tome koliko je pogresno klasificiran primjer.
+Pozitivne primjere uopce ne kaznjavamo.
+E(w|D) = SUM( max(0, -wT * psi(x) * y) )(FROM i = 1 TO N)
+
+max(0, -wT * psi(x) * y) ce osigurati da vrijednost nikada nece biti veca od 0.
+
+
+E(w|D) od perceptrona aproksimira zero-one loss function tako da ju napravi da je vise glatka. 
+
+Ne postoji zatvorena forma za izracun w-ova, pa koristimo gradijentni spust.
+  - krecemo se u smjeru suprotnom od smjera derivacije
+  - koracamo dok ne nademo minimum na dnu doline spusta 
+
+Azurirajw-ove s: w <-- w - lambda*E(w|D)
+
+Prednosti: jednostavan postupak, robusniji od regresije, otporan je na vrijednosti koje strse.
+Veliki nedostatak: nece konvergirati ako primjeri nisu linearno odvojivi.
+
+
+
+
+
+
+
+
+
+

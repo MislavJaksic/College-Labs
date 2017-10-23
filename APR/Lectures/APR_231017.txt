@@ -1,0 +1,124 @@
+2.2 Optimiziranje f-je vise varijable bez uporabe derivacija
+
+Ili u jednoj dimenziji prosiri na vise dimenzija ili izmisli nekaj sasvim nono.
+
+Nekaj sasvim novo: Hooke-Jeeves
+  - ulazni podaci: pocetna tocka x0 (to je vektor, jer radimo u vise dimenzija), deltaX govori koliko cemo koracati, epsilon je preciznost.
+    - x0, deltaX, epsilon
+  - dijelovi: istrazivanje - radi pomak svake varijable u minus i plus smjeru za deltaX (svaki dio vektora ima svoj korak)
+                             - za svaku vrijednost u x napravi korak u minus i plus i neovisno odluci kamo cemo se pomaknuti za svaku vrijednost
+              kretanje - pokrenuli smo se u smjeru gdje je vrijednost f-je najmanja
+                       - zatim se povuce pravac u smjeru gdje smo se pomaknuli i pokusamo se pomaknuti u istom smjeru za istu udaljenost
+                       - uspjesnost skoka se provjerava uvjetom: if ( f(xn) <  f(xb) )
+                       - "skok" (refleksija) xb preko xn: x = 2x1 - x0  
+  - xb je bazna tocka, xm je tocka dobivena pretrazivanjem, xp je pocetna tocka za pretrazivanje
+
+Nemoj implementirati kod u skripti, ali mozes onaj na webu.
+
+Primjer: f(x1, x2) = (x1**2) + 4*(x2**2), x0 = 7,3, deltaX = 1, epsilon = 0.25
+deltaX je skalar -> za sve vrijednosti u x koracamo jednako
+
+xb    xp    xn    uvjet     komentar
+7,3   7,3   6,3   da        - xb je isti kao xp u pocetnom koraku
+                            - xn izracunamo tako da se za deltaX pomaknemo u svakom smjeru (pocni od prve koordinate i odluci gdje ces se pomaknuti, pa uzmi sljedecu koordinatu i dluci gdje ces se pomaknuti, ...) 
+                            - u sljedecem koraku:
+6,3   5,1   4,0               - xp je xb u proslom koraku koja je preskocila xn u proslom koraku (xNOVAp = 2*xSTARAn - xSTARA)
+                              - xb je najbolja od triumvirata tocaka u proslom koraku
+
+Primjer: f(x1, x2, x3) = (x1**2) + (x2**2) + (x3**2)
+U biljeznici...
+
+2.2.2 Simpleks postupak (po Nelderu i Meadu)
+Koristi posebnu simpleks strukturu: skup od n+1 tocke koji u n-dimenzijskom prostoru cini n-dimenzijsku tvorevinu 
+
+Slican Hooke-Jeeves, ali koristi vise, ne jednu tocku.
+Pravi Simpleks ima tocke jednako udaljene, ali za nas to nije potrebno. 
+
+Podaci: tocke simpleksa x[],...x[M], x[l] tocka s najboljom vrijednoscu funkcije cilja, x[h] tocka s najlosijom vrijednoscu funkcije cilja 
+Izracunamo x[c] koji je centroid, aritmeticka sredina svih tocaka, osim najlosije
+
+Operacije:
+  - refleksija - prvo pokusaj
+               - refleksija x[h] preko x[c] da se dobije tocka x[r]
+               - faktor alpha je omjer translacije (pocetno je alpha = 1)
+               - x[r] = (1 + alpha)*x[c] - alpha*x[h]
+  
+  - ekspanzija - ako smjer refleksije daje dobar 
+               - faktor gama (pocetno je gama = 2)
+               - x[e] = (1 - gama)*x[c] + gama*x[]
+  
+  - kontrakcija - sluzi za zaustavljanje tvorevine simpleks iznad minimuma 
+                - x[k] = (1 - beta)* ...
+  
+  - pomaki simpleks - zadnje se pokusa napraviti, kada nista drugo ne radi
+                    - sve tocke simpleksa se pomaknu u nekom smjeru
+                    - 
+  
+  - izbaci najgoru tocku, a zadrze ostale -> tako se simpleks krece
+
+Ispituju se koraci, ne cijele iteracije algoritma niti algoritam sam.
+
+Primjer: f(x1, x2, x3) = (x1**2) + (x2**2) + (x3**2)
+ 1  2  3 f=14
+ 0  2  4 f=20 <- izbaci je, pa izracunaj centrodid
+-2  0  3 f=13
+-4  0  1 f=17
+Nadi centroid!
+x[c] = -5/3  2/3  7/3
+
+Primjer: f(x1, x2) = (x1**2) + (x2**2)
+Tocke tvore simpleks:
+0  0 
+2  0
+1  2
+Skiciraj rekleksiju, ekspanziju i kontrakciju. <- rjesenje u biljeznici
+
+
+
+2.2.3 Trazenje minimuma na pravcus
+
+Primjer: fx = (x1 - 2)**2 + (x2 - 1)**2, x0=(0, 0), h=1, v=(2, 1)
+Pronadi minimum zadane funkcije na pravcu pronalaznjem unimodalnog intervala i postupkom zlatnog reza.
+
+ne vidim... slikaj
+
+
+2.2.4 Trazenje u smjerovima koordinatnim osi
+Idi po x1, pa kad si najbolje nasao, idi po x2, pa kad si najbolje nasao ...
+
+Jedna iteracija ovog algoritma je kada se produ sve osi.
+Methoda je losa jer ako imamo dugacku tanku dolinu ,on ce se jako muciti.
+
+Nedostatak svih algoritama je da algoritam moze zapeti na ostar rub.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
