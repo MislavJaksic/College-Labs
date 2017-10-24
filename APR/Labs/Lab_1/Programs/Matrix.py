@@ -149,6 +149,8 @@ class Matrix(object):
   def _IsValueNumeric(self, value):
     if InputController.IsInt(value):
       return True
+    if InputController.IsLong(value):
+      return True
     if InputController.IsFloat(value):
       return True
       

@@ -5,22 +5,10 @@ def SolveTasks(tasks):
     print "Solving task:"+task
     TryToSolveATask(task)
     
-def CreateMatricies(path):
-  A = Matrix.fromFile(path.replace("Y", "A"))
-  b = Matrix.fromFile(path.replace("Y", "b"))
-  ShowLoaded(A, b)
-  return A, b
-  
-def ShowLoaded(A, b):
-  print "A:"
-  print A
-  print "b:"
-  print b
-  
 def TryToSolveATask(path):
   A, b = CreateMatricies(path)
   
-  if (path == "Task_6Y.txt"):
+  if (path == "Tasks/Task_6Y.txt"):
     for i in range(0, A.n_rows):
       A._matrix[0][i] /= float(10**9)
       
@@ -43,6 +31,18 @@ def TryToSolveATask(path):
   except ZeroDivisionError:
     print u"Cannot solve with LUP"
     print
+    
+def CreateMatricies(path):
+  A = Matrix.fromFile(path.replace("Y", "A"))
+  b = Matrix.fromFile(path.replace("Y", "b"))
+  ShowLoaded(A, b)
+  return A, b
+  
+def ShowLoaded(A, b):
+  print "A:"
+  print A
+  print "b:"
+  print b
   
 def ShowResults(x, y):
   print "x:"
@@ -51,7 +51,7 @@ def ShowResults(x, y):
   print y
 
 baseName = "Tasks/Task_XY.txt"
-taskNumbers = [4]#2, 3, 4, 5, 6] # <- 
+taskNumbers = [6]#2, 3, 4, 5, 6] # <- 
 tasks = []
 
 for number in taskNumbers:

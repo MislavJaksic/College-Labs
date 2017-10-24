@@ -42,6 +42,13 @@ class InputController(object):
     if type(param) is types.IntType:
       return True
     return False
+    
+  @staticmethod
+  def IsLong(param):
+    """Checks if the paramater is an integer."""
+    if type(param) is types.LongType:
+      return True
+    return False
   
   @staticmethod
   def IsFloat(param):

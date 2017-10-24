@@ -179,7 +179,7 @@ def test_Matrix_transpose(MatrixDull):
   assert MatrixDull[(3,2)] == 666666
   
 def test_Matrix__eq__(MatrixDull):
-  newMatrix = Matrix([[1,    22],
+  newMatrix = Matrix([[1.000001,    22],
                       [333,  4444],
                       [55555,666666]
                      ])
