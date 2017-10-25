@@ -18,12 +18,24 @@ Nemoj implementirati kod u skripti, ali mozes onaj na webu.
 Primjer: f(x1, x2) = (x1**2) + 4*(x2**2), x0 = 7,3, deltaX = 1, epsilon = 0.25
 deltaX je skalar -> za sve vrijednosti u x koracamo jednako
 
-xb    xp    xn    uvjet     komentar
-7,3   7,3   6,3   da        - xb je isti kao xp u pocetnom koraku
-                            - xn izracunamo tako da se za deltaX pomaknemo u svakom smjeru (pocni od prve koordinate i odluci gdje ces se pomaknuti, pa uzmi sljedecu koordinatu i dluci gdje ces se pomaknuti, ...) 
-                            - u sljedecem koraku:
-6,3   5,1   4,0               - xp je xb u proslom koraku koja je preskocila xn u proslom koraku (xNOVAp = 2*xSTARAn - xSTARA)
-                              - xb je najbolja od triumvirata tocaka u proslom koraku
+xb      xp     xn     uvjet
+7, 3    7, 3   6, 2    da     - u pocetnom koraku: xb je isti kao xp 
+                              - xn je tocka najbliza minimumu: za deltaX se pomaknemo u svakom smjeru
+                                - prva koordinata, tocka korakne, pomakni tocku, druga koordinata, tocka korakne, pomakni tocku, ...
+                              - uvjet: F(xb) > F(xn)
+                                - ako da:
+6,2    5, 1   4,0      da        - xpNOVA je xbSTARA reflektirana preko xnSTARA (izracun koordinate: xpNOVA = 2*xnSTARA - xbSTARA)
+                                 - xbNOVA je najbolja izmedu xbSTARA, xpSTARA, xnSTARA
+4,0    2,-2  1,-1      da         
+                               
+1,-1  -2,-2  -1,-1     ne       - ako ne:
+                                 - x0 je xbSTARA, nastavi rjesavati kao da si u pocetnom korak
+                                 - deltaXNOVI = deltaXSTARI / 2, sve velicine koraka se prepolove
+1,-1   1,-1  0.5,-0.5  da
+
+0.5,-0.5 0,0   0,0     da
+
+0,0   -0.5,0.5 0,0     ne     - zaustavni uvjet je dolazak deltaX do epsilona nakon prepolavljanja    
 
 Primjer: f(x1, x2, x3) = (x1**2) + (x2**2) + (x3**2)
 U biljeznici...
@@ -90,35 +102,3 @@ Jedna iteracija ovog algoritma je kada se produ sve osi.
 Methoda je losa jer ako imamo dugacku tanku dolinu ,on ce se jako muciti.
 
 Nedostatak svih algoritama je da algoritam moze zapeti na ostar rub.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

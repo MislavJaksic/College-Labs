@@ -1,6 +1,5 @@
 import math
 
-epsilon = (0.1)**6
 golden_ratio = (1 + math.sqrt(5)) / 2 # Golden ratio, 1.6180...
 
 def UnimodalIntervalSearch(startingPoint, step, GoalFunction):
@@ -95,7 +94,7 @@ def _IsUnimodal(FLeft, FMiddel, FRight):
   
   
   
-def GoldenSectionSearch(startingValue, GoalFunction, doUnimodal=False):
+def GoldenSectionSearch(startingValue, GoalFunction, epsilon=((0.1)**6), doUnimodal=False):
   """If doUnimodal -> True  -> startingValue is (startingPoint, step)
                    -> False -> startingValue is (A, B)
      A  C  D  B"""
@@ -106,7 +105,7 @@ def GoldenSectionSearch(startingValue, GoalFunction, doUnimodal=False):
   C = B - (B - A) / golden_ratio
   D = A + (B - A) / golden_ratio
   _PrintPoints(A, C, D, B, F)
-  while _IsIntervalBig(A, B):
+  while _IsIntervalBig(A, B, epsilon):
     A, C, D, B = _CalculatePoints(A, C, D, B, F)
     _PrintPoints(A, C, D, B, F)
       
@@ -122,7 +121,7 @@ def _GetStartingInterval(startingValue, F, doUnimodal):
     Exception("ERROR_SHOULD_NOT_OCCURE")
   return (A, B)
   
-def _IsIntervalBig(A, B):
+def _IsIntervalBig(A, B, epsilon):
   if abs(B - A) > epsilon:
     return True
   return False
@@ -140,6 +139,7 @@ def _CalculatePoints(A, C, D, B, F):
   return A, C, D, B
   
 def _PrintPoints(A, B, C, D, F):
-  "{:+.2f}".format(A), "{:+.2f}".format(F(A))
-  print "A:" + str(("{:+.2f}".format(A), "{:+.2f}".format(F(A)))) + " B:" + str(("{:+.2f}".format(B), "{:+.2f}".format(F(B)))) + " C:" + str(("{:+.2f}".format(C), "{:+.2f}".format(F(C)))) + " D:" + str(("{:+.2f}".format(D), "{:+.2f}".format(F(D))))
+  print "  A     C     D     B  |  F(A)  F(C)  F(D)  F(B)"
+  print "{:+.2f} ".format(A) + "{:+.2f} ".format(C) + "{:+.2f} ".format(D) + "{:+.2f} ".format(B),
+  print "{:+.2f} ".format(F(A)) + "{:+.2f} ".format(F(C)) + "{:+.2f} ".format(F(D)) + "{:+.2f} ".format(F(B))
   
