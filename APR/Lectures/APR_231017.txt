@@ -38,13 +38,15 @@ xb      xp     xn     uvjet
 0,0   -0.5,0.5 0,0     ne     - zaustavni uvjet je dolazak deltaX do epsilona nakon prepolavljanja    
 
 Primjer: f(x1, x2, x3) = (x1**2) + (x2**2) + (x3**2)
-U biljeznici...
+Rijesen u biljeznici.
+
+
 
 2.2.2 Simpleks postupak (po Nelderu i Meadu)
 Koristi posebnu simpleks strukturu: skup od n+1 tocke koji u n-dimenzijskom prostoru cini n-dimenzijsku tvorevinu 
 
-Slican Hooke-Jeeves, ali koristi vise, ne jednu tocku.
-Pravi Simpleks ima tocke jednako udaljene, ali za nas to nije potrebno. 
+Slican Hooke-Jeeves, ali koristi vise tocaka, ne samo jednu.
+Pravi Simpleks ima jednako udaljene tocke, ali za nas to nije potrebno. 
 
 Podaci: tocke simpleksa x[],...x[M], x[l] tocka s najboljom vrijednoscu funkcije cilja, x[h] tocka s najlosijom vrijednoscu funkcije cilja 
 Izracunamo x[c] koji je centroid, aritmeticka sredina svih tocaka, osim najlosije
@@ -55,14 +57,16 @@ Operacije:
                - faktor alpha je omjer translacije (pocetno je alpha = 1)
                - x[r] = (1 + alpha)*x[c] - alpha*x[h]
   
-  - ekspanzija - ako smjer refleksije daje dobar 
+  - ekspanzija - pokusaj sljedece
+               - ako smjer refleksije daje dobar 
                - faktor gama (pocetno je gama = 2)
                - x[e] = (1 - gama)*x[c] + gama*x[]
   
-  - kontrakcija - sluzi za zaustavljanje tvorevine simpleks iznad minimuma 
+  - kontrakcija - pokusaj ako niti ekspanzija ne uspije
+                - sluzi za zaustavljanje tvorevine simpleks iznad minimuma 
                 - x[k] = (1 - beta)* ...
   
-  - pomaki simpleks - zadnje se pokusa napraviti, kada nista drugo ne radi
+  - pomaki simpleks - pokusaj ako nista drugo ne radi
                     - sve tocke simpleksa se pomaknu u nekom smjeru
                     - 
   
@@ -87,7 +91,7 @@ Skiciraj rekleksiju, ekspanziju i kontrakciju. <- rjesenje u biljeznici
 
 
 
-2.2.3 Trazenje minimuma na pravcus
+2.2.3 Trazenje minimuma na pravcu
 
 Primjer: fx = (x1 - 2)**2 + (x2 - 1)**2, x0=(0, 0), h=1, v=(2, 1)
 Pronadi minimum zadane funkcije na pravcu pronalaznjem unimodalnog intervala i postupkom zlatnog reza.

@@ -1,0 +1,85 @@
+Klasifikacija kao regresija ne radi jer njena funkcija gubitka nije otporna na vrijednosti koje odskacu.
+
+Model perceptrona:
+  - step funkcija: f(x, w)
+  - f je aktivacijska funckija
+  - model: h(x, w) = f(x, w)
+  - "squashing function" f:R -> [0,1] ili f:R -> [-1,1] 
+
+Logisticka regresija:
+  - prava klasifikacija! Nije regresija kao klasifikacija!
+
+  - logisticka (sigmoidalan) funkcija
+    - sig(alpha) = (1 / (1 + exp((-1) * alpha)))
+      - derivabila
+      - daje rezultat izmedu <0, 1>
+
+  - model: h(x, w) = sig(wT*psi(x)) = (1 / (1 + exp((-1) * wT*psi(x)))) = p(y=1|x)
+    - rezultat hipoteze je izmedu  <0, 1>
+      - tumacimo kao vjerojatnost da primjer x pripada klasi y=1
+    - binarni klasifikacijski model: >0.5 -> 1, inace 0
+    - h(x, w) = 1{ sig(wT*psi(x)) > 0.5 }, moze se, ali ga necemo tako definirati 
+
+  - funkcija pogreska
+    - zelimo gubitak 0-1, sigurno nezelimo kvadratni gubitak, gubitak perceptrona je dosta dobar jer simulira 0-1 gubitak
+    
+    - h(x, w) = p(y|x) = N(wT*x, sigma*2), te smo maksimizirali izglednost
+    - to je bilo opravdanje za pogresku kod regresije
+    - ali to je upravo postupak na koji se izvodi sve funkcija gubitka
+
+    - distribucija za binarne varijable
+      - Bernullijeva varijabla: moze imati dva ishoda, 0 ili 1
+      - distribucija: P(y=1|x) = (mi**y) * ((1 - mi)**(1 - y))
+      - mi je u strojnom ucenju vrijednost koju daje h(x,w)
+        - P(y=1|x,w) = (h(x,w)**y) * ((1 - h(x,w))**(1 - y))
+
+    - maksimiziraj izglednost: ...
+      - isto kao minimizacija negativne empirijske pogreske log-izglednosti: E(w|D) = 1/N * SUM(((-1) * y * ln(h(x,w)) - ((1 - y) * ln(1 - h(x,w))))) 
+      - zove se pogreska unakrsne entropije (eng. cross-entropy error)
+    - funkcija gubitka
+      - L(h(x),y) = ((-1) * ln(h(x))) - ((1 - y) * ln(1 - h(x)))
+      - zove se gubitak unakrsne entropije (eng. cross-entropy loss)
+      - malo kaznjavamo model ako je primjer 0 klasificiran s velikom sigurnoscu prema 0 i ako primjer 1 klasificira s velikom sigurnoscu prema 1
+
+  - optimizacija
+    - sve funkcije koje se mogu derivirati nemaju zatvorenu formu
+    - ali sve funkcije koje se mego derivirati se mogu rjesiti gradijentnom spustu
+    
+    - w <- w - eta*gradijent*E(w|D)
+      - eta: je koracanje
+             ako prevelika, nikad se necemo spustiti na dno
+             ako je premala, gmizat cemo do dna
+      - potrebno je imati globalnu konvergenciju
+        - to radimo pametnim izborom ete u skakom koraku spusta
+        - linijsko pretrazivanje je standardna metoda
+    
+    - rjesenje: idi suprotno od smjera gradijenta!!! Preporuceno je napraviti stohasticki gradijentni spust (SGD)
+      - on ce uvijek naci globalni minimum kod konveksnih funkcija 
+
+    - konveksnost: domena(f) je konveksnim skup (nemozes pocuvi crtu koja presjeca oblik)
+                   x1, x2 su elementi domena(f) i za svaki alpha izmedu [0,1]:
+                     - f(x) = f(alpha*x1 + (1 - alpha)*x2) <= alpha*f(x1) + (1 - alpha)*f(x2)
+    
+    - sve funkcije gubitka do sada su uistinu konveksne (kvadratna, logisticka, "hinge")
+
+  - gradijentni spust za logisticku regresiju:
+    - ako se derivira E(w|D) = 1/N * SUM(((-1) * y * ln(h(x,w)) - ((1 - y) * ln(1 - h(x,w)))))
+      - ... dobije se funkcija gubitka i funkcija pogreske 
+
+U labosu implementiraj logisticku regresiju (gradijentni spust), ne stohasticki gradijentni spust.
+
+Regularizirana logisticka regresija:
+  - tako izbjegavamo prenaucenost
+  
+  - prednosti:
+    - sprijecavanje pretjeranost nelinearnosti + suzbijanje nepotrebnih znacajki
+    - specificno za log. reg -> sigmoida se moze prenapeti, postane previse strma
+                                  - zato jer se w moze pomnoziti skalarom a da se hiperravnina ne mijenja
+                                regularizacija to rjesava smanjivanjem vrijednosti u w
+
+  - postoji L1 regularizirana regresija, ali necemo nju gledati
+  
+  - L2 logisticka regresija se izvodi kao i kod regresije
+    - w <- w(1 - eta*lambda) - eta*SUM((h(x) - y) * x)
+    - "odumiranje" tezine
+    - PAZI! w0 ne regulariziramo
