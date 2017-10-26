@@ -40,5 +40,5 @@ def test_HookeJeeves():
   startingPoints = [7,3]
   steps = [1,1]
   GoalFunction = lambda x: x[0]**2 + 4*x[1]**2
-  assert Programs.HookeJeeves.HookeJeeves(startingPoints, steps, GoalFunction) == [0,0]
+  assert Programs.HookeJeeves.HookeJeeves(startingPoints, GoalFunction, steps=steps) == [0,0]
   
