@@ -58,18 +58,18 @@ Operacije:
                - xr = (1 + alpha)*xc - alpha*X[h]
   
   - ekspanzija - pokusaj sljedece
-               - ako smjer refleksije daje dobar 
+               - ako smjer refleksije daje dobru rezultantnu tocku, "pojacaj" refleksiju
                - faktor gama (pocetno je gama = 2)
                - xe = (1 - gama)*xc + gama*xr
   
-  - kontrakcija - pokusaj ako niti ekspanzija ne uspije
-                - sluzi za zaustavljanje tvorevine simpleks iznad minimuma
+  - kontrakcija - pokusaj ako refleksija ne uspije
+                - sluzi za zaustavljanje tvorevine simpleks iznad minimuma primicanjem najgore tocke prema centroidu
                 - faktor beta (pocetno je beta = 0.5)
                 - xk = (1 - beta)*xc + beta*X[h]
   
   - pomaki simpleks - pokusaj ako nista drugo ne radi
-                    - sve tocke simpleksa se pomaknu u nekom smjeru
-                    - X[l] : X[i] = 0.5*(X[i] + X[l])
+                    - sve tocke simpleksa se pomaknu prema najboljoj tocki X[l]
+                    - X[i] = 0.5*(X[i] + X[l])
   
   - izbaci najgoru tocku, a zadrze ostale -> tako se simpleks krece
 
@@ -98,7 +98,6 @@ Skiciraj rekleksiju, ekspanziju i kontrakciju. <- rjesenje u biljeznici
 Primjer: fx = (x1 - 2)**2 + (x2 - 1)**2, x0=(0, 0), h=1, v=(2, 1)
 Pronadi minimum zadane funkcije na pravcu pronalaznjem unimodalnog intervala i postupkom zlatnog reza.
 
-ne vidim... slikaj
 
 
 2.2.4 Trazenje u smjerovima koordinatnim osi
