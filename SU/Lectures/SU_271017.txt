@@ -1,0 +1,96 @@
+Logisticka regresija
+
+Gradijentni spust
+  - problem je kaj pretrazivanje ide cik cak; to je sporo
+
+Alternative gradijentnom spustu:
+  - uzmi drugu derivaciju, jer ona govori brzinu promjene gradijenta
+    - optimizacije drugog reda
+
+  - Newton-Raphsonov postupak (ili Newtonov postupak)
+    - x[t+1] = x[t] - eta*nablaF(x[t])
+      - u x[t] napravi kvadratnu aproksimaciju, te otidi na minimum te kvadratne funckije
+      - to ce raditi akko je funkcija konveksna
+    
+    - Taylorov razvoj drugog reda: f(x) = f(a) + f'(a)/1!*(x-a) + f''(a)/2!*(x-a)**2
+      - f(x) ~ fKVAD(x) = f(x[t]) + nablaF(x[t])T*(x-x[t]) + 0.5*(x - x[t])T*H[t]*(x - x[t])
+    
+    - Taylorov razvoj vise varijabli drugog reda: fKVAD(x) = f(x[t]) + nablaF(x[t])T*(x-x[t]) + 0.5*(x - x[t])T*H[t]*(x - x[t])
+      - H je Hesseova matrica (matrica drugih parcijalnih derivacija)
+      - kvadratna aproksimacija je f(x) ~ fKVAD(x)
+
+  - azuriranje parametara: x[t+1] <- x[t] - eta*(H**-1)*nablaF(x[t])
+    - mozemo staviti eta = 1 ako je Hessova matrica H egzaktno izracunata, inace, ako je Hessova matrica aproksimirana, onda je bolje da je eta manja od 1
+  
+  - kod logisticke regresije: H = fiT*S*fi, gdje je S=diagonala(h(x)*(1 - h(x)))
+    - H je pozitivno definitna -> xT*A*x > 0
+      - H je zato uvijek invertibilna
+    - w <- w - (H**-1)*nablaE(w|D), eta = 1
+      - zove se (eng. iteratively reweighted least squares) (IRLS)
+
+dijag(1,2,3) znaci da je 1, 2, 3 na dijagonali matrice. 
+
+  - izracun H[t] u svakom koraku moze biti skup (kada imamo jako puno znacajki)
+
+  - kvazi-Newton postupci:
+    - aproksimira H[t] pomocu prethodnog gradijenta i ??? (BFSG postupak, nazvan po autorima)
+    - dijagonala + matrica malog ranga -> (L-BFSG postupak, za smanjenje memorijskih zahtjeva)
+  
+  - L2 regularizacija:
+    - nablaE'(w|D) = nablaE(w|D) + lambda*w
+    - H' = H + lambda*I, PAZI! Nemoj regularizirati w0!
+
+  - kod L1 nemozemo izracunati gradijent jer je funkcija pogrske nederivabilna 
+    - onda napravi podgradijent (eng. subgradient)
+    - koordinatni spust (radili na APR-u)
+      - inace radimo projekcijske ili aproksamitivne metode
+
+Viseklasna logisticka regresija:
+  - OVO ni OVR ne daje vjerojatnosnu distribuciju primjera u klasu
+
+  - h(x,w) = sigma(wT*psi(x)) je bila za binarnu logisticku klasifikaciju
+
+  - multinomijalna logisticka regresija:
+    - na izlazu imamo funkciju softmax
+
+  - softmax funkcija:
+    - h(x, W) = exp(w[j]T*psi(x))/SUM(exp(w[j]T*psi(x))) PAZI! U skripti krivo pise.
+  
+  - poopcenje Bernullijeve razdiobe na vise varijabli je kategoricka varijabla ili multinomijalna varijabla (multinulijeva varijabla)   
+    - y = (y1,y2,...,yk)
+      - ali je samo jedan y jednak 1 (npr. (0,0,0,1))
+        - zove se hot-one encoding
+  
+  - poopcena unakrsna entropija (izvodi se kao maksimizacija log-izglednosti multinulijeve distribucije):
+    - E(W|D) = -SUMSUM(yk*ln(hk(x, W)))
+  
+  - funkcija gubitka:
+    - L(hk(x),y) = -SUM(yk*ln(hk(x,W)))
+
+  - gradijent za klasu k:
+    - nablaWk*E(W|D) = SUM(hk(x,W) - yk)*psi(x)
+  
+  - online azuriranje:
+    - wk <- w - eta*(h(x,w) - y)*psi(x)
+    - (eng. least mean squares) (LMS) ili Widrow-Hoffovo pravilo
+
+
+Poopceni linearni modeli
+  - model h, razdioba P, funkcija gubitka L, azuriranje za svaki dio nablaL  
+  - u svima je sve poravnato
+
+
+Adaptivne bazne funkcije
+  - fi(x) = (fi1(x), ..., fin(x)) je funkcija preslikavanja, bazna funkcija
+  - h(x,w) = f(wT*fi(x)) = f(SUM(w*fi(x)))
+  - ovdje imamo fiksne bazne funkcije
+    - nazalost, neznamo kako nabosti dobru fi funkciju (njenu slozenost) 
+
+  - pokusajmo fi prilagoditi podacima ili koristi fiksni broj baznih funkcija i napravi parametarske bazne funkcije
+  - parametrizirane bazne funkcije
+    - tvrdimo da je SVAKI fi poopceni linearni model
+    - h(x,w) = f(SUm(w)*f(SUM(w*x))) = f(wT*f(W*x))
+    - zove se adaptivna bazna funkcija
+    - iz podataka fi-jevi nauce kakvi trebaju biti
+  
+    - napisano je zapravo dvoslojna neuronska mreza

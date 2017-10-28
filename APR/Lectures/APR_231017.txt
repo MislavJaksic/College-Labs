@@ -95,15 +95,20 @@ Skiciraj rekleksiju, ekspanziju i kontrakciju. <- rjesenje u biljeznici
 
 2.2.3 Trazenje minimuma na pravcu
 
-Primjer: fx = (x1 - 2)**2 + (x2 - 1)**2, x0=(0, 0), h=1, v=(2, 1)
+Primjer: f(x1, x2) = (x1 - 2)**2 + (x2 - 1)**2, x0=(0, 0), h=1, v=(2, 1), epsilon = 0.5
 Pronadi minimum zadane funkcije na pravcu pronalaznjem unimodalnog intervala i postupkom zlatnog reza.
+x = x0 + k*v = (0, 0) + k*(2, 1) = (2*k, k)
 
+x1 = 2*k, x2 = k
+f(k) = (2*k - 2)**2 + (k - 1)**2 se treba minimizirati.
+kMIN = 1
+Azuriraj tocku s kMIN, x = (0+1*2,0+1*1) = (2,1)
 
 
 2.2.4 Trazenje u smjerovima koordinatnim osi
 Idi po x1, pa kad si najbolje nasao, idi po x2, pa kad si najbolje nasao ...
 
 Jedna iteracija ovog algoritma je kada se produ sve osi.
-Methoda je losa jer ako imamo dugacku tanku dolinu ,on ce se jako muciti.
+Methoda je losa jer ako imamo dugacku tanku dolinu, algoritam ce se jako muciti.
 
 Nedostatak svih algoritama je da algoritam moze zapeti na ostar rub.

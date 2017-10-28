@@ -13,43 +13,43 @@ def SimplexNelderMead(startingPoint, GoalFunction, alpha=1, beta=0.5, gamma=2, s
     for i in range(len(x0)):
       steps.append(1)
   
-  simplex = CreateSimplex(x0, steps)
+  simplex = _CreateSimplex(x0, steps)
   print "centroid     F(centroid)"
-  centroid = simplex[0] #for the purposes of the while condition
+  centroid = simplex[0] #for the purpose of checking the while condition
   
-  while not IsSimplexOverMin(simplex, centroid, F, epsilon):
-    bestIndex, worstIndex = GetBestAndWorstSimplexIndexes(simplex, F)
+  while not _IsSimplexOverMin(simplex, centroid, F, epsilon):
+    bestIndex, worstIndex = _GetBestAndWorstSimplexIndexes(simplex, F)
     
-    centroid = GetSimplexCentroid(simplex, worstIndex, F)
+    centroid = _GetSimplexCentroid(simplex, worstIndex, F)
     
-    PrintCentroid(centroid, F)
+    _PrintCentroid(centroid, F)
     
-    xRefl = ReflectWorseOverCentroid(simplex, worstIndex, centroid, alpha)
+    xRefl = _ReflectWorseOverCentroid(simplex, worstIndex, centroid, alpha)
     
-    if IsPointBetterThenAnother(xRefl, simplex[bestIndex], F):
-      xExpa = ExpendReflectedOverCentroid(xRefl, centroid, gamma)
+    if _IsPointBetterThenAnother(xRefl, simplex[bestIndex], F):
+      xExpa = _ExpendReflectedOverCentroid(xRefl, centroid, gamma)
       
-      if IsPointBetterThenAnother(xExpa, simplex[bestIndex], F):
+      if _IsPointBetterThenAnother(xExpa, simplex[bestIndex], F):
         simplex[worstIndex] = xExpa
       else:
         simplex[worstIndex] = xRefl
     
     else:
-      if IsEverySimplexPointBetterThenReflectedPoint(xRefl, simplex, worstIndex, F):
-        if IsPointBetterThenAnother(xRefl, simplex[worstIndex], F):
+      if _IsEverySimplexPointBetterThenReflectedPoint(xRefl, simplex, worstIndex, F):
+        if _IsPointBetterThenAnother(xRefl, simplex[worstIndex], F):
           simplex[worstIndex] = xRefl
           
-        xCont = ContractPoint(simplex, worstIndex, centroid, beta)
-        if IsPointBetterThenAnother(xCont, simplex[worstIndex], F):
+        xCont = _ContractPoint(simplex, worstIndex, centroid, beta)
+        if _IsPointBetterThenAnother(xCont, simplex[worstIndex], F):
           simplex[worstIndex] = xCont
         else:
-          simplex = MoveTowardsBest(simplex, bestIndex, sigma)
+          simplex = _MoveTowardsBest(simplex, bestIndex, sigma)
       else:
         simplex[worstIndex] = xRefl
         
   return simplex[bestIndex]
       
-def CreateSimplex(x0, steps):
+def _CreateSimplex(x0, steps):
   """If x0=[1,2,3] and steps=[4,5,6]:
      simplex=[[1,2,3],[5,2,3],[1,7,3],[1,2,9]]"""
   simplex = []
@@ -60,7 +60,7 @@ def CreateSimplex(x0, steps):
     simplex.append(simplexPoint)
   return simplex
   
-def IsSimplexOverMin(simplex, centroid, F, epsilon):
+def _IsSimplexOverMin(simplex, centroid, F, epsilon):
   quadraticSum = 0
   centroidDistance = F(centroid)
   for x in simplex:
@@ -70,7 +70,7 @@ def IsSimplexOverMin(simplex, centroid, F, epsilon):
     return True
   return False
   
-def GetBestAndWorstSimplexIndexes(simplex, F):
+def _GetBestAndWorstSimplexIndexes(simplex, F):
   bestIndex = 0
   worstIndex = 0
   
@@ -86,7 +86,7 @@ def GetBestAndWorstSimplexIndexes(simplex, F):
       
   return bestIndex, worstIndex
 
-def GetSimplexCentroid(simplex, worstIndex, F):
+def _GetSimplexCentroid(simplex, worstIndex, F):
   centroid = []
   for j in range(len(simplex[0])):
     sum = 0
@@ -97,14 +97,14 @@ def GetSimplexCentroid(simplex, worstIndex, F):
     centroid.append(sum / float(len(simplex) - 1))
   return centroid
 
-def PrintCentroid(centroid, F):
+def _PrintCentroid(centroid, F):
   row = ""
   row += str(centroid)
   row += " "
   row += str(F(centroid))
   print row
 
-def ReflectWorseOverCentroid(simplex, worstIndex, centroid, alpha):
+def _ReflectWorseOverCentroid(simplex, worstIndex, centroid, alpha):
   reflectedPoint = []
   for i in range(len(simplex[0])):
     coord = (1 + alpha)*centroid[i] - alpha*simplex[worstIndex][i]
@@ -112,7 +112,7 @@ def ReflectWorseOverCentroid(simplex, worstIndex, centroid, alpha):
   
   return reflectedPoint
   
-def ExpendReflectedOverCentroid(xRefl, centroid, gamma):
+def _ExpendReflectedOverCentroid(xRefl, centroid, gamma):
   expandedPoint = []
   for i in range(len(xRefl)):
     coord = (1 - gamma)*centroid[i] + gamma*xRefl[i]
@@ -120,20 +120,20 @@ def ExpendReflectedOverCentroid(xRefl, centroid, gamma):
   
   return expandedPoint
   
-def IsPointBetterThenAnother(onePoint, twoPoint, F):
+def _IsPointBetterThenAnother(onePoint, twoPoint, F):
   if F(onePoint) < F(twoPoint):
     return True
   return False
     
-def IsEverySimplexPointBetterThenReflectedPoint(xRefl, simplex, worstIndex, F):
+def _IsEverySimplexPointBetterThenReflectedPoint(xRefl, simplex, worstIndex, F):
   for i in range(len(simplex)):
     if i == worstIndex:
       continue
-    if IsPointBetterThenAnother(simplex[i], xRefl, F): #check the condition here!!!
+    if _IsPointBetterThenAnother(xRefl, simplex[i], F):
       return False
   return True
   
-def ContractPoint(simplex, worstIndex, centroid, beta):
+def _ContractPoint(simplex, worstIndex, centroid, beta):
   contractedPoint = []
   for i in range(len(simplex[0])):
     coord = (1 - beta)*centroid[i] + beta*simplex[worstIndex][i]
@@ -141,7 +141,7 @@ def ContractPoint(simplex, worstIndex, centroid, beta):
   
   return contractedPoint
   
-def MoveTowardsBest(simplex, bestIndex, sigma):
+def _MoveTowardsBest(simplex, bestIndex, sigma):
   bestPoint = copy(simplex[bestIndex])
   for x in simplex:
     for i in range(len(simplex[0])):
