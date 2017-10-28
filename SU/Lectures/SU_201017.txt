@@ -23,13 +23,3 @@ Azurirajw-ove s: w <-- w - lambda*E(w|D)
 
 Prednosti: jednostavan postupak, robusniji od regresije, otporan je na vrijednosti koje strse.
 Veliki nedostatak: nece konvergirati ako primjeri nisu linearno odvojivi.
-
-
-
-
-
-
-
-
-
-
