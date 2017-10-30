@@ -9,7 +9,7 @@ def CoordinateDescent(startingPoint, GoalFunction, steps=[], epsilon=((0.1)**6))
       steps.append(1)
   xPrevious = copy(x) #for the purpose of checking the while condition
   for i in range(len(x)):
-    xPrevious[i] += i
+    xPrevious[i] += (i + 1)
     
   while _IsAtLeastOnePointWasMoved(x, xPrevious, epsilon):
     xPrevious = copy(x)
@@ -21,6 +21,9 @@ def CoordinateDescent(startingPoint, GoalFunction, steps=[], epsilon=((0.1)**6))
       singleDimensionF = _CreateOneDimensionFunction(F, compositePoint, i, KPoint)
       
       KMinimum = GoldenSectionSearch(KStartingValue, singleDimensionF, epsilon, doUnimodal=True)
+      
+      print "Minimum of " + str(compositePoint) + " is " + str(KMinimum)
+      
       x[i] += KMinimum
       
   return x

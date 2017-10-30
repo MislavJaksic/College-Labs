@@ -22,7 +22,7 @@ def SimplexNelderMead(startingPoint, GoalFunction, alpha=1, beta=0.5, gamma=2, s
     
     centroid = _GetSimplexCentroid(simplex, worstIndex, F)
     
-    _PrintCentroid(centroid, F)
+    _PrintCentroid(centroid, F) #Deactivate during peformance analysis
     
     xRefl = _ReflectWorseOverCentroid(simplex, worstIndex, centroid, alpha)
     
@@ -47,7 +47,7 @@ def SimplexNelderMead(startingPoint, GoalFunction, alpha=1, beta=0.5, gamma=2, s
       else:
         simplex[worstIndex] = xRefl
         
-  return simplex[bestIndex]
+  return centroid#simplex[bestIndex] #try it like this!!!
       
 def _CreateSimplex(x0, steps):
   """If x0=[1,2,3] and steps=[4,5,6]:
@@ -61,11 +61,17 @@ def _CreateSimplex(x0, steps):
   return simplex
   
 def _IsSimplexOverMin(simplex, centroid, F, epsilon):
+  print "Condition:"
+  print simplex
+  print centroid
+  print F(centroid)
+  print epsilon
   quadraticSum = 0
   centroidDistance = F(centroid)
   for x in simplex:
     quadraticSum += (F(x) - centroidDistance)**2
-  quadraticSum /= float(len(simplex)) 
+  quadraticSum = quadraticSum / float(len(simplex))
+  
   if sqrt(quadraticSum) <= epsilon:
     return True
   return False

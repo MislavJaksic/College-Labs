@@ -12,7 +12,7 @@ def HookeJeeves(startingPoint, GoalFunction, steps=[], epsilon=(0.1)**6):
   
   while(steps[0] > epsilon):
     xn = _FindBestStepPoint(xp, steps, F)
-    _PrintRow(xb, xp, xn, F, steps[0])
+    #_PrintRow(xb, xp, xn, F, steps[0]) #Deactivate during peformance analysis
     
     if _IsXBFartherFromMinThenXN(xb, xn, F):
       xp = _ReflectXBAccrossXN(xb, xn)
@@ -30,9 +30,10 @@ def _FindBestStepPoint(xp, steps, F):
     zeroPoint = _CalculateStepPoint(bestPoint,              0, i)
     minusPoint = _CalculateStepPoint(bestPoint, (-1)*steps[i], i)
     
-    if F(minusPoint) < F(zeroPoint):
+    FZero = F(zeroPoint)
+    if F(minusPoint) < FZero:
       bestPoint = minusPoint
-    elif F(zeroPoint) < F(plusPoint):
+    elif FZero < F(plusPoint):
       bestPoint = zeroPoint
     else:
       bestPoint = plusPoint
