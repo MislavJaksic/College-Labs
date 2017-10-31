@@ -1,4 +1,5 @@
 """All functions have a uniform interface, x is a list"""
+import math
 
 def f1(x):
   return 100*((x[1] - (x[0]**2))**2) + ((1 - x[0])**2)
@@ -13,7 +14,7 @@ def f3(x):
   return sum
   
 def f4(x):
-  return math.abs(((x[0] - x[1])*(x[0] + x[1]))) + math.sqrt((x[0]**2) + (x[1]**2))
+  return math.fabs(((x[0] - x[1])*(x[0] + x[1]))) + math.sqrt((x[0]**2) + (x[1]**2))
   
 def f6(x):
   squareSum = 0

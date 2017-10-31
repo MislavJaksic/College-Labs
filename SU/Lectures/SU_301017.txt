@@ -1,0 +1,115 @@
+Stroj potpornih vektora
+
+Omiljeni algoritam za klasifikaciju.
+
+Problem maksimalne margine:
+  - linearni model h(x,w) = wT*x + w0
+  - COLT
+  - udaljenost primjera od hiperravnine: margina
+    - postavi hiperravninu tako da maksimizira marginu
+
+  - konveksnost skupova: za dva disjunktna skupa koji su i konveksni postoji takva hipperavnina
+  - konveksna ljuska je najmanji prostor koji spaja sve primjere iste klase
+    - maksimalna margina je tamo gdje je ravnina jednako udaljena od primjera koji su najblizi drugom skupu predmeta (skica u biljeznici)
+  
+  - model h(x,w) = wT*x + w0
+  - h(x) = 0
+  - y iz {-1,1}, y = sgn(h(x))
+
+  - pretpostavimo da model nema pogresku:
+    - w0, w su takvi parametri; y'*h(x) >= 0
+  
+  - d = h(x) / (||w||) je udaljenost primjera od hiperravnine
+    - y*h(x) / (||w||) 
+    - udaljenost od najblizeg primjer je onaj koji minimizira y*(wT*x + w0) / (||w||)
+      - argmax( (1 / ||w|| )*MIN(y*(wT*x + w0)) ) gdje su arg w0 i wi -> problem maksimalne margine
+
+  - w0 i wi mozemo arbitrarno skalirati bez da se mijenjaju udaljenosti
+    - pretpostavi y*(wT*x + w0) = 1 za primjere najblize ravnini, a za sve ostale primjere ... >= 1
+    - h(x) za najblize primjere je ili 1 ili -1
+
+    - onda, za najblizi primjer, argmax{1 / ||w||} uz ogranicenje y*(wT*x + w0) >= 1
+    - argmin{ ||w||**2 }*0.5 -> to je problem maksimalne margine
+
+
+  - problem konveksne optimizacije uz ogranicenja, odnosno kvadratno programiranje
+
+Kvadratno programiranje
+  - kanosnki oblik:
+    - minimiziraj f(x)
+    - uz ogranicenja: gi <= 0, i=1..m
+                      hi = 0,  i=1..p
+    - ciljna funkcija f, ogranicenja jednakosti h, ogranicenje nejednakosti g
+
+  - metode kazne, metode unutarnje tocke, koordinatni spust, Langregeova dualnost, SMO
+    - 1) u dualnoj formulaciji mozemo primjeniti SMO algoritam
+      2) u dualnoj formulaciji mozemo definirati porlbme pomocu potpunih vektora
+      3) u dualnoj formulaciji mozemo koristiti jezgreni trik
+
+Lagrangeova dulanost
+  - ogranicenja ugradi u ciljnu funkciju, pa se samo njoj bavi
+
+  - pocetni problem: kanonski oblik kvadratnog programiranja
+    - L(x,alpha,beta) = f(x) + SUM(alpha*gi(x)) + SUM(beta*hi(x))
+      - x nema veze sa primjerima
+      - alpha i beta su Lagrangeovi multiplikatori
+
+  - rjesenje: nablaL = 0, seblo funkcije L
+    - L(x,alpha, beta) = f(x) + beta*h(x) i to je upravo Langrangeova funkcija  
+
+  - L(x,alpha) = f(x) + alpha*g(x), alpha >= 0
+    - neaktivno ogranicenje, onda imamo komplementarnu labavost, alpha*g(x) = 0
+
+  - L(x, alpha, beta) = f(x) + alpha*g(x) + beta*h(x), a ako imamo vise ogranicenje, samo dodamo sumiranje
+    - alpha >= 0
+  
+  - Karush-Kuhn-Tuckerove (KKT) uvjeti su:
+    gi(x) <= 0
+    hi(x) = 0
+    alphai >= 0
+    alphai*gi(x) = 0
+
+  - nacelo dualnosti: (eng. duality principle)
+                      gledamo ili primarni problem -> minimiziraj f(x)
+                      dualni problem -> nadi donju ogradu primarnog problema
+
+  - Lagrangeova dualnost:
+    - dualna Lagrangeova funkcija: L(alpha,beta) = min{ L(x,alpha,beta) } <- ove je ispravno, u natuknicama je pogresno
+    - to je gornja ograda primarnog problema!
+    - ali to je i minimum f(x)
+      - maksimiziraj   L(alpha,beta)
+        uz ogranicenja alphai >= 0, i=1..m , ali vrijede i KKT uvjeti
+
+  
+Optimizacije maksimalne margine
+  - argmin{ ||w||**2 } * 0.5 , y*(wT*x + w0) >= 1
+  - L(w,w0,alpha,) = 0.5 * ||w||**2 - SUM( alphai*(y*(wT*x + w0) - 1)) gdje alpha >= 0
+  
+  - dualna formulacija je derivacija L-a i izjednacavanje po nuli
+    - dL(w,w0,alpha) / dw  = 0 -> w = SUM(alpha*y*x)   PAZI! Vrata iz i u dualni svijet.
+    - dL(w,w0,alpha) / dw0 = 0 -> SUM(alpha*y) = 0
+
+    - kada se to uvrsti natrag u L
+      - L(alpha) = SUM(alpha) - 0.5*SUM_SUM(alpha*alpha*y*y*xT*x)
+
+  - maksimiziraj dualnu Lagrangeovu funkciju (vidi je gore s SUM_SUM)
+    - ali vrijedi alphai >= 0 i SUM(alpha*y) = 0
+    - to radi algoritam (eng. sequential minimal optimization) SMO (njegova je slozenost O(n**2))
+
+  - u tocki rjesenja vrijedi:
+    y*(wT*x + w0) >= 1
+    alphai >= 0
+    alphai*(y*h(x) - 1) = 0
+
+Dualni model SVM-a
+
+  - vrati se na pocetak, SVM je linearni model
+  - w = SUM(amphai*y*x) <- primarni model
+
+  - dualna formulacija h(x) = wT*x + w0 = SUM(alpha*y*xT*x + w0)
+    - umjesto parametara w postoje dualni parametri alpha
+
+    - uzmi ulazni primjer i mnozi da sa svim ostalim primjerima u skupu primjera; skalarni produkt govori koliko su vektori slicni s xT*x; klasificiramo tako da primjer gledamo koliko je slican sa vektroima
+
+  - hiperravnina 
+  - dualni problem izrazava hiperravninu kao linearnu kombinaciju primjera za ucenje 
