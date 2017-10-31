@@ -5,6 +5,7 @@ from Programs.SimplexNelderMead import SimplexNelderMead
 from Tasks.TaskFunctions import f1,f2,f3,f4,f6
 
 from copy import copy
+from random import randint
 
 def f3Variant(x):
   return (x[0] - 3)**2
@@ -28,6 +29,30 @@ def TaskThree():
   SolveWithSimplex(startingPoint, function)
   SolveWithHookeJeeves(startingPoint, function)
   
+def TaskFour():
+  #startingPoint, function = ([0.5,0.5],f1)
+  startingPoint, function = ([20.,20.],f1)
+  
+  differentSteps = [[1,1],[5,5],[10,10],[20,20]]
+  
+  for steps in differentSteps:
+    SolveWithSimplex(startingPoint, function, steps=steps)
+  
+def TaskFive():
+  function = f6
+  
+  startingPoint = [-1,-1]
+  print "startingPoint:",
+  print startingPoint
+  SolveWithSimplex(startingPoint, function)
+    
+  for i in range(5):
+    startingPoint = [randint(-50,50), randint(-50,50)]
+    print "startingPoint:",
+    print startingPoint
+    SolveWithSimplex(startingPoint, function)
+  
+  
 def Solve(startingPoint, function):
   SolveWithDescent(startingPoint, function)
   SolveWithSimplex(startingPoint, function)
@@ -40,9 +65,9 @@ def SolveWithDescent(startingPoint, function):
   print "CoordinateDescent ",
   PrintMinimumAndInvocations(minimum, GoalFunction)
   
-def SolveWithSimplex(startingPoint, function):
+def SolveWithSimplex(startingPoint, function, steps=[]):
   GoalFunction = CountInvocations(function)
-  minimum = SimplexNelderMead(copy(startingPoint), GoalFunction)
+  minimum = SimplexNelderMead(copy(startingPoint), GoalFunction, steps=steps)
   print "SimplexNelderMead ",
   PrintMinimumAndInvocations(minimum, GoalFunction)
   
@@ -70,6 +95,8 @@ def CountInvocations(function):
   return interdictor
   
 #TaskOne()
-TaskTwo()
+#TaskTwo()
 #TaskThree()
+#TaskFour()
+TaskFive()
 
