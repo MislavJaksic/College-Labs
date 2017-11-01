@@ -2,10 +2,12 @@
 
 Granica izmedu klasa je linearna. Hiperravnine.
 
-h(X;w) = wT*X
+h(X;w) = wT*X -> rezultat je realni broj
+
+h(X;w) = f(wT*X= -> rezultat je broj izmedu [0,1] ili [-1,1]
 
 Funkcija daje ili pozitivan ili negativan broj.
-Ulazni prostor se zapravo dijeli na negativne i pozitivne dijelove reavnine.
+Ulazni prostor se zapravo dijeli na negativne i pozitivne dijelove ravnine.
 
 Granica je uvijek za jednu dimenziju manja od prostora kojeg dijeli.
   - pravac za 2D, ravnina za 3D, hiperravnina za 4D itd...
@@ -14,7 +16,7 @@ Granica = Diskriminativna funkcija = Decizijska funkcija
 
 Ako zelimo nelinearnu granicu: preslikaj s phi() x-eve u vecu dimenziju.
   - kao i kod regresije
-PAZI! Takav model je i dalje linearan jer se rijec "linearan" odnosi na linearnost parametara wi.
+PAZI! Takav model je i dalje linearan obzirom na parametre jer se rijec "linearan" odnosi na linearnost parametara wi.
 
 Generativni modeli: imaju vise parametara i modeliraju vise od same granice.
                     oni modeliraju vjerojatnosti i time onda impliciraju granicu izmedu primjera.
@@ -27,33 +29,33 @@ h(x) = 0 -> granica (n-1 dimenzijski podprostor u n-dimenzijskom prostoru)
 n = 2 (dvije dimenzije, znacajke)
 h(x,w0,wi) = w0 + w1*x1 + w2*x2
 
-||w|| je norma -> ||w|| = sqrt(x1*x1 + x2*x2 + ... + xn*xn)
+||w|| je norma -> ||w|| = sqrt(w1**2 + w2**2 + ... + wn**2)
                -> ||w|| = sqrt(wT*w)
 
 1)
 w je zapravo normala na hiperravninu. 
 
-h(X1) = h(X2) = 0 ako x1 i x2 leze na granici
+h(x1) = h(x2) = 0 ako x1 i x2 leze na granici
 
-w0 + wT*X1 = w0 + WT*X2
+w0 + wT*x1 = w0 + WT*x2
 
-w(X1 - X2) = 0
+w(x1 - x2) = 0
 
-Ako se oduzmu X1 i X2, tocke koje leze na granici, onda se dobije vektor paralelan s granicom koji ujedno i lezi na njoj.
+Ako se oduzmu x1 i x2, tocke koje leze na granici, onda se dobije vektor paralelan s granicom koji ujedno i lezi na njoj.
 
 2)
 d je zapravo udaljenost hiperravnine od ishodista.
 
-xT*X + w0 = 0 / (||w||)
-wT*X/(||w||) = -w0/(||w||)
-wT*X/(||w||) je projekcija vektora X na vektor w.
+xT*x + w0 = 0 / (||w||)
+wT*Xx/(||w||) = -w0/(||w||)
+wT*x/(||w||) je projekcija vektora X na vektor w.
 
 d = -w0/(||w||)
 
 3)
-Koliko je tocka X udaljena od hiperravnine? Ako je blizu, onda nismo sigurni da smo dobro klasificirali.
+Koliko je tocka x udaljena od hiperravnine? Ako je blizu, onda nismo sigurni da smo dobro klasificirali.
 
-d = h(X)/(||w||)
+d = h(x)/(||w||)
 
 Vektor tezine:                        (w0, wi)
 Vektor normale:                       w
@@ -78,7 +80,7 @@ One-vs-rest: OVR, jedan naspram ostali
              klasifikacija ovisno o blizini (udaljenosti) primjera granicama
                - tocno na "Bermudskim (tankim) ravninama" nema rjesenja zbog ekvidistance
 
-OVR ima manje modela od OVO, pa je brzi, ali je sigurniji.
+OVR ima manje modela od OVO, pa je brzi, ali OVO je sigurniji.
 OVR se moze dovesti do disbalansa zbog uravnotezenosti klasa.
 
 
@@ -90,7 +92,7 @@ Optimizacija: w = ... kao i u regresiji
 
 K = 2
 n = 2
-Ideja: napravi hipotezu koja svrstava tocke u vrijednost izmedu 0 i 1. Ako je > 0.5, onda je hipoteza predvidjela pripadnost klasi.
+Ideja: napravi hipotezu koja svrstava tocke u vrijednost izmedu 0 i 1. Ako je > 0.5, onda je hipoteza predvidjela pripadnost jednoj klasi, inace je predvidjela pripadnost onoj drugoj.
 Svi iz jedne klasu imaju vrijednost 0, a svi druge klase imaju vrijednost 1.
 
 Kada imas primjere, onda prilikom klasifikacije regresijom one koji su unutar zeljene klase dajes vrijednost y=1, a svima koji nisu u zeljenoj klasi daj vrijednost y=0. Zatim kada se trenira hipoteze za regresiju, povuci ce se pravac koji ce predvidati vrijednost h(x) gdje ako h(x) > 0.5, onda se predvida da primjer pripada zeljenoj klasi.

@@ -4,7 +4,7 @@ h(x) = f(wT*x)
 
 Aktivacijska funkcija f, 1 ako x veca od 1, 0 ako manja od nula. Prag!
 
-Model ce zgnjeciti primjere ???
+Model ce zgnjeciti primjere iz domene R u kodomenu [-1,1].
 
 Funkcija gubitka kaznjava ovisno o tome koliko je pogresno klasificiran primjer.
 Pozitivne primjere uopce ne kaznjavamo.

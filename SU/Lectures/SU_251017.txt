@@ -43,7 +43,7 @@ Logisticka regresija:
 
   - optimizacija
     - sve funkcije koje se mogu derivirati nemaju zatvorenu formu
-    - ali sve funkcije koje se mego derivirati se mogu rjesiti gradijentnom spustu
+    - ali sve funkcije koje se mogu derivirati se mogu rjesiti gradijentnim spustom
     
     - w <- w - eta*gradijent*E(w|D)
       - eta: je koracanje
