@@ -23,14 +23,15 @@ Logisticka regresija:
   - funkcija pogreska
     - zelimo gubitak 0-1, sigurno nezelimo kvadratni gubitak, gubitak perceptrona je dosta dobar jer simulira 0-1 gubitak
     
-    - h(x, w) = p(y|x) = N(wT*x, sigma*2), te smo maksimizirali izglednost
-    - to je bilo opravdanje za pogresku kod regresije
-    - ali to je upravo postupak na koji se izvodi sve funkcija gubitka
+    - kod regresije:
+      - h(x, w) = p(y|x) = N(wT*x, sigma*2), te smo maksimizirali izglednost
+      - to je bilo opravdanje za pogresku kod regresije
+      - ali to je upravo postupak na koji se izvodi sve funkcija gubitka
 
     - distribucija za binarne varijable
       - Bernullijeva varijabla: moze imati dva ishoda, 0 ili 1
       - distribucija: P(y=1|x) = (mi**y) * ((1 - mi)**(1 - y))
-      - mi je u strojnom ucenju vrijednost koju daje h(x,w)
+      - u strojnom ucenju vrijednost: mi = h(x,w)
         - P(y=1|x,w) = (h(x,w)**y) * ((1 - h(x,w))**(1 - y))
 
     - maksimiziraj izglednost: ...
