@@ -14,7 +14,7 @@ Primjer: F(x) = (x1 + 2)**2 + (x2 + 1)**2
 Uvjet za ekstrem kvadratne funkcije: nablaF = b + A*x
   - A je Hesseova matrica (sadrzi sve parcijalne dvostruke derivacije)
 
-Minimum kvadratne funkcije: xmin = A**(-1)*b
+Minimum kvadratne funkcije: xmin = (-1)*A**(-1)*b
 
 Ako je A pozitivno definitna, onda je xmin sigurno minimum.
 Ako je negativno definitna, onda ce xmin biti maximum.
@@ -32,24 +32,28 @@ Powell trazi minimum u konjugiranim smjerovima.
      xn je minimum.
 
 2) Novi konjugirani smjer dobiva se spajanjem minimuma na dva paralelna pravca zadanog smjera.
-     Dodatno, gradijent ce uvijek biti okomit na 
+     Dodatno, gradijent ce uvijek biti okomit na izokonturu funkcije.
 
-Algoritam gradi konjugirane smjerova i ponasa se kao da je funkcija kvadratna. Pretraga po konjugiranim smjerovaima ce nam dopustiti da brze dodemo do minimuma.
+Algoritam gradi konjugirane smjerova i ponasa se kao da je funkcija kvadratna. Pretraga po konjugiranim smjerovima ce nam dopustiti da brze dodemo do minimuma.
 
 Ako je funkcija kvadratna, sigurno ce doci do minimuma u n koraka. Ako nije kvadratna, onda ce se ponasati drugacije.
 
 Trebamo znati svojstva kvadratnih funkcija, na cemu se temelji Powell i kako Powell gradi konjugirane smjerova.
 
+
+
 2.3. Optimiranje uz uporabu derivacija (gradijentni postupci)
 
 2.3.1 Najbrzi spust
 
-v = (-1*)nablaF / ||nablaF|| je smjer najbrzeg spusta
+v = (-1)*nablaF / ||nablaF|| je smjer najbrzeg spusta
   Idi u negativnom smjeru gradijenta.
 
 Globalno geldano je losa metoda: ako je funkcija kvadratna, onda kad dode do minimuma pravca, on ce upravo biti okomit na smjer kretanja. To ce kao posljedicu imati da cemo ici cik cak.
                                  osjetljivost na odredivanje minimuma na pravcu (ostar rub ili spica).
-                                 
+                  
+
+               
 2.3.2 Newton Raphsonove metode
 
 Za kvadratne funkcije uvijek vodi do minimuma u prvom koraku. Za ostale je iterativan.
@@ -62,6 +66,8 @@ Tehnike povecanja stabilnosti:
   c) ako stvar divergira, koristi najbrzi spust
 
 Racunalno zahtjevna: treba izracunati druge parcijalne derivacije i invertirati Hesseova matricu.
+
+
 
 2.3.3 Fletcher-Powell (predstavnik kvazi Newtonovih metoda)
 
