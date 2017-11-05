@@ -1,35 +1,46 @@
+from UnimodalGolden import GoldenSectionSearch
+
 import math
 
-def SteepestDescent(startingPoint, GoalFunction, PartialDerivativeFunctions, epsilon=((0.1)**6)):
+def SteepestDescent(startingPoint, GoalFunction, PartialDerivativeFunctions, useGolden=True, epsilon=((0.1)**6)):
   x = startingPoint
   F = GoalFunction
   dF = PartialDerivativeFunctions
-    
-  while _IsGradientNormSmall(gradientNorm, epsilon):
-    xPrevious = copy(x)
+  
+  gradient = _GetGradientAtPoint(dF, x)
+  gradientNorm = _GetGradientNorm(gradient)
+  direction = _GetDescentDirection(gradient)
+  
+  divergenceCounter = 0
+  bestValue = 10**6 #a sentinel value
+  while _IsGradientNormLarge(gradientNorm, epsilon):
+  
+    if _IsDiverging(x, F, bestValue, epsilon):
+      divergenceCounter += 1
+    else:
+      bestValue = F(x)
+    if divergenceCounter > 100:
+      print "Divergence limit has been reached"
+      break
+      
+    KMinimum = 0.1
+    if useGolden == True:
+      KStartingValue = (0, 1)
+      singleDimensionF = _CreateOneDimensionFunction(F, x, direction)
+      
+      KMinimum = GoldenSectionSearch(KStartingValue, singleDimensionF, epsilon, doUnimodal=True)
+      
     for i in range(len(x)):
-      pass
-      #KStartingValue = (0, steps[i])
+      x[i] += KMinimum*direction[i]
       
-      #compositePoint = _CreateCompositePoint(x, i)
-      #KPoint = [x[i], 1]
-      #singleDimensionF = _CreateOneDimensionFunction(F, compositePoint, i, KPoint)
-      
-      #KMinimum = GoldenSectionSearch(KStartingValue, singleDimensionF, epsilon, doUnimodal=True)
-      
-      #print "Minimum of " + str(compositePoint) + " is " + str(KMinimum)
-      
-      #x[i] += KMinimum
+    _PrintDescent(gradientNorm, direction, x)
+    
+    gradient = _GetGradientAtPoint(dF, x)
+    gradientNorm = _GetGradientNorm(gradient)
+    direction = _GetDescentDirection(gradient)
       
   return x
     
-def _GetGradientNorm(gradient):
-  sum = 0
-  for partialDerivative in gradient:
-    sum += partialDerivative**2
-    
-  return math.sqrt(sum)
-  
 def _GetGradientAtPoint(dF, x):
   gradient = []
   for partialDerivativeFunction in dF:
@@ -37,18 +48,39 @@ def _GetGradientAtPoint(dF, x):
     gradient.append(result)
     
   return gradient
+  
+def _GetGradientNorm(gradient):
+  sum = 0
+  for partialDerivative in gradient:
+    sum += partialDerivative**2
     
-def _IsGradientNormSmall(gradientNorm, epsilon):
-  if epsilon > gradientNorm:
+  return math.sqrt(sum)
+    
+def _GetDescentDirection(gradient):
+  descentDirection = []
+  gradientNorm = _GetGradientNorm(gradient)
+  for value in gradient:
+    descentDirection.append(value / ((-1) * gradientNorm))
+    
+  return descentDirection
+
+def _IsGradientNormLarge(gradientNorm, epsilon):
+  if epsilon < gradientNorm:
     return True
   return False
   
-def _CreateOneDimensionFunction(compositeFunction, compositePoint, KIndex, KPoint):
-  """baseF(x) = x[0]         **2 + x[1]**2 is given x = [1 + (2 * k), 3] which transforms baseF(x) into
-     compF(k) = (1 + (2 * k))**2 + 3   **2, where KFunction(k) = (1 + (2 * k))"""
+def _IsDiverging(x, F, bestValue, epsilon):
+  if (bestValue - epsilon) <= F(x):
+    return True
+  return False
+  
+def _CreateOneDimensionFunction(compositeFunction, KPoint, KVector):
+  """baseF(x) = x[0]**2           + x[1]**2 is given KPoint = [1 2] and KVector = [3 4]
+     compositeF(k) = (1 + 3*k)**2 + (2 + 4*k)**2 is the resulting function"""
   def interdictor(value):
-    currentCompositePoint = copy(compositePoint)
-    currentCompositePoint[KIndex] = _KFunction(KPoint[0], KPoint[1]*value)
+    currentCompositePoint = []
+    for i in range(len(KPoint)):
+      currentCompositePoint.append(_KFunction(KPoint[i], KVector[i]*value))
     
     calculation = compositeFunction(currentCompositePoint)
     return calculation
@@ -58,7 +90,12 @@ def _CreateOneDimensionFunction(compositeFunction, compositePoint, KIndex, KPoin
 def _KFunction(a, b):
   return a + b 
   
-def _CreateCompositePoint(x, KIndex):
-  compositePoint = copy(x)
-  compositePoint[KIndex] = "KFunction"
-  return compositePoint
+def _PrintDescent(gradientNorm, direction, x):
+  print "-.-.-.-.-.-.-.-.-.-"
+  print "gradientNorm:",
+  print gradientNorm
+  print "direction:",
+  print direction
+  print "x:",
+  print x
+  
