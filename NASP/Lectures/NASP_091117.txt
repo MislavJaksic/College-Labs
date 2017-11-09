@@ -1,0 +1,50 @@
+Backpropagation algoritam je bio kljuc za izracunavanje ciljne funkcije kada trebamo uvjezbavamo cijelu mrezu.
+
+Za pismeni nam treba samo slajd sa formulama 60 i 61.
+
+U biljeznici imas zadatak kako rijesiti jedan zadatak iz neuronskih mreza.
+
+Kako zadati pocetne parametre mreze tako da algoritam sto bolje uvjezba mrezu? Time se na bavimo.
+  - svi parametri theta su nula, a w ... pogeldaj sam u slajdu
+  - nju jedino trebas znati za ispit!!!
+ 
+Stopa ucenja: alpha, bira se na razlicite nacine, jedan od njih je ... pogledaj sam
+
+Kriterij zaustavljanja i postoje mnoge ostale napomene.
+
+
+NASTAVAK NAKON NEURONSKIH MREZA
+Osnove genetskih algoritama
+
+Neki problemi se niti nemogu derivirati ili su toliko komplicirane da neznamo kako primjeniti gradijentnu metodu.
+Podrucje optimiranja je jako siroko. Ima puno metoda optimiranja.
+Vecina metoda su heuristicke: roj cestica, skupina mrava, ali i genetski i evolucijski algoritmi.
+Prednost genetskih algoritama je da nije potrebno matematicko predzanje, a daju vrlo dobra rjesenja cak i za probleme koje niti neznamo postaviti.
+  - zadnja linija obrane prije metode palca, pogadanja
+Proizlaze iz promatranja prirode.
+
+Zapravo je to jedna velika petlja u kojoj se dogada puno stvari.
+1) Odaberemo nultu populaciju
+2) Procijeni sve jednike; ta ocjena se zove dobrota ili kvaliteta P
+3) Ako postoji dovoljno dobra jedinka, onda algoritam zaustavi inace...
+4) Odaberi jedinke za razmnozavanje i stavi ih u "mating pool" M
+5) Mating pool M krizamo i mutiramo
+6) Nova generacija zamijeni staru generaciju, nulta sa prvom nakon kaj zavrsi prva iteracija
+7) Ponovi postupak od koraka 2)
+
+Primjer: f6 funkcija iz APR_Lab2
+Trebamo naci tocku maksimuma (x,y). Zadamo konacnu domenu. Pocetna populacija su slucajne tocke (x,y).
+Kako zapisati jednike (zove se kromosom)? Proizvoljan je broj gena u kromosomu. Kromosom prikazujemo kao polje gena koji su binarni elementi.
+Recimo da smo odabrali 44 gena (bita), 22 za x i 22 za y vrijednost.
+Ogranicimo se na domenu -100 do 100. Vrijednosti iz -100 do 100 prebacimo u interval 0 do 2**22 - 1.
+Izracunamo dobrotu jednika. Koristimo funkciju dobrote. Za ovaj primjer je dobrota velicina funkcije.
+Za svaki primjer izracunamo dobrotu, te onda rangiramo jednike.  
+Slajd 18 prikazuje kako odabrati jedinke za krizanje. Losije jedinke trebaju biti manje zastupljene.
+"Kolo ruleta odabira roditelja" koje bira hoce li se jedinka razmnazati odabire jedinke kao rulet. Baci kuglicu i gdje padne, tu jedinku uzmi. Vece polje je jednika sa vecom dobrotom.
+Krizanje se radi s jednom prekidnom tockom. Na tom mjestu zamijeni genetski materijal roditelja i takve jednike sa zamijenjenim materijalom zovu se djeca. Vrlo dobar model, ali nije jedini.
+  - ono je vazno za popravljanje dobrote u pocetnim fazama algoritma, ali ona nemoze stvoriti nove blokove; to radi mutacija
+Nakon krizanja napravimo mutaciju nasumicnim odabirom gena cija ce vrijednost biti suprotna.
+  - ona u kasnijim iteracijama pokusava nasumicno poboljsati jednike izmjenama nekih gena
+Kako neka jednika nebi bila superdominantna, treba ograniciti maksimalnu dobrotu koju jednika moze dobiti na "kolu ruleta odabira roditelja", npr. na 100. Linearizacija dobrote. Windowing.
+Elitizam sacuva najbolju jedinku kako bi bila sigurno izabrana za razmnozavanje jer se inace najbolje jedinke mogu izgubiti tako da nebudu odabrane za razmnozavanje.
+Mozemo krizati i s predloskom (template) tako da izaberemo vise prekidnih tocaka, najcesce nasumicno.

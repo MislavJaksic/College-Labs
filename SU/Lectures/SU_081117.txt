@@ -1,0 +1,171 @@
+Jezgrene metode
+
+xeX, X iz R*R
+Nekada nije jasno kako podatke pretvoriti u vektore znacajka.
+
+Umjesto toga, izracunaj slicnost izmedu podataka. Zamisli apstraktni prostor znacajka X.
+
+Jezgrena funkcija (eng. kernel function) racuna slicnost vektora. k:XxX->R
+Kernel je mjera slicnosti ako k(x,x) = 1,
+                              k(x,x') iz [0,1] i ako
+                              k(x,x') = k(x',x)
+
+Razlicite jezgrene funkcije
+  - linearna k(x,x') = xT*x' 
+  - Gaussova k(x,x') = e**(-(||x - x'||**2)/(2*sigma**2)) (ona doslovno izgleda kao Gaussova distribucija kad se nacrta)
+    - sigma definira kako udaljenost utjece na slicnost
+    - ona je jedna od radijalnih baznih funkcija
+      - njihov opci oblik je k(x,x') = f(||x-x'||) (tj. u sebi imaju normu razlike vektora, a oko njih moze biti puno raznih stvari) 
+      - jos neke su: inverzna jezgra i eksponencijalna jezgra
+  - Mahalanobisova udaljenost umjesto euklidske
+    - k(x,x') = e**(-0.5*(x-x')T*SUM**(-1)*(x-x'))
+      - SUM je kovarijacijska matrica
+  - ADR
+    - k(x,x') = e**(-0.5*SUM((x-x')**2/(sigma)**2))
+  
+  - string kernel je skup raznik jezgra jedna od kojih je (eng. subsequence kernel)
+    - uzme dva stringa i pogleda koliko su slicni
+    - k(x,x') = SUM(f(pojavljivanje_substringova))
+
+  - tree and graph kernel are even more complicated
+
+
+Jezgreni strojevi
+  - fi(x) = (1, k(x,mi1), ..., k(x,mi-mti)) 
+  - preslikavanje fi ce sad koristiti kernele za preslikavanje, ne multinomnu formulu
+    - fi:R**n -> R**m, fi-jot:R**n -> R
+    - fi = (k(x,mi1), k(x,mi2), k(x,mi3), ..., k(x,mi-mti))
+      - mi je centroid kada ga nacrtas (sfera, krug ili hipersfera)
+  - to je jezgreni stroj; poopceni linearni model s gore definiranim preslikavanjem iz podatka putem mi-ja u  
+  - problem je kaj neznamo gdje postaviti mi-jeve
+    - jedna mogucnost je da ih uniformno rasprsimo po prostoru
+    - bolja mogucnost je da se koriste primjeri kao centroidi
+
+  - jezgreni stroj fi(x) = (1, k(x,x'**2), ..., k(x,x'**n)) koji koristi primjere kao centroide
+    - tada imamo puno znacajka, ali ih mozemo izbaciti L1 regularizacijom (pritegnemo na nulu)
+    - oni koje se ne pritegnu su onda "prototipi-primjeri"
+    - zovu se rijetki jezgreni strojevi
+  
+Jezgreni trik
+  - SVM je vec rijedak jezgreni stroj, pa umjesto preslikaavnja koristimo jezgreni trik (kernel)
+  
+  - ako hocemo preslikati znacajke u prostor vece dimenzije, samo zamijeni x sa fi(x) u formulama
+
+  - jezgeni trik je zamjena umnoska fi-jeva sa kernel funkcijom
+    - PAZI! Pri tome nikad necemo napraviti visedimenzijsko preslikvanje
+    - kernel funkcija ce biti crna kutija iz koje ce izaci neki broj, a uci neki vektori
+      - ona je surogat za pravu stvar -> trik nas spasava od preslikavanja u visedimenzijski prostor
+    - takav pristup zove se invezno oblikovanje    
+      Super prednosti:
+      - smanjenje racunalne slozenosti
+      - jednostavnost oblikovanja
+      - veca slozenost modela
+
+  - dualni SVM: h(x) = SUM(alpha[i]*y[i]*fi(x)T*fi(x)) + w0 = SUM(alpha[i]*y[i]*k(x,x[i])) + w0
+  
+  - uvjet za postojanje kernel funkcije koja odgovara skalarnom produktu fi-jeva:
+    - Mercerova jezgra su sve one koje zadovoljavaju taj uvjet
+
+Mercerove jezgre
+  - K je kernel matrica
+  - K je n*n
+  - K je Grammova matrica (jezgrena matrica), simetrica
+    - K mora biti pozitivno semidefinitna -> akko bilo koji vektor koji nije nula onda xT*A*x >= 0 
+      - samo je tada Grammova matrica
+
+      - to znaci da K odgovara umnosku vektora znacajki u nekom prostoru
+  - Mercerov teorem: ako je K pozitivno semidefinitna za svaki D onda jezgrene funkcije u K mozemo rastaviti na skalarni produkt dvaju vektora
+    - k(x,x') = fi(x)T*fi(x) -> k je onda Mercerova jezgra
+
+  - Hilbertov prostori su svi prostori proizvoljnih dimenzija ili skalarni produkti (Mercerova jezgre se sigurno biti preslikavna u njega)
+
+  - neke Mercerove jezgre: linearna, polinomijalna, RBF, string, ...
+    - k(x,x') = xT*x
+    - k(x,x') = (xT*x + 1)**p <- znamo da je Mercerova jer 
+    - k(x,x') = ...
+
+  - RBF jezgra (tzv. eksponencijalna jezgra)
+    - povecavanjem game primjeri postaju sve manje i mnaje slicni jedan drugome do toga da svaki primjer moze otici u svoju dimenziju -> to znaci da imamo beskonacno dimenzijski prostor 
+
+  - ako trebamo slozenije jezgre: onda gradimo druge jezgre od Mercerovih jezgra
+    - (eng. multiple kernel learning)
+
+Napomene:
+uz odabir hiperparametra C kod SVM-a trebat cemo izabrati jos neke hiperparametre koje uvode kernel jezgre (gamma npr. kod RBF jezgre)
+  - radit cemo pretrazivanje po resetci (eng. grid search) gdje su stange razne vrijednosti hiperparametara
+linearni kernel je omogucava koristenje algoritma SMO ili ako ne zelimo preslikavanje
+aproksimacija kernela se radi kada imamo malo znacajka, a jako puno primjera; 
+kernelizacija algoritama znaci da se jezgreni trikovi mogu primjeniti i kod drugih algoritama -> to se zove kernelizacija algoritma   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
