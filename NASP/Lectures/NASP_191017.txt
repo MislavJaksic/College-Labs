@@ -63,5 +63,5 @@ za opcu kulturu.
 
 Struktura Trie:
 Zuti listovi su podaci, bijeli cvorovi su kljucevi.
-Skoro pa takoder za optu kulturu.
+Skoro pa takoder za opcu kulturu.
 Moze doci na ispitu da se treba nacrtati struktura Trie koja sadrzi odredene rijeci.
