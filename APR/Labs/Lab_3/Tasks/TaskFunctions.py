@@ -6,8 +6,17 @@ def f1(x):
 def df1x0(x):
   return (400*x[0]**3 + 2*x[0] - 200*x[1] - 2)
   
+def ddf1x0x0(x):
+  return (1200*x[0]**2 + 2)
+  
 def df1x1(x):
   return (200*x[1] - 200*x[0])
+  
+def ddf1x1x1(x):
+  return 200
+  
+def ddf1x0x1(x):
+  return (-200)
   
   
   
@@ -17,8 +26,17 @@ def f2(x):
 def df2x0(x):
   return (2*x[0] - 8)
   
+def ddf2x0x0(x):
+  return (2)
+  
 def df2x1(x):
   return (8*x[1] - 16)
+  
+def ddf2x1x1(x):
+  return (8)
+  
+def ddf2x0x1(x):
+  return (0)
   
   
   
@@ -28,8 +46,17 @@ def f3(x):
 def df3x0(x):
   return (2*x[0] - 4)
   
+def ddf3x0x0(x):
+  return (2)
+  
 def df3x1(x):
   return (2*x[1] + 6)
+  
+def ddf3x1x1(x):
+  return (2)
+  
+def ddf3x0x1(x):
+  return (0)
   
   
   

@@ -1,15 +1,17 @@
 from Helpers.UnimodalGolden import GoldenSectionSearch
+from Helpers.Matrix import Matrix
 
 import math
 
-def SteepestDescent(startingPoint, GoalFunction, PartialDerivativeFunctions, useGolden=True, epsilon=((0.1)**6)):
+def NewtonRaphson(startingPoint, GoalFunction, FirstPartialDerivativeFunctions, SecondPartialDerivativeFunctions, useGolden=True, epsilon=((0.1)**6)):
   x = startingPoint
   F = GoalFunction
-  dF = PartialDerivativeFunctions
+  dF = FirstPartialDerivativeFunctions
+  ddF = SecondPartialDerivativeFunctions #[[], []] format
   
-  gradient = _GetGradientAtPoint(dF, x)
-  gradientNorm = _GetGradientNorm(gradient)
-  direction = _GetDescentDirection(gradient)
+  gradientMatrix = _GetGradientMatrixAtPoint(dF, x)
+  gradientNorm = _GetGradientNorm(gradientMatrix)
+  inverseHessianMatrix = _GetInverseHessianMatrixAtPoint(ddF, x)
   
   divergenceCounter = 0
   bestValue = 10**6 #a sentinel value
@@ -41,28 +43,34 @@ def SteepestDescent(startingPoint, GoalFunction, PartialDerivativeFunctions, use
       
   return x
     
-def _GetGradientAtPoint(dF, x):
+def _GetGradientMatrixAtPoint(dF, x):
   gradient = []
   for partialDerivativeFunction in dF:
     result = partialDerivativeFunction(x)
-    gradient.append(result)
+    gradient.append(  [result] )
     
-  return gradient
-  
-def _GetGradientNorm(gradient):
+  return Matrix(gradient)
+
+def _GetGradientNorm(gradientMatrix):
+  gradient = gradientMatrix._GetMatrixColumn(1)
   sum = 0
   for partialDerivative in gradient:
     sum += partialDerivative**2
     
   return math.sqrt(sum)
+
+def _GetInverseHessianMatrixAtPoint(ddF, x):
+  hessianValues = []
+  for derivativeList in ddF:
     
-def _GetDescentDirection(gradient):
-  descentDirection = []
-  gradientNorm = _GetGradientNorm(gradient)
-  for value in gradient:
-    descentDirection.append(value / ((-1) * gradientNorm))
+    results = []
+    for derivative in derivativeList:
+      results.append(derivative(x))
+    hessianValues.append(results)
     
-  return descentDirection
+  hessianMatrix = Matrix(hessianValues)
+  hessianMatrix.inverse()
+  return hessianMatrix
 
 def _IsGradientNormLarge(gradientNorm, epsilon):
   if epsilon < gradientNorm:
