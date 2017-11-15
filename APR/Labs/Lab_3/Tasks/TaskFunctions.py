@@ -63,3 +63,32 @@ def ddf3x0x1(x):
 def f4(x):
   return ((x[0] - 3)**2) + ((x[1])**2)
   
+  
+  
+def constraint1(x):
+  return x[1] - x[0]
+  
+def constraint2(x):
+  return 2 - x[0]
+  
+def constraint3(x):
+  return 3 - x[0] - x[1]
+  
+def constraint4(x):
+  return 3 - 1.5 * x[0] - x[1]
+ 
+def constraint5(x):
+  return x[1] - 1
+
+  
+def constraint6(x):
+  return 100 - x[0]
+  
+def constraint7(x):
+  return x[0] + 100
+  
+def constraint8(x):
+  return 100 - x[1]
+  
+def constraint9(x):
+  return x[1] + 100

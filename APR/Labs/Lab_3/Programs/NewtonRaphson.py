@@ -6,21 +6,13 @@ import math
 def NewtonRaphson(startingPoint, GoalFunction, FirstPartialDerivativeFunctions, HessianPartialDerivativeFunctions, useGolden=True, epsilon=((0.1)**6)):
   x, F, dF, ddF = _MapToMathsNames(startingPoint, GoalFunction, FirstPartialDerivativeFunctions, HessianPartialDerivativeFunctions)
   
-  gradient = _CreateGradientAtPoint(dF, x)
-  gradientNorm = _CreateGradientNorm(gradient)
-  inverseHessian = _CreateInverseHessianAtPoint(ddF, x)
-  
   divergenceCounter = 0
-  bestValue = 10**6
-  while _IsGradientNormLarge(gradientNorm, epsilon):
-  
-    if _IsDiverging(x, F, bestValue, epsilon):
-      divergenceCounter += 1
-    else:
-      bestValue = F(x._GetMatrixColumn(1))
-    if divergenceCounter > 100:
-      print "Divergence limit has been reached"
-      break
+  bestValue = F(x._GetMatrixColumn(1))
+  while (True):
+    
+    gradient = _CreateGradientAtPoint(dF, x)
+    gradientNorm = _CreateGradientNorm(gradient)
+    inverseHessian = _CreateInverseHessianAtPoint(ddF, x)
       
     KMinimum = 1
     if useGolden == True:
@@ -36,9 +28,16 @@ def NewtonRaphson(startingPoint, GoalFunction, FirstPartialDerivativeFunctions, 
       
     _PrintNewtonRaphson(gradientNorm, inverseHessian, x)
     
-    gradient = _CreateGradientAtPoint(dF, x)
-    gradientNorm = _CreateGradientNorm(gradient)
-    inverseHessian = _CreateInverseHessianAtPoint(ddF, x)
+    if _IsDiverging(x, F, bestValue, epsilon):
+      divergenceCounter += 1
+    else:
+      bestValue = F(x._GetMatrixColumn(1))
+      
+    if divergenceCounter > 100:
+      print "Divergence limit has been reached"
+      break
+    if not _IsGradientNormLarge(gradientNorm, epsilon):
+      break
       
   return x
   
