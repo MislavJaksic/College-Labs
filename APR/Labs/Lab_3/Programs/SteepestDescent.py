@@ -2,46 +2,50 @@ from Helpers.UnimodalGolden import GoldenSectionSearch
 
 import math
 
+LARGE_VALUE = 10**6
+DEFAULT_K_VALUE = 1
+DIVERGENCE_THRESHOLD = 100
+
 def SteepestDescent(startingPoint, GoalFunction, PartialDerivativeFunctions, useGolden=True, epsilon=((0.1)**6)):
+  x, F, dF = _MapToMathsNames(startingPoint, GoalFunction, PartialDerivativeFunctions)
+  
+  noImprovementCounter = 0
+  bestFValue = LARGE_VALUE
+  while (True):
+    gradient = _CalculateGradientAtPoint(dF, x)
+    gradientNorm = _CalculateVectorNorm(gradient)
+    descentDirection = _CalculateDescentDirection(gradient)
+    
+    KMin = _FindOptimumStepConstant(F, x, descentDirection, useGolden, epsilon)
+      
+    x = _MovePoint(x, KMin, descentDirection)
+      
+    #_PrintDescent(gradientNorm, descentDirection, x)
+    
+    if _IsDiverging(x, F, bestFValue, epsilon):
+      noImprovementCounter += 1
+    else:
+      bestFValue = F(x)
+      
+    if (noImprovementCounter > DIVERGENCE_THRESHOLD):
+      print "Divergence limit has been reached. Goal function hasn't improved for " + str(DIVERGENCE_THRESHOLD) + " iterations." 
+      break
+    if _IsGradientNormSmall(gradientNorm, epsilon):
+      break
+      
+  return x
+
+def _MapToMathsNames(startingPoint, GoalFunction, PartialDerivativeFunctions):
+  """startingPoint is a Python list of numbers;
+     GoalFunction is a function saved in a variable (higher order function);
+     PartialDerivativeFunctions is a list of function;"""
   x = startingPoint
   F = GoalFunction
   dF = PartialDerivativeFunctions
-  
-  gradient = _GetGradientAtPoint(dF, x)
-  gradientNorm = _GetGradientNorm(gradient)
-  direction = _GetDescentDirection(gradient)
-  
-  divergenceCounter = 0
-  bestValue = 10**6 #a sentinel value
-  while _IsGradientNormLarge(gradientNorm, epsilon):
-  
-    if _IsDiverging(x, F, bestValue, epsilon):
-      divergenceCounter += 1
-    else:
-      bestValue = F(x)
-    if divergenceCounter > 100:
-      print "Divergence limit has been reached"
-      break
-      
-    KMinimum = 0.1
-    if useGolden == True:
-      KStartingValue = (0, 1)
-      singleDimensionF = _CreateOneDimensionFunction(F, x, direction)
-      
-      KMinimum = GoldenSectionSearch(KStartingValue, singleDimensionF, epsilon, doUnimodal=True)
-      
-    for i in range(len(x)):
-      x[i] += KMinimum*direction[i]
-      
-    _PrintDescent(gradientNorm, direction, x)
+  return x, F, dF
     
-    gradient = _GetGradientAtPoint(dF, x)
-    gradientNorm = _GetGradientNorm(gradient)
-    direction = _GetDescentDirection(gradient)
-      
-  return x
-    
-def _GetGradientAtPoint(dF, x):
+def _CalculateGradientAtPoint(dF, x):
+  """Gradient is the direction in which F increases the fastest"""
   gradient = []
   for partialDerivativeFunction in dF:
     result = partialDerivativeFunction(x)
@@ -49,30 +53,64 @@ def _GetGradientAtPoint(dF, x):
     
   return gradient
   
-def _GetGradientNorm(gradient):
+def _CalculateVectorNorm(vector):
+  """Vector norm = sqrt(component**2 + componenet2**2, ...)"""
   sum = 0
-  for partialDerivative in gradient:
-    sum += partialDerivative**2
+  for component in vector:
+    sum += component**2
     
   return math.sqrt(sum)
     
-def _GetDescentDirection(gradient):
-  descentDirection = []
-  gradientNorm = _GetGradientNorm(gradient)
-  for value in gradient:
-    descentDirection.append(value / ((-1) * gradientNorm))
-    
+def _CalculateDescentDirection(gradient):
+  direction = _CalculateVectorDirection(gradient)
+  descentDirection = _ChangeSign(direction)
   return descentDirection
+  
+def _CalculateVectorDirection(vector):
+  direction = []
+  vectorNorm = _CalculateVectorNorm(vector)
+  for value in vector:
+    direction.append(value / vectorNorm)
+    
+  return direction
 
-def _IsGradientNormLarge(gradientNorm, epsilon):
-  if epsilon < gradientNorm:
+def _ChangeSign(list):
+  oppositeList = []
+  for value in list:
+    oppositeList.append((-1) * value)
+    
+  return oppositeList
+ 
+def _FindOptimumStepConstant(F, x, descentDirection, useGolden, epsilon):
+  if useGolden == True:
+    KMin = _FindKMinimum(F, x, descentDirection, epsilon)
+  else:
+    KMin = DEFAULT_K_VALUE
+    
+  return KMin
+
+def _MovePoint(x, KMin, descentDirection):
+  for i in range(len(x)):
+    x[i] = x[i] + KMin * descentDirection[i]
+    
+  return x
+  
+def _IsGradientNormSmall(gradientNorm, epsilon):
+  if epsilon > gradientNorm:
     return True
   return False
   
-def _IsDiverging(x, F, bestValue, epsilon):
-  if (bestValue - epsilon) <= F(x):
+def _IsDiverging(x, F, bestFValue, epsilon):
+  if (bestFValue - epsilon) <= F(x):
     return True
   return False
+  
+def _FindKMinimum(F, x, direction, epsilon):
+  KStartingValue = (0, 1)
+  singleDimensionF = _CreateOneDimensionFunction(F, x, direction)
+  
+  KMinimum = GoldenSectionSearch(KStartingValue, singleDimensionF, epsilon, doUnimodal=True)
+  return KMinimum
   
 def _CreateOneDimensionFunction(compositeFunction, KPoint, KVector):
   """baseF(x) = x[0]**2           + x[1]**2 is given KPoint = [1 2] and KVector = [3 4]
