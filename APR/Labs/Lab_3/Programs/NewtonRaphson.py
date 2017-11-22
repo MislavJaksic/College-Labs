@@ -3,52 +3,49 @@ from Helpers.Matrix import Matrix
 
 import math
 
-def NewtonRaphson(startingPoint, GoalFunction, FirstPartialDerivativeFunctions, HessianPartialDerivativeFunctions, useGolden=True, epsilon=((0.1)**6)):
-  x, F, dF, ddF = _MapToMathsNames(startingPoint, GoalFunction, FirstPartialDerivativeFunctions, HessianPartialDerivativeFunctions)
+DEFAULT_K_VALUE = 1
+DIVERGENCE_THRESHOLD = 100
+
+def NewtonRaphson(startingPoint, GoalFunction, PartialDerivativeFunctions, HessianPartialDerivativeFunctions, useGolden=True, epsilon=((0.1)**6)):
+  x, F, dF, ddF = _MapToMathsNames(startingPoint, GoalFunction, PartialDerivativeFunctions, HessianPartialDerivativeFunctions)
   
   divergenceCounter = 0
   bestValue = F(x._GetMatrixColumn(1))
   while (True):
     
-    gradient = _CreateGradientAtPoint(dF, x)
-    gradientNorm = _CreateGradientNorm(gradient)
-    inverseHessian = _CreateInverseHessianAtPoint(ddF, x)
+    gradient = _CalculateGradientAtPoint(dF, x)
+    gradientNorm = _CalculateVectorNorm(gradient)
+    inverseHessian = _CalculateInverseHessianAtPoint(ddF, x)
+    
+    moveDirection = _CalculateMoveDirection(inverseHessian * gradient, useGolden)
+    
+    KMin = _FindOptimumStepConstant(F, x, moveDirection, useGolden, epsilon)
+    
+    x = _MovePoint(x, KMin, moveDirection)
       
-    KMinimum = 1
-    if useGolden == True:
-      KStartingValue = (0, 1)
-      direction = _CreateDescentDirection( inverseHessian * gradient )
-      singleDimensionF = _CreateOneDimensionFunction(F, x, direction)
-      
-      KMinimum = GoldenSectionSearch(KStartingValue, singleDimensionF, epsilon, doUnimodal=True)
-      
-      x = _GoldenChangePoint(x, direction, KMinimum)
-    else:
-      x = _ChangePoint(x, inverseHessian, gradient, KMinimum)
-      
-    _PrintNewtonRaphson(gradientNorm, inverseHessian, x)
+    #_PrintNewtonRaphson(gradientNorm, inverseHessian, x)
     
     if _IsDiverging(x, F, bestValue, epsilon):
       divergenceCounter += 1
     else:
       bestValue = F(x._GetMatrixColumn(1))
       
-    if divergenceCounter > 100:
+    if divergenceCounter > DIVERGENCE_THRESHOLD:
       print "Divergence limit has been reached"
       break
     if not _IsGradientNormLarge(gradientNorm, epsilon):
       break
       
-  return x
+  return x._GetMatrixColumn(1)
   
-def _MapToMathsNames(startingPoint, GoalFunction, FirstPartialDerivativeFunctions, HessianPartialDerivativeFunctions):
+def _MapToMathsNames(startingPoint, GoalFunction, PartialDerivativeFunctions, HessianPartialDerivativeFunctions):
   """startingPoint is a Python list of numbers;
      GoalFunction is a function saved in a variable (higher order function);
-     FirstPartialDerivativeFunctions is a Python list of functions;
+     PartialDerivativeFunctions is a Python list of functions;
      HessianPartialDerivativeFunctions is a Python list of lists of functions;"""
   x = _CreateColumnMatrix(startingPoint)
   F = GoalFunction
-  dF = FirstPartialDerivativeFunctions
+  dF = PartialDerivativeFunctions
   ddF = HessianPartialDerivativeFunctions
   return x, F, dF, ddF
   
@@ -59,7 +56,7 @@ def _CreateColumnMatrix(list):
     
   return Matrix(columnMatrix)
     
-def _CreateGradientAtPoint(dF, x):
+def _CalculateGradientAtPoint(dF, x):
   gradient = []
   for partialDerivativeFunction in dF:
     result = partialDerivativeFunction(x._GetMatrixColumn(1))
@@ -67,14 +64,14 @@ def _CreateGradientAtPoint(dF, x):
     
   return Matrix(gradient)
 
-def _CreateGradientNorm(gradient):
+def _CalculateVectorNorm(vector):
   sum = 0
-  for partialDerivative in gradient._GetMatrixColumn(1):
-    sum += partialDerivative**2
+  for compoenent in vector._GetMatrixColumn(1):
+    sum += compoenent**2
     
   return math.sqrt(sum)
 
-def _CreateInverseHessianAtPoint(ddF, x):
+def _CalculateInverseHessianAtPoint(ddF, x):
   hessianValues = []
   for derivativeList in ddF:
     
@@ -87,24 +84,31 @@ def _CreateInverseHessianAtPoint(ddF, x):
   hessianMatrix.inverse()
   return hessianMatrix
 
-def _IsGradientNormLarge(gradientNorm, epsilon):
-  if epsilon < gradientNorm:
-    return True
-  return False
-
-def _IsDiverging(x, F, bestValue, epsilon):
-  x = x._GetMatrixColumn(1)
-  if (bestValue - epsilon) <= F(x):
-    return True
-  return False
+def _CalculateMoveDirection(gradient, useGolden):
+  if useGolden == True:
+    descentDirection = []
+    gradientNorm = _CalculateVectorNorm(gradient)
+    for value in gradient._GetMatrixColumn(1):
+      descentDirection.append( [value / gradientNorm] )
+      
+    return Matrix(descentDirection)
+  else:
+    return gradient
   
-def _CreateDescentDirection(gradient):
-  descentDirection = []
-  gradientNorm = _CreateGradientNorm(gradient)
-  for value in gradient._GetMatrixColumn(1):
-    descentDirection.append( [value / ((-1) * gradientNorm)] )
+def _FindOptimumStepConstant(F, x, moveDirection, useGolden, epsilon):
+  if useGolden == True:
+    KMin = _FindKMinimum(F, x, moveDirection, epsilon)
+  else:
+    KMin = DEFAULT_K_VALUE
     
-  return Matrix(descentDirection)
+  return KMin
+  
+def _FindKMinimum(F, x, moveDirection, epsilon):
+  KStartingValue = (0, 1)
+  singleDimensionF = _CreateOneDimensionFunction(F, x, moveDirection)
+  
+  KMinimum = GoldenSectionSearch(KStartingValue, singleDimensionF, epsilon, doUnimodal=True)
+  return KMinimum
   
 def _CreateOneDimensionFunction(compositeFunction, KPoint, KVector):
   """baseF(x) = x[0]**2           + x[1]**2 is given KPoint = [1 2] and KVector = [3 4]
@@ -122,16 +126,22 @@ def _CreateOneDimensionFunction(compositeFunction, KPoint, KVector):
 def _KFunction(a, b):
   return a + b 
   
-def _GoldenChangePoint(x, direction, KMinimum):
-  distance = direction.scale(KMinimum)
-    
-  return (x + distance)
+def _IsGradientNormLarge(gradientNorm, epsilon):
+  if epsilon < gradientNorm:
+    return True
+  return False
 
-def _ChangePoint(x, inverseHessian, gradient, KMinimum):
-  distance = inverseHessian * gradient
-  distance = distance.scale(KMinimum)
-    
-  return (x - distance)
+def _IsDiverging(x, F, bestValue, epsilon):
+  x = x._GetMatrixColumn(1)
+  if (bestValue - epsilon) <= F(x):
+    return True
+  return False
+  
+def _MovePoint(x, KMin, direction):
+  distance = direction.scale(KMin)
+  if KMin == DEFAULT_K_VALUE:
+    return (x - distance)
+  return (x + distance)
 
 def _PrintNewtonRaphson(gradientNorm, inverseHessianMatrix, x):
   print "-.-.-.-.-.-.-.-.-.-"

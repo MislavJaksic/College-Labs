@@ -11,16 +11,17 @@ def SteepestDescent(startingPoint, GoalFunction, PartialDerivativeFunctions, use
   
   noImprovementCounter = 0
   bestFValue = LARGE_VALUE
+  print "direction     x        gradientNorm Kmin"
   while (True):
     gradient = _CalculateGradientAtPoint(dF, x)
     gradientNorm = _CalculateVectorNorm(gradient)
     descentDirection = _CalculateDescentDirection(gradient)
-    
+
     KMin = _FindOptimumStepConstant(F, x, descentDirection, useGolden, epsilon)
+    
+    _PrintDescent(gradientNorm, descentDirection, x, KMin)
       
     x = _MovePoint(x, KMin, descentDirection)
-      
-    #_PrintDescent(gradientNorm, descentDirection, x)
     
     if _IsDiverging(x, F, bestFValue, epsilon):
       noImprovementCounter += 1
@@ -105,9 +106,9 @@ def _IsDiverging(x, F, bestFValue, epsilon):
     return True
   return False
   
-def _FindKMinimum(F, x, direction, epsilon):
+def _FindKMinimum(F, x, descentDirection, epsilon):
   KStartingValue = (0, 1)
-  singleDimensionF = _CreateOneDimensionFunction(F, x, direction)
+  singleDimensionF = _CreateOneDimensionFunction(F, x, descentDirection)
   
   KMinimum = GoldenSectionSearch(KStartingValue, singleDimensionF, epsilon, doUnimodal=True)
   return KMinimum
@@ -128,12 +129,11 @@ def _CreateOneDimensionFunction(compositeFunction, KPoint, KVector):
 def _KFunction(a, b):
   return a + b 
   
-def _PrintDescent(gradientNorm, direction, x):
-  print "-.-.-.-.-.-.-.-.-.-"
-  print "gradientNorm:",
-  print gradientNorm
-  print "direction:",
-  print direction
-  print "x:",
-  print x
-  
+def _PrintDescent(gradientNorm, direction, x, KMin):
+  for value in direction:
+    print "{:+.2f} ".format(value),
+  for value in x:
+    print "{:+.2f} ".format(value),
+    
+  print "{:+.2f} ".format(gradientNorm),
+  print "{:+.2f} ".format(KMin)

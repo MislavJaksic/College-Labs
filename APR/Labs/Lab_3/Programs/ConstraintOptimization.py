@@ -3,6 +3,7 @@ from Helpers.SimplexNelderMead import SimplexNelderMead
 
 import math
 
+DIVERGENCE_THRESHOLD = 100
 LARGE_VALUE = 10**6
 
 def ConstraintOptimization(startingPoint, GoalFunction, Inequalities, Equalities, t=1, epsilon=(0.1)**6):
@@ -13,20 +14,21 @@ def ConstraintOptimization(startingPoint, GoalFunction, Inequalities, Equalities
   #print x
   
   divergenceCounter = 0
-  bestValue = F(x)
+  bestValue = LARGE_VALUE
   while (True):
     
     replacementF = _CreateReplacementFunction(F, gs, hs, t)
     newx = SimplexNelderMead(x, replacementF)
     
-    #print newx
+    print newx,
+    print replacementF(newx)
     
     if _IsDiverging(x, F, bestValue, epsilon):
       divergenceCounter += 1
     else:
       bestValue = F(x)
       
-    if divergenceCounter > 100:
+    if divergenceCounter > DIVERGENCE_THRESHOLD:
       print "Divergence limit has been reached"
       break
     if not _IsPointMoved(x, newx, epsilon):
@@ -98,7 +100,7 @@ def _CreateReplacementFunction(F, gs, hs, t):
   return interdictor
   
 def _IsOutsideConstraint(x):
-  if (x < 0):
+  if (x <= 0):
     return True
   return False
   

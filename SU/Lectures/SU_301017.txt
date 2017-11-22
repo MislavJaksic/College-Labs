@@ -43,7 +43,7 @@ Kvadratno programiranje
 
   - metode kazne, metode unutarnje tocke, koordinatni spust, Langregeova dualnost, SMO
     - 1) u dualnoj formulaciji mozemo primjeniti SMO algoritam
-      2) u dualnoj formulaciji mozemo definirati porlbme pomocu potpunih vektora
+      2) u dualnoj formulaciji mozemo definirati probleme pomocu potpunih vektora
       3) u dualnoj formulaciji mozemo koristiti jezgreni trik
 
 Lagrangeova dulanost

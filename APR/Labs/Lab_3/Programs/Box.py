@@ -4,6 +4,9 @@ from copy import copy
 from math import sqrt
 from random import random
 
+DIVERGENCE_THRESHOLD = 100
+LARGE_VALUE = 10**6
+
 def Box(startingPoint, GoalFunction, Inequalities, Interval, alpha=1.3, epsilon=(0.1)**6):
   x, F, gs, lowBarrier, highBarrier = _MapToMathsNames(startingPoint, GoalFunction, Inequalities, Interval)
   
@@ -11,6 +14,8 @@ def Box(startingPoint, GoalFunction, Inequalities, Interval, alpha=1.3, epsilon=
   
   box, centroid = _CreateBoxAndCentroid(x, gs, lowBarrier, highBarrier)
   
+  noImprovementCounter = 0
+  bestFValue = LARGE_VALUE
   while not _IsBoxOverMin(box, centroid, F, epsilon):
     firstWorstIndex, secondWorstIndex = _GetFirstAndSecondWorstBoxIndexes(box, F)
     
@@ -31,7 +36,15 @@ def Box(startingPoint, GoalFunction, Inequalities, Interval, alpha=1.3, epsilon=
         xRefl[coordinate] = 0.5 * (xRefl[coordinate] + centroid[coordinate])
     
     box[firstWorstIndex] = xRefl
-    print xRefl
+    
+    if _IsDiverging(x, F, bestFValue, epsilon):
+      noImprovementCounter += 1
+    else:
+      bestFValue = F(x)
+      
+    if (noImprovementCounter > DIVERGENCE_THRESHOLD):
+      print "Divergence limit has been reached. Goal function hasn't improved for " + str(DIVERGENCE_THRESHOLD) + " iterations." 
+      break
       
   return centroid
       
@@ -132,6 +145,8 @@ def _IsBoxOverMin(box, centroid, F, epsilon):
     quadraticSum += (F(x) - centroidDistance)**2
   quadraticSum = quadraticSum / float(len(box))
   
+  print "error: ",
+  print sqrt(quadraticSum)
   if sqrt(quadraticSum) <= epsilon:
     return True
   return False
@@ -168,6 +183,11 @@ def _ReflectWorseOverCentroid(box, firstWorstIndex, centroid, alpha):
   
 def _IsPointBetterThenAnother(onePoint, twoPoint, F):
   if F(onePoint) < F(twoPoint):
+    return True
+  return False
+  
+def _IsDiverging(x, F, bestFValue, epsilon):
+  if (bestFValue - epsilon) <= F(x):
     return True
   return False
     

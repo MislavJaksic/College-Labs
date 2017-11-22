@@ -14,7 +14,7 @@ def SimplexNelderMead(startingPoint, GoalFunction, alpha=1, beta=0.5, gamma=2, s
       steps.append(1)
   
   simplex = _CreateSimplex(x0, steps)
-  print "centroid     F(centroid)"
+  #print "centroid     F(centroid)"
   centroid = simplex[0] #for the purpose of checking the while condition
   
   while not _IsSimplexOverMin(simplex, centroid, F, epsilon):
@@ -48,7 +48,7 @@ def SimplexNelderMead(startingPoint, GoalFunction, alpha=1, beta=0.5, gamma=2, s
       else:
         simplex[worstIndex] = xRefl
         
-  return simplex[bestIndex]
+  return centroid
       
 def _CreateSimplex(x0, steps):
   """If x0=[1,2,3] and steps=[4,5,6]:
