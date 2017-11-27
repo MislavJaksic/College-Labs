@@ -49,7 +49,7 @@ Trebamo znati svojstva kvadratnih funkcija, na cemu se temelji Powell i kako Pow
 v = (-1)*nablaF / ||nablaF|| je smjer najbrzeg spusta
   Idi u negativnom smjeru gradijenta.
 
-Globalno geldano je losa metoda: ako je funkcija kvadratna, onda kad dode do minimuma pravca, on ce upravo biti okomit na smjer kretanja. To ce kao posljedicu imati da cemo ici cik cak.
+Globalno gledano je losa metoda: ako je funkcija kvadratna, onda kad dode do minimuma pravca, on ce upravo biti okomit na smjer kretanja. To ce kao posljedicu imati da cemo ici cik cak.
                                  osjetljivost na odredivanje minimuma na pravcu (ostar rub ili spica).
                   
 

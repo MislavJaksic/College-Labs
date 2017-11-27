@@ -23,17 +23,18 @@ def TaskTwo():
          [ddf1x0x1, ddf1x1x1],
         ]
   
-  SolveWithSteepestDescent(x0, F, dF, True)
+  #SolveWithSteepestDescent(x0, F, dF, True)
   #SolveWithNewtonRaphson(x0, F, dF, ddF, True)
   
-  x0 = [0.1, 0.3]
+  #x0 = [0.1, 0.3]
+  x0 = [0, 0]
   F = f2
   dF = [df2x0, df2x1]
   ddF = [[ddf2x0x0, ddf2x0x1],
          [ddf2x0x1, ddf2x1x1],
         ]
   
-  #SolveWithSteepestDescent(x0, F, dF, True)
+  SolveWithSteepestDescent(x0, F, dF, True)
   #SolveWithNewtonRaphson(x0, F, dF, ddF, True)
   
 def TaskThree():
@@ -154,7 +155,7 @@ def CountInvocations(function):
   return interdictor
   
 #TaskOne()
-#TaskTwo()
+TaskTwo()
 #TaskThree()
 #TaskFour()
-TaskFive()
+#TaskFive()

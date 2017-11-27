@@ -46,7 +46,7 @@ Kvadratno programiranje
       2) u dualnoj formulaciji mozemo definirati probleme pomocu potpunih vektora
       3) u dualnoj formulaciji mozemo koristiti jezgreni trik
 
-Lagrangeova dulanost
+Lagrangeova dualnost
   - ogranicenja ugradi u ciljnu funkciju, pa se samo njoj bavi
 
   - pocetni problem: kanonski oblik kvadratnog programiranja
