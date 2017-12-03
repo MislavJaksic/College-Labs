@@ -34,7 +34,7 @@ def plot_2d_clf_problem(X, y, h=None):
         plt.contourf(xx, yy, Z, cmap=plt.cm.Pastel1)
 
     # Plot the dataset
-    plt.scatter(X[:,0],X[:,1], c=y, cmap=plt.cm.tab20b, marker='o', s=50);
+    plt.scatter(X[:,0],X[:,1], c=y, cmap=plt.cm.Paired, marker='o', s=50);
 
 def plot_2d_svc_problem(X, y, svc=None):
     '''
