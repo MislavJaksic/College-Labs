@@ -7,7 +7,7 @@ def f1(x):
 def f3(x):
   sum = 0
   for i in range(len(x)):
-    sum += (x[i] - i)**2
+    sum += (x[i] - i - 1)**2
   return sum
   
 def f6(x):
