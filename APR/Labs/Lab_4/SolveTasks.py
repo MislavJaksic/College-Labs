@@ -1,19 +1,65 @@
-from Programs.Box import Box
-from Programs.ConstraintOptimization import ConstraintOptimization
-from Programs.NewtonRaphson import NewtonRaphson
-from Programs.SteepestDescent import SteepestDescent
+from Programs.GeneticAlgorithm import GeneticAlgorithm
 
 from Tasks.TaskFunctions import *
 
 from copy import copy
 
 def TaskOne():
-  x0 = [0, 0]
-  F = f3
-  dF = [df3x0, df3x1]
+  #f1, dim=2, best_values: pop=100, mut=0.01
   
-  SolveWithSteepestDescent(x0, F, dF, True)
-  SolveWithSteepestDescent(x0, F, dF, False)
+  
+  #f3, dim=5, best_values: pop=4, mut=0.01
+  iterations = 11
+  desired_goal_value = (0.1)**6
+  results = []
+  for i in range(iterations):
+    GA = GeneticAlgorithm(goal_function=f3, dimensions=5, problem_bounds=(-50,150),
+                          fitness_bounds=(0,100), population_size=4, binary_display=False, precision=8, p_of_mutation=0.01, p_of_crossover=0.01,
+                          max_evaluations=10000, reach_goal_value=(0.1)**6)
+    point, goal_value = GA.SolveProblem()
+    results.append(goal_value)
+
+  results.sort()
+  count = 0
+  for result in results:
+    if result < desired_goal_value:
+      count += 1
+  print "reached desired goal value:",
+  print count
+  print "median_goal_value:",
+  print results[iterations/2]
+  
+def ParamOpti():
+  desired_goal_value = (0.1)**6
+  iterations = 11
+  population_values = [20,50,100] #[4,10,20,50,100]
+  mutation_values = [0.01,0.05,0.1,0.2,0.5] #[0.01,0.05,0.1,0.2,0.5]
+  for pop_value in population_values:
+    for mut_value in mutation_values:
+      results = []
+      for i in range(iterations):
+        GA = GeneticAlgorithm(goal_function=f6, dimensions=2, problem_bounds=(-50,150),
+                              fitness_bounds=(0,100), population_size=pop_value, binary_display=False, precision=8, p_of_mutation=mut_value, p_of_crossover=0.01,
+                              max_evaluations=1000, reach_goal_value=(0.1)**6)
+        point, goal_value = GA.SolveProblem()
+        results.append(goal_value)
+    
+    
+      results.sort()
+      count = 0
+      for result in results:
+        if result < desired_goal_value:
+          count += 1
+      print "reached desired goal value:",
+      print count
+      print "median_goal_value:",
+      print results[iterations/2]
+      print "min point:",
+      print point
+      print "population_value:",
+      print pop_value
+      print "mutation_value:",
+      print mut_value
   
 def TaskTwo():
   x0 = [-1.9, 2]
@@ -154,8 +200,9 @@ def CountInvocations(function):
   
   return interdictor
   
-#TaskOne()
-TaskTwo()
+#ParamOpti()
+TaskOne()
+#TaskTwo()
 #TaskThree()
 #TaskFour()
 #TaskFive()

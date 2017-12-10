@@ -5,16 +5,25 @@ from Programs.Helpers.Matrix import Matrix
 import pytest
 from copy import copy
 
-def test_GeneticAlgorithm_Binary_f3():
-  GeneticAlgorithm(goal_function=f3, dimensions=2, problem_bounds=(-50,150),
-                   fitness_bounds=(0,100), population_size=100, binary_display=True, precision=4, p_of_mutation=0.01, p_of_crossover=0.01,
-                   max_generations=1000, max_evaluations=1000, reach_goal_value=0, no_improvement_limit=1000, time_limit=1000)
+def test_GeneticAlgorithm_Binary_MaxEval_f3():
+  algo = GeneticAlgorithm(goal_function=f3, dimensions=2, problem_bounds=(-50,150),
+                          fitness_bounds=(0,100), population_size=100, binary_display=True, precision=4, p_of_mutation=0.01, p_of_crossover=0.01,
+                          max_evaluations=1000)
+  result = algo.SolveProblem()
   assert True #the result cannot be interpreted
   
-def test_GeneticAlgorithm_FloatingPoint_f3():
-  GeneticAlgorithm(goal_function=f3, dimensions=2, problem_bounds=(-50,150),
-                   fitness_bounds=(0,100), population_size=100, binary_display=False, precision=4, p_of_mutation=0.01, p_of_crossover=0.01,
-                   max_generations=1000, max_evaluations=1000, reach_goal_value=0, no_improvement_limit=1000, time_limit=1000)
+def test_GeneticAlgorithm_FloatingPoint_MaxGen_f3():
+  algo = GeneticAlgorithm(goal_function=f3, dimensions=5, problem_bounds=(-50,150),
+                          fitness_bounds=(0,100), population_size=100, binary_display=False, precision=0, p_of_mutation=0.01, p_of_crossover=0.01,
+                          max_generations=1000)
+  result = algo.SolveProblem()
+  assert True #the result cannot be interpreted
+  
+def test_GeneticAlgorithm_FloatingPoint_GoalValue_f3():
+  algo = GeneticAlgorithm(goal_function=f3, dimensions=2, problem_bounds=(-50,150),
+                          fitness_bounds=(0,100), population_size=100, binary_display=False, precision=0, p_of_mutation=0.01, p_of_crossover=0.01,
+                          reach_goal_value=(0.1)**3)
+  result = algo.SolveProblem()
   assert True #the result cannot be interpreted
 
 
@@ -32,11 +41,37 @@ def SimpleBinaryPopulation():
   population = BinaryPopulation(goal_function, dimensions, min_x, max_x, min_fitness, max_fitness, p_of_mutation, population_size, precision)
   return population
   
+def test_BinaryPopulation_InitializeBestWorstCreatures(SimpleBinaryPopulation):
+  assert SimpleBinaryPopulation.worst_goal_creature != False
+  assert SimpleBinaryPopulation.best_goal_creature != False
+  assert SimpleBinaryPopulation.worst_fitness_creature != False
+  assert SimpleBinaryPopulation.best_fitness_creature != False
+  
 def test_BinaryPopulation_EvaluatePopulation(SimpleBinaryPopulation):
   for creature in SimpleBinaryPopulation.population:
     assert creature.goal_value != False
     assert creature.fitness_value >= 0
+
+def test_BinaryPopulation_SetGoalForAllCreatures(SimpleBinaryPopulation):
+  SimpleBinaryPopulation.SetGoalForAllCreatures()
+  for creature in SimpleBinaryPopulation.population:
+    assert creature.goal_value > 0
+
+def test_BinaryPopulation_SetFitnessForAllCreatures(SimpleBinaryPopulation):
+  SimpleBinaryPopulation.SetFitnessForAllCreatures()
+  for creature in SimpleBinaryPopulation.population:
+    assert creature.goal_value >= 0
   
+def test_BinaryPopulation_SetBestWorstGoalForAllCreatures(SimpleBinaryPopulation):
+  SimpleBinaryPopulation.SetBestWorstGoalForAllCreatures()
+  assert SimpleBinaryPopulation.worst_goal_creature != False
+  assert SimpleBinaryPopulation.best_goal_creature != False
+  
+def test_BinaryPopulation_SetBestWorstFitnessForAllCreatures(SimpleBinaryPopulation):
+  SimpleBinaryPopulation.SetBestWorstFitnessForAllCreatures()
+  assert SimpleBinaryPopulation.worst_fitness_creature != False
+  assert SimpleBinaryPopulation.best_fitness_creature != False
+    
 def test_BinaryPopulation_SetBestWorstGoalCreature(SimpleBinaryPopulation):
   for creature in SimpleBinaryPopulation.population:
     assert creature.goal_value >= SimpleBinaryPopulation.best_goal_creature.goal_value
@@ -50,6 +85,7 @@ def test_BinaryPopulation_SetBestWorstFitnessCreature(SimpleBinaryPopulation):
   
 def test_BinaryPopulation_KTournamentCreatureSelection(SimpleBinaryPopulation):
   worst_creature, other_creatures = SimpleBinaryPopulation.KTournamentCreatureSelection(3)
+  assert len(other_creatures) == 2
   for creature in other_creatures:
     assert worst_creature.fitness_value < creature.fitness_value
   
@@ -71,20 +107,9 @@ def test_BinaryPopulation_RandomlyChooseMutation(SimpleBinaryPopulation):
   
 def test_BinaryPopulation_ReplaceCreatureWithAnother(SimpleBinaryPopulation):
   group_of_chromosomes = Matrix([[1,0,0,0,1,0,1,0,1,1,0,1,0,1,0,1,0,0,1,0],
-                                 [1,0,0,0,1,0,1,0,1,1,0,1,0,1,0,1,0,0,1,0]])
+                                 [1,0,1,0,1,0,1,0,1,1,0,1,0,1,0,0,0,0,1,0]])
   SimpleBinaryPopulation.ReplaceCreatureWithAnother(SimpleBinaryPopulation.worst_goal_creature, group_of_chromosomes)
   assert group_of_chromosomes != SimpleBinaryPopulation.worst_goal_creature.group_of_chromosomes
-  
-def test_BinaryPopulation_UpdateBestWorstGoalCreature(SimpleBinaryPopulation):
-  group_of_chromosomes = Matrix([[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]])
-  SimpleBinaryPopulation.worst_goal_creature.group_of_chromosomes = group_of_chromosomes
-  goal_value = SimpleBinaryPopulation.worst_goal_creature.SetGoalValue()
-  SimpleBinaryPopulation.UpdateBestWorstGoalCreature()
-  assert SimpleBinaryPopulation.worst_goal_creature.goal_value > goal_value #may fail in some extremely unlucky case
-  
-def test_BinaryPopulation_UpdateBestWorstFitnessCreatureAndFitnesses(SimpleBinaryPopulation):
-  assert SimpleBinaryPopulation.UpdateBestWorstFitnessCreatureAndFitnesses() == None #can't be bothered...
   
 
 def test_BinaryPopulation_CalculateChromosomeLength(SimpleBinaryPopulation):
@@ -93,8 +118,12 @@ def test_BinaryPopulation_CalculateChromosomeLength(SimpleBinaryPopulation):
   precision = 4
   assert SimpleBinaryPopulation.CalculateChromosomeLength(min_x, max_x, precision) == 20  
   
+def test_BinaryPopulation_CalculateCreatureMutationProbability(SimpleBinaryPopulation):
+  assert SimpleBinaryPopulation.CalculateCreatureMutationProbability(0.01) > 0.180
+  assert SimpleBinaryPopulation.CalculateCreatureMutationProbability(0.01) < 0.183
+  
 def test_BinaryPopulation_CalculateHowManyBitsToMutate(SimpleBinaryPopulation):
-  assert SimpleBinaryPopulation.CalculateHowManyBitsToMutate(0.01) == 4
+  assert SimpleBinaryPopulation.CalculateHowManyBitsToMutate() == 4
   
   
 def test_BinaryPopulation_KPointCrossover(SimpleBinaryPopulation):
@@ -133,7 +162,8 @@ def test_BinaryPopulation_UniformMutation(SimpleBinaryPopulation):
   
 
 def test_BinaryPopulation_GetNextGeneration(SimpleBinaryPopulation):
-  SimpleBinaryPopulation.GetNextGeneration()
+  for i in range (1000):
+    SimpleBinaryPopulation.GetNextGeneration()
   assert True #one of them is different
   
 
@@ -180,7 +210,8 @@ def test_FloatingPointPopulation_GaussianMutation(SimpleFloatingPointPopulation)
   
   
 def test_FloatingPointPopulation_GetNextGeneration(SimpleFloatingPointPopulation):
-  SimpleFloatingPointPopulation.GetNextGeneration()
+  for i in range (1000):
+    SimpleFloatingPointPopulation.GetNextGeneration()
   assert True #one of them is different
   
 
@@ -235,10 +266,10 @@ def test_BinaryCreature_ConvertBinaryChromosomeToBinaryValue(SimpleBinaryCreatur
   binary_value = SimpleBinaryCreature.ConvertBinaryChromosomeToBinaryValue([1,0,0,0,1,0,1,0,1,1,0,1,0,1,0,1,0,0,1,0])
   assert binary_value == 568658
   
-def test_BinaryCreature_CalculatePoint(SimpleBinaryCreature):
+def test_BinaryCreature_SetPoint(SimpleBinaryCreature):
   point = SimpleBinaryCreature.SetPoint()
   assert len(point) == 2
-  assert point[1] < 50
+  assert (point[1] < 50 and  -50 < point[1])
   
 
 @pytest.fixture(scope='function')
@@ -260,10 +291,10 @@ def test_FloatingPointCreature_CreateChromosome(SimpleFloatingPointCreature):
 def test_FloatingPointCreature_CreateFloatingPointChromosome(SimpleFloatingPointCreature):
   assert SimpleFloatingPointCreature.CreateFloatingPointChromosome(4.27487) == [4.27487]
   
-def test_FloatingPointCreature_CalculatePoint(SimpleFloatingPointCreature):
+def test_FloatingPointCreature_SetPoint(SimpleFloatingPointCreature):
   point = SimpleFloatingPointCreature.SetPoint()
   assert len(point) == 2
-  assert point[1] < 50
+  assert (point[1] < 50 and  -50 < point[1])
   
 
 #  assert (1.9 < result[0]) and (result[0] < 2.1) and (1.9 < result[1]) and (result[1] < 2.1)
