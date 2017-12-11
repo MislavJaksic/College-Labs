@@ -33,9 +33,11 @@ class GeneticAlgorithm(object):
     self.p_of_crossover = p_of_crossover #== not used due to tournament selection
     
     self.max_generations = max_generations #suggested value is 1000
-    self.max_evaluations = max_evaluations #suggested value is 1000
+    self.max_evaluations = max_evaluations #suggested value is 5000
     self.reach_goal_value = reach_goal_value #suggested value is (0.1)**6
-    self.no_improvement_limit = no_improvement_limit #suggested value is 100
+    self.no_improvement_limit = no_improvement_limit #suggested value is 500
+    self.no_improvement_counter = 0
+    self.last_best_goal = False
     self.time_limit = time_limit #suggested value is 10000
   
   def CountInvocations(self, function):
@@ -56,6 +58,7 @@ class GeneticAlgorithm(object):
       
       #self.IsPrintPopulationData(population) #change during param optimization
     
+    #print "-.-.-.-.-.-.-.-.-.-.-"
     best_point = population.best_goal_creature.point
     best_goal = population.best_goal_creature.goal_value
     return best_point, best_goal
@@ -70,6 +73,7 @@ class GeneticAlgorithm(object):
                                            self.min_fitness, self.max_fitness, self.p_of_mutation,
                                            self.population_size)
                                            
+    self.last_best_goal = population.best_goal_creature.goal_value
     return population
   
   def StoppingConditionHasNotBeenReached(self, population):
@@ -88,9 +92,20 @@ class GeneticAlgorithm(object):
       if self.reach_goal_value > population.best_goal_creature.goal_value:
         return False
         
+    if (population.worst_goal_creature.goal_value == population.best_goal_creature.goal_value):
+      print "Points are too close to each other! Stopped to prevent division by zero."
+      return False
+    
+    if self.last_best_goal > population.best_goal_creature.goal_value:
+      self.last_best_goal = population.best_goal_creature.goal_value
+      self.no_improvement_counter = 0
+    else:
+      self.no_improvement_counter += 1
+          
     if self.no_improvement_limit:
-      if self.no_improvement_limit:
-        pass
+      if self.no_improvement_limit < self.no_improvement_counter:
+        print "Stopping due to making no progress for " + str(self.no_improvement_limit) + " generations."
+        return False
         
     if self.time_limit:
       if self.time_limit:
@@ -99,7 +114,7 @@ class GeneticAlgorithm(object):
     return True
   
   def IsPrintPopulationData(self, population):
-    if (population.generation % 100 == 0):
+    if (population.generation % 500 == 0):
       self.PrintPopulationData(population)
   
   def PrintPopulationData(self, population):
@@ -254,13 +269,19 @@ class Population(object):
     creature.SetGoalValue()
     
     self.SetBestWorstGoalForAllCreatures()
-    self.SetFitnessForAllCreatures()
-    self.SetBestWorstFitnessForAllCreatures()
+    if not self.IsBestWorstTheSame():
+      self.SetFitnessForAllCreatures()
+      self.SetBestWorstFitnessForAllCreatures()
   
   def IsDuplicate(self, new_group_of_chromosomes):
     for creature in self.population:
       if (creature.group_of_chromosomes == new_group_of_chromosomes):
         return True
+    return False
+  
+  def IsBestWorstTheSame(self):
+    if (self.worst_goal_creature.goal_value == self.best_goal_creature.goal_value):
+      return True
     return False
   
 
@@ -516,13 +537,6 @@ class FloatingPointPopulation(Population):
     if (random.randint(1, int(1 / self.p_of_mutation)) == 1):
       return True
     return False
-    
-  # def IsWorstBestSimilar(self):
-    # if ((self.worst_goal_creature.goal_value - self.best_goal_creature.goal_value) < (0.1)**8):
-      # return True
-    # return False
-    
-  
     
   
 class Creature(object):

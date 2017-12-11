@@ -25,6 +25,13 @@ def test_GeneticAlgorithm_FloatingPoint_GoalValue_f3():
                           reach_goal_value=(0.1)**3)
   result = algo.SolveProblem()
   assert True #the result cannot be interpreted
+  
+def test_GeneticAlgorithm_FloatingPoint_ConvergedOnAPoint_f3():
+  algo = GeneticAlgorithm(goal_function=f3, dimensions=2, problem_bounds=(-50,150),
+                          fitness_bounds=(0,100), population_size=100, binary_display=False, precision=0, p_of_mutation=0.01, p_of_crossover=0.01,
+                          no_improvement_limit=50)
+  result = algo.SolveProblem()
+  assert True #the result cannot be interpreted
 
 
 @pytest.fixture(scope='function')

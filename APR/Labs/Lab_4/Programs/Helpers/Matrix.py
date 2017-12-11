@@ -106,14 +106,14 @@ class Matrix(object):
   
   def __getitem__(self, key):
     """A[(row, column)] returns an element"""
-    if not self._IsValidKey(key):
-      raise TypeError
-    if not self._IsKeyInRange(key):
-      raise IndexError
+    # if not self._IsValidKey(key):
+      # raise TypeError
+    # if not self._IsKeyInRange(key):
+      # raise IndexError
       
-    i, j = self._GetZeroIndexes(key)
+    #i, j = self._GetZeroIndexes(key)
     
-    element = self._matrix[i][j]
+    element = self._matrix[key[0] - 1][key[1] - 1] # [key[0] - 1][key[1] - 1]  [i][j]
     return element
     
   def _IsKeyInRange(self, key):
@@ -129,13 +129,13 @@ class Matrix(object):
   
   def __setitem__(self, key, value):
     """A[(row, column)] = value"""
-    if not self._IsValidKey(key):
-      raise TypeError
-    if not self._IsValueNumeric(value):
-      raise TypeError 
+    # if not self._IsValidKey(key):
+      # raise TypeError
+    # if not self._IsValueNumeric(value):
+      # raise TypeError 
       
-    i, j = self._GetZeroIndexes(key)
-    self._matrix[i][j] = value
+    #i, j = self._GetZeroIndexes(key)
+    self._matrix[key[0] - 1][key[1] - 1] = value
     
   def _IsValidKey(self, key):
     """Valid key -> (row, columns) where row and columns are integers"""
@@ -265,8 +265,10 @@ class Matrix(object):
     
   def _IsFloatsEqual(self, floatOne, floatTwo):
     """If f1 close to f2 then expand f2 by adding and subtracting a margin of error"""
-    if ((floatTwo-ERROR) <= floatOne) and (floatOne <= (floatTwo+ERROR)):
-      return True
+    if ((floatTwo-ERROR) <= floatOne):
+      if (floatOne <= (floatTwo+ERROR)):
+        return True
+      return False
     return False
     
   def _IsMatricesSameDimension(self, other):
