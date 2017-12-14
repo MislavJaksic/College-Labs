@@ -1,0 +1,71 @@
+Neparametarske metode
+Kada imamo dovoljno primjera i nezelimo napraviti pretpostavke o njima.
+
+Parametarski modeli: kada je model definiran do na neke parametre.
+  - karakteristike - broj parametara ne ovisi o broju primjera
+                   - pretpostavlja se da se podaci pokoravaju nekom idealnom modelu (distribuciji)
+                   - globalni, u smislu da je model definiran na cijeloj domeni realnih brojeva od -inf do +inf i da mala promjena u vrijednosti znacajke primjera utjece na izgled cijelog modela
+
+Neparametarski modeli: kada model nije eksplicitno definiran.
+  - karakteristike - ne pretpostavljaju distribuciju podataka
+                   - modeli rade lokalne aproksimacije hipoteze (slicnost primjera sa postojecim primjerima)
+                     - lokalno susjedstvo se napravi za neki primjer i na temelju njega se odreduje njegova vrijednost
+                     - podaci kojima se procjenjuje primjer se spreme i njima se kasnije procjenjuje vrijednost primjera
+                   - broj parametara raste sa pocevanjem broja primjera
+  - lijene metode - odluku o klasifikaciji primjera odraduju tek kada se to od njih zahtjeva (za razliku od parametarskih koje pri izboru najbolje hipoteze, s njom odjednom procjene sve primjere u cijeloj domeni)
+
+Malo primjera, a pretpostavka je dobra -> parametarski modeli
+Dovoljno primjera, a pretpostavke su opasne -> neparametarski modeli -> popularni u Big Data ludosti danasnjice, cesto koristeni za preporuke
+
+
+
+SVM (on je neparametarski)
+Ima parametara proporcionalno broju primjera. 
+h(x) = SUM(alpha[i]*y[i]*xT*x) + w0 <- dualna formulacija, neparametarski model
+                                    <- primarna formulacija, parametarski model
+Mozemo iskoristiti SMO algoritam u O(n**2). To se isplati kada je broj znacajki znatno veci od broja primjera (n >> N).
+
+
+
+Algoritam k-NN
+Neparametarski klasifikacijski algoritam.
+Predvidanje na temelju k oznaka najblizih susjeda (eng. nearest neighbors):
+  h(x) = argmax(SUM( 1{j=y[i]})) <- pozbrajaj koliko susjeda ima koju oznaku i onda ona oznaka koje ima najvise pobijeduje
+
+K je broj klasa (a mali k je broj susjeda).
+k je hiperparametar -> manji k, model je slozeniji
+k=1 -> Voronoijeve celije, svaki primjer ima svoju celiju
+k>1 -> izaberemo ga unakrsnom provjerom (i bilo bi dobro uzeti neparan k za binarne probleme)
+
+Tezinski k-NN: blizi/slicni susjed vise utjece. Koristimo jezgrenu funkciju da odredimo slicnost primjera.
+  h(x) = argmax( SUM(kernel(x[i], x) * 1{j = y[i]}) )
+
+Nalazenje najblizih susjeda je veliki problem. Ideja je da se izgradi indeksna struktura (bitno u Big Data problemima).
+  - stablo lopti - indeksna struktura koja particionira prostor pomocu hipersfera. Svaka hipersfera ima dvoje djece koji su takoder hipersfere. Svaki primjer pripada jednoj hipersferi, a odredeno je udaljenosti od sredista hipersfere.
+                 - otidemo do odredene dubine ??? fuf???
+  - (eng. locally sensitive hashing) - ideja je da slicni primjeri imaju slicnu vrijednost kljuca
+    - (eng. large scale machine learning)
+
+Prokletstvo dimenzionalnosti:
+  - u sve vecim dimenzijama, primjeri postaju sve vise udaljeni
+    - trebamo zahtaviti jako veliki prostor ako hocemo obuhvatiti dovoljni broj primjera
+    - udaljenosti postaju nediskriminativne
+
+
+
+Neparametarska regresija
+Model zagladivanja (eng. smoothing model)
+  h(x) = 1/k * SUM(y[i]) <- KNN smoother
+Tezinski model zaglagivanja:
+  h(x) = SUM(kernel(x,x) * y[i])/SUM(kernel(x,x))
+
+
+
+Neparametarske metode se mogu koristiti i u nenadziranom ucenju.
+
+Procjena gustoce, (eng. kernel density estimation).
+
+
+
+Stabla odluke
+Takoder neparametarski modeli.

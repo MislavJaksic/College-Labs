@@ -1,0 +1,97 @@
+Kombiniranje klasifikatora
+Ne postoji algoritam koji je najbolji za rjesavanje svih problema.
+
+Osnovni klasifikatori se spajaju u meta klasifikatore.
+  - kod nekih metoda osnovni klasifikatori su slabi klasifikatori (eng. weak learners)
+
+Nadi razlicite osnovne klasifikatore -> manipulacija skupa za ucenje D. Neki klasifikatori su uceni na jednom, a neki na drugom.
+                                     -> manipulacija znacajkama.
+                                     -> manipulacija algoritmom (npr. mijenjanje hiperparametara)
+
+Glasanje i stacking
+  - ako imamo L osnovnih klasifikatora, onda je meta klasifikator:
+    - h(x;w) = argmax( SUM( w[j]*1{ h[j](x) = y } ) ) gdje w[j] >= 0 i SUM(w[j]) = 1
+    - ako je w[j] = 1/L, onda je meta klasifikator brojac glasova gdje je pobijednih onaj koji ima najvise glasova
+
+  - glasanje kod regresije: h(x;w) = (1/L) * SUM( w[j]*h[j](x) )
+
+Primjer:
+L = 25 binarnih osnovnih klasifikatora
+Pogreska svakog je 0.35 (to je empirijske pogreska).
+Pretpostavimo da su L-ovi medusobno nezavisni. -> saznanje o jednom od izlazu iz L1,...,L25 nemoze se predvidjeti izlaz bilo kojeg drugog izlaza  (to je vrlo nesigurna pretpostavka)
+Radimo vecinsko glasanje sa w[j] = 1/L
+  - vjerojatnost pogreske meta klasifikatora je da barem 13 osnovnih klasifikatora pogrijesi
+    - ona je vrlo mala; VIS gradivo
+
+  - varijanca ansambla
+    - Var(h) = (1/L)*(Var(h[j])) -> smanjuje se proporcionalno s L
+      - Var(a*X) = a**2 * Var(X) <- VIS gradivo
+      - Var(X+Y) = Var(X) + Var(Y)
+      - izvod je frustrirajuc, ali takav je po knjigama...
+
+  - stacking
+    - treniranje meta klasifikatora na predikcijama osnovnim klasifikatora
+    - moramo trenirati na izdvojenom skupu (napravi unakrsnu provjeru)
+    - nije popularan u statistickom strojnom ucenju, ali je u istrazivanjima
+
+Bagging
+  - dolazi od eng. boostrap aggregating
+  - kako dobiti vise podataka iz ogranicenog skupa podataka? -> generiramo nove na temelju starih
+    - uzrokovanje s ponavljanje (eng. sampling with replacement) - uzmemo podatak, generiramo poduzorak i onda pocetni podatak vratimo natrag na mjesto 
+  
+  - N je broj primjera u skupu za ucenje D
+  - generiraj L skupova podataka i svaki je velicine N:
+    - lim(1 - 1/N)**N = 1/e = 0.368 
+    - vjerojatnost da ce primjer uci u uzorak L je (1 - 0.368) = 0.632 -> to je "0.632 bootstrap"
+
+Primjer N = 4, D = 1,2,3,4
+L = 10
+Npr, L1 = 1,1,2,3, L2 = 2,2,2,4, ... i sansa da svaki primjer iz D bude u L[i] je 0.632 (ako limes N->inf). PAZI! To ne ovisi o broju L-ova.
+
+  - problem: visoka korelacija osnovnih klasifikatora jer su podaci iz zajednickog skupa
+
+  - slucajna suma (eng. random forest)
+    - "bagging" + slucajni odabir podskupa znacajki
+    - stabla odluke su osnovni klasifikatori, a konacna predikcija je vecinsko glasanje
+
+    - algoritam je u natuknicama
+      - napravi bootstrap uzorka D1
+      - napravi odabir od n' znacajki u F1 skup gdje n' < n
+      - treniraj stablo odluke na D1 sa znacajkama F1 
+      - dodaj stablo u sumu
+
+Boosting
+  - slijedno uci na pogreskama prijasnih algoritama -> oni primjeri koji uzrokoju veliki pogresku, njih se pokusava klasificirati vise od onih koji su dobro klasificirani
+  
+  - AdaBoost (1996.)
+    - vj. odabira primjera je 1/N (uniformna vj.)
+    - svaki primjer ima svoju tezinu da budu odabrani u skup za ucenje osnovnog klasifikatora L
+      - oni primjeri na kojima klasifikatori grijese ce imati vecu vjerojatnost da budu izbarani za sljedeci skup primjera
+      - oni zadnji L u nizu su oni koji su trenirani na najtezim primjerima
+
+    - algoritam je u natuknicama
+      - bootstrap uzoraka s tezinama w
+      - treniraj klasifikator
+      - izracunaj pogresku
+      - izracunaj pouzdanost (ona je opcenita vrijednost za ovu iteraciju i nije vezana za neki skup)
+        - ako pouzdanost je manja od 0.5, onda continue i vrati se na pocetak petelje <- nema u natuknicama
+      - azuriraj tezine svakog primjera <- l+1 je iteracija, a i je vezan uz primjer, neovisno jel je u superskriptu ili subskriptu (PAZI na to u ovoj formuli)
+      - normaliziraj vektor
+
+    - konacna predikcija je tezinsko glasanje:
+      - h(x;alpha) = argmax( SUM( alpha[j]*1{ h[j](x) = y } ) )
+  
+  - osnovni klasifikator:
+    - stablo odluke dubine 1: to je panj (end. stump); postoji samo jedna znacajka
+
+  - osnovni klasifikatori zapravo minimiziraju eksponencijalni gubitak:
+    - L(h(x),y) = e**((-1)*y*h(x))
+    - strogo kaznjavaju pogresno klasificirane primjere
+
+  - neki drugi boosting algoritmi: logit boost, gradient boosting (on radi gradijentni spust sa razlicitim gubitaka)
+
+Usporedba uspjesnosti algoritama
+
+Caruana, Mizil (2006) -> rad koji usporeduje algoritme na skupovima podataka
+
+
