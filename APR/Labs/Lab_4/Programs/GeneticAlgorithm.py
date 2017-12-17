@@ -82,18 +82,21 @@ class GeneticAlgorithm(object):
     """
     if self.max_generations:
       if self.max_generations < population.generation:
+        #print "Max gen."
         return False
         
     if self.max_evaluations:
       if self.max_evaluations < self.goal_function.invocations:
+        #print "Max evaluations."
         return False
         
     if self.reach_goal_value:
       if self.reach_goal_value > population.best_goal_creature.goal_value:
+        #print "Reached the desired goal."
         return False
         
     if (population.worst_goal_creature.goal_value == population.best_goal_creature.goal_value):
-      print "Points are too close to each other! Stopped to prevent division by zero."
+      #print "Prevented division by zero."
       return False
     
     if self.last_best_goal > population.best_goal_creature.goal_value:
@@ -104,7 +107,7 @@ class GeneticAlgorithm(object):
           
     if self.no_improvement_limit:
       if self.no_improvement_limit < self.no_improvement_counter:
-        print "Stopping due to making no progress for " + str(self.no_improvement_limit) + " generations."
+        #print "No improvement."
         return False
         
     if self.time_limit:
@@ -114,7 +117,8 @@ class GeneticAlgorithm(object):
     return True
   
   def IsPrintPopulationData(self, population):
-    if (population.generation % 500 == 0):
+    if (self.goal_function.invocations % 500) == 0:
+    #if (population.generation % 500 == 0):
       self.PrintPopulationData(population)
   
   def PrintPopulationData(self, population):
@@ -600,7 +604,7 @@ class BinaryCreature(Creature):
   def ConvertFloatingPointToBinary(self, floating_point):
     interval_length = self.max_x - self.min_x
     binary_value = (floating_point - self.min_x) / interval_length * (2**self.chromosome_length)
-    return int(binary_value)
+    return int(round(binary_value))
     
   def ConvertBinaryToFloatingPoint(self, binary_value):
     floating_binary_value = float(binary_value)

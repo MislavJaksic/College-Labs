@@ -5,54 +5,39 @@ from Tasks.TaskFunctions import *
 from copy import copy
 import cProfile
 
+
+
 def TaskOne():
   problem_bounds = (-50,150)
-  max_evals = 5000
+  max_evals = 10000
   desired_goal_value = (0.1)**6
-  
+  divergence_at = 1000
+
   iterations = 11
   results = []
   for i in range(iterations):
-    #f1, dim=2, best_values: pop=100, mut=0.01
     # GA = GeneticAlgorithm(goal_function=f1, dimensions=2, problem_bounds=problem_bounds,
                           # fitness_bounds=(0,100), population_size=100, binary_display=False, precision=8, p_of_mutation=0.01, p_of_crossover=0.01,
-                          # max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=500)
-    #f3, dim=5, best_values: pop=4, mut=0.01
+                          # max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=divergence_at)
+    
     # GA = GeneticAlgorithm(goal_function=f3, dimensions=5, problem_bounds=problem_bounds,
                           # fitness_bounds=(0,100), population_size=4, binary_display=False, precision=8, p_of_mutation=0.01, p_of_crossover=0.01,
-                          # max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=500)
-    GA = GeneticAlgorithm(goal_function=f6, dimensions=2, problem_bounds=problem_bounds,
+                          # max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=divergence_at)
+    
+    # GA = GeneticAlgorithm(goal_function=f6, dimensions=2, problem_bounds=problem_bounds,
+                                # fitness_bounds=(0,100), population_size=100, binary_display=True, precision=4, p_of_mutation=0.01, p_of_crossover=0.01,
+                                # max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=divergence_at)
+    
+    GA = GeneticAlgorithm(goal_function=f7, dimensions=2, problem_bounds=problem_bounds,
                                 fitness_bounds=(0,100), population_size=20, binary_display=True, precision=4, p_of_mutation=0.01, p_of_crossover=0.01,
-                                max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=500)
-    # GA = GeneticAlgorithm(goal_function=f7, dimensions=2, problem_bounds=problem_bounds,
-                                # fitness_bounds=(0,100), population_size=20, binary_display=True, precision=4, p_of_mutation=0.01, p_of_crossover=0.01,
-                                # max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=500)
+                                max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=divergence_at)
+    
     point, goal_value = GA.SolveProblem()
     results.append((goal_value, point))
 
   results = SortGoalAndPoint(results)
   count = CountSuccesses(results, desired_goal_value)
   PrintResults(results, count, iterations)
-  
-def SortGoalAndPoint(results):
-  results = sorted(results, key=lambda result: result[0])
-  return results
-  
-def CountSuccesses(results, desired_goal_value):
-  count = 0
-  for result in results:
-    if result[0] < desired_goal_value:
-      count += 1
-      
-  return count
-  
-def PrintResults(results, count, iterations):
-  print "reached desired goal value:",
-  print count
-  print "median_goal_value:",
-  print results[iterations/2][0]
-  print "point:",
-  print results[iterations/2][1]
   
 def ParamOpti():
   problem_bounds = (-50,150)
@@ -85,31 +70,134 @@ def ParamOpti():
         print pre_value
   
 def TaskTwo():
-  pass
+  problem_bounds = (-50,150)
+  max_evals = 10000
+  desired_goal_value = (0.1)**6
+  divergence_at = 1000
+  
+  iterations = 3
+  dimensions = [1,3,6,10]
+  for d in dimensions:
+    results = []
+    for i in range(iterations):
+      GA = GeneticAlgorithm(goal_function=f6, dimensions=d, problem_bounds=problem_bounds,
+                                    fitness_bounds=(0,100), population_size=20, binary_display=True, precision=4, p_of_mutation=0.01, p_of_crossover=0.01,
+                                    max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=divergence_at)
+        
+      # GA = GeneticAlgorithm(goal_function=f7, dimensions=d, problem_bounds=problem_bounds,
+                                  # fitness_bounds=(0,100), population_size=20, binary_display=True, precision=4, p_of_mutation=0.01, p_of_crossover=0.01,
+                                  # max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=divergence_at)
+
+      point, goal_value = GA.SolveProblem()
+      results.append((goal_value, point))
+
+    results = SortGoalAndPoint(results)
+    count = CountSuccesses(results, desired_goal_value)
+    PrintResults(results, count, iterations)
   
 def TaskThree():
-  pass
+  problem_bounds = (-50,150)
+  max_evals = 100000
+  desired_goal_value = (0.1)**6
+  divergence_at = 1000
+  
+  binary_display = False
+  d = 6
+  
+  iterations = 11
+  results = []
+  for i in range(iterations):
+    
+    GA = GeneticAlgorithm(goal_function=f6, dimensions=d, problem_bounds=problem_bounds,
+                                fitness_bounds=(0,100), population_size=20, binary_display=binary_display, precision=4, p_of_mutation=0.01, p_of_crossover=0.01,
+                                max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=divergence_at)
+                                
+    # GA = GeneticAlgorithm(goal_function=f7, dimensions=d, problem_bounds=problem_bounds,
+                                # fitness_bounds=(0,100), population_size=20, binary_display=binary_display, precision=4, p_of_mutation=0.01, p_of_crossover=0.01,
+                                # max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=divergence_at)
+                                
+    point, goal_value = GA.SolveProblem()
+    results.append((goal_value, point))
+
+  results = SortGoalAndPoint(results)
+  count = CountSuccesses(results, desired_goal_value)
+  PrintResults(results, count, iterations)
   
 def TaskFour():
-  pass
+  problem_bounds = (-50,150)
+  max_evals = 10000
+  desired_goal_value = (0.1)**6
+  divergence_at = 1000
+
+  iterations = 11
+  
+  #population_values = [30, 50, 100, 200] #[30, 50, 100, 200]
+  mutation_values = [0.01, 0.03, 0.06, 0.1] #[0.1, 0.3, 0.6, 0.9]
+  #for pop_value in population_values:
+  for mut_value in mutation_values:
+    results = []
+    for i in range(iterations):   
+      GA = GeneticAlgorithm(goal_function=f6, dimensions=2, problem_bounds=problem_bounds,
+                                  fitness_bounds=(0,100), population_size=100, binary_display=True, precision=4, p_of_mutation=mut_value, p_of_crossover=0.01,
+                                  max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=divergence_at)
+      
+      point, goal_value = GA.SolveProblem()
+      results.append((goal_value, point))
+      print goal_value
+
+    results = SortGoalAndPoint(results)
+    count = CountSuccesses(results, desired_goal_value)
+    PrintResults(results, count, iterations)
   
 def TaskFive():
-  pass
+  """
+  The tournament size is set at k=3, but it can be increased for testing purposes within the algorithm.
+  WARNING: always return the tournmanet size  after testing.
+  """
+  problem_bounds = (-50,150)
+  max_evals = 10000
+  desired_goal_value = (0.1)**6
+  divergence_at = 1000
+
+  iterations = 11
+  results = []
+  for i in range(iterations):
+    GA = GeneticAlgorithm(goal_function=f6, dimensions=2, problem_bounds=problem_bounds,
+                                fitness_bounds=(0,100), population_size=100, binary_display=True, precision=4, p_of_mutation=0.01, p_of_crossover=0.01,
+                                max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=divergence_at)
+
+    point, goal_value = GA.SolveProblem()
+    results.append((goal_value, point))
+    print goal_value
+
+  results = SortGoalAndPoint(results)
+  count = CountSuccesses(results, desired_goal_value)
+  PrintResults(results, count, iterations)
   
-def CountInvocations(function):
-  def interdictor(x):
-    interdictor.invocations += 1
-    result = function(x)
-    return result
-    
-  interdictor.invocations = 0
+def SortGoalAndPoint(results):
+  results = sorted(results, key=lambda result: result[0])
+  return results
   
-  return interdictor
+def CountSuccesses(results, desired_goal_value):
+  count = 0
+  for result in results:
+    if result[0] < desired_goal_value:
+      count += 1
+      
+  return count
+  
+def PrintResults(results, count, iterations):
+  print "reached desired goal value:",
+  print count
+  print "median_goal_value:",
+  print results[iterations/2][0]
+  print "point:",
+  print results[iterations/2][1]
   
 
 #cProfile.run("ParamOpti()")
-TaskOne()
+#TaskOne()
 #TaskTwo()
 #TaskThree()
 #TaskFour()
-#TaskFive()
+TaskFive()
