@@ -253,7 +253,7 @@ def test_BinaryCreature_CreateChromosome(SimpleBinaryCreature):
   assert chromosome_matrix._CountColumns() == 20
   
 def test_BinaryCreature_ConvertFloatingPointToBinary(SimpleBinaryCreature):
-  assert SimpleBinaryCreature.ConvertFloatingPointToBinary(4.231514) == 568658
+  assert SimpleBinaryCreature.ConvertFloatingPointToBinary(4.231514) == 568659
   
 def test_BinaryCreature_ConvertBinaryToFloatingPoint(SimpleBinaryCreature):
   floating_point = SimpleBinaryCreature.ConvertBinaryToFloatingPoint(568658)
