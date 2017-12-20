@@ -56,7 +56,7 @@ class GeneticAlgorithm(object):
     while (self.StoppingConditionHasNotBeenReached(population)):
       population.GetNextGeneration()
       
-      #self.IsPrintPopulationData(population) #change during param optimization
+      self.IsPrintPopulationData(population) #change during param optimization
     
     #print "-.-.-.-.-.-.-.-.-.-.-"
     best_point = population.best_goal_creature.point
@@ -82,21 +82,21 @@ class GeneticAlgorithm(object):
     """
     if self.max_generations:
       if self.max_generations < population.generation:
-        #print "Max gen."
+        print "Max gen."
         return False
         
     if self.max_evaluations:
       if self.max_evaluations < self.goal_function.invocations:
-        #print "Max evaluations."
+        print "Max evaluations."
         return False
         
     if self.reach_goal_value:
       if self.reach_goal_value > population.best_goal_creature.goal_value:
-        #print "Reached the desired goal."
+        print "Reached the desired goal."
         return False
         
     if (population.worst_goal_creature.goal_value == population.best_goal_creature.goal_value):
-      #print "Prevented division by zero."
+      print "Prevented division by zero."
       return False
     
     if self.last_best_goal > population.best_goal_creature.goal_value:
@@ -107,7 +107,7 @@ class GeneticAlgorithm(object):
           
     if self.no_improvement_limit:
       if self.no_improvement_limit < self.no_improvement_counter:
-        #print "No improvement."
+        print "No improvement."
         return False
         
     if self.time_limit:
@@ -133,10 +133,11 @@ class GeneticAlgorithm(object):
   
   
 class Population(object):
-  def __init__(self, dimensions,  min_fitness, max_fitness, population_size):
+  def __init__(self, dimensions, min_fitness, max_fitness, p_of_mutation, population_size):
     self.dimensions = dimensions
     self.min_fitness = min_fitness
     self.max_fitness = max_fitness
+    self.p_of_mutation = p_of_mutation
     self.population_size = population_size
     
     self.generation = 0
@@ -291,7 +292,7 @@ class Population(object):
 
 class BinaryPopulation(Population):
   def __init__(self, goal_function, dimensions, min_x, max_x, min_fitness, max_fitness, p_of_mutation, population_size, precision):
-    super(BinaryPopulation, self).__init__(dimensions, min_fitness, max_fitness, population_size)
+    super(BinaryPopulation, self).__init__(dimensions, min_fitness, max_fitness, p_of_mutation, population_size)
     
     self.chromosome_length = self.CalculateChromosomeLength(min_x, max_x, precision)
     
@@ -397,13 +398,18 @@ class BinaryPopulation(Population):
     
     
   def SimpleMutation(self, group_of_chromosomes):
-    for i in range(self.mutate_bits):
-      mutate_column = random.randint(1, self.chromosome_length)
-      for row in range(1, self.dimensions + 1):
-        if group_of_chromosomes[(row, mutate_column)] == 0:
-          group_of_chromosomes[(row, mutate_column)] = 1
-        else:
-          group_of_chromosomes[(row, mutate_column)] = 0
+    for row in range(1, self.dimensions + 1):
+      for column in range(1, self.chromosome_length + 1):
+        random_float = random.random()
+        if random_float < self.p_of_mutation:
+          group_of_chromosomes[(row, column)] = (1 - group_of_chromosomes[(row, column)])
+    # for i in range(self.mutate_bits):
+      # mutate_column = random.randint(1, self.chromosome_length)
+      # for row in range(1, self.dimensions + 1):
+        # if group_of_chromosomes[(row, mutate_column)] == 0:
+          # group_of_chromosomes[(row, mutate_column)] = 1
+        # else:
+          # group_of_chromosomes[(row, mutate_column)] = 0
           
     return group_of_chromosomes
     
@@ -445,8 +451,7 @@ class BinaryPopulation(Population):
     
 class FloatingPointPopulation(Population):
   def __init__(self, goal_function, dimensions, min_x, max_x, min_fitness, max_fitness, p_of_mutation, population_size):
-    super(FloatingPointPopulation, self).__init__(dimensions, min_fitness, max_fitness, population_size)
-    self.p_of_mutation = p_of_mutation
+    super(FloatingPointPopulation, self).__init__(dimensions, min_fitness, max_fitness, p_of_mutation, population_size)
     
     self.population = self.CreateFloatingPointPopulation(goal_function, dimensions, min_x, max_x, min_fitness, max_fitness)
     self.InitializeBestWorstCreatures()

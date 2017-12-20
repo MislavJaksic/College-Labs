@@ -200,4 +200,4 @@ def PrintResults(results, count, iterations):
 #TaskTwo()
 #TaskThree()
 #TaskFour()
-TaskFive()
+cProfile.run("TaskFive()")
