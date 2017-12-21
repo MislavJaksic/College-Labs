@@ -17,19 +17,19 @@ def TaskOne():
   results = []
   for i in range(iterations):
     # GA = GeneticAlgorithm(goal_function=f1, dimensions=2, problem_bounds=problem_bounds,
-                          # fitness_bounds=(0,100), population_size=100, binary_display=False, precision=8, p_of_mutation=0.01, p_of_crossover=0.01,
+                          # fitness_bounds=(0,100), population_size=100, display="float", precision=8, p_of_mutation=0.01, 
                           # max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=divergence_at)
     
     # GA = GeneticAlgorithm(goal_function=f3, dimensions=5, problem_bounds=problem_bounds,
-                          # fitness_bounds=(0,100), population_size=4, binary_display=False, precision=8, p_of_mutation=0.01, p_of_crossover=0.01,
+                          # fitness_bounds=(0,100), population_size=4, display="float", precision=8, p_of_mutation=0.01, 
                           # max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=divergence_at)
     
     # GA = GeneticAlgorithm(goal_function=f6, dimensions=2, problem_bounds=problem_bounds,
-                                # fitness_bounds=(0,100), population_size=100, binary_display=True, precision=4, p_of_mutation=0.01, p_of_crossover=0.01,
+                                # fitness_bounds=(0,100), population_size=100, display="binary", precision=4, p_of_mutation=0.01, 
                                 # max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=divergence_at)
     
     GA = GeneticAlgorithm(goal_function=f7, dimensions=2, problem_bounds=problem_bounds,
-                                fitness_bounds=(0,100), population_size=20, binary_display=True, precision=4, p_of_mutation=0.01, p_of_crossover=0.01,
+                                fitness_bounds=(0,100), population_size=20, display="binary", precision=4, p_of_mutation=0.01, 
                                 max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=divergence_at)
     
     point, goal_value = GA.SolveProblem()
@@ -53,7 +53,7 @@ def ParamOpti():
         results = []
         for i in range(iterations):
           GA = GeneticAlgorithm(goal_function=f7, dimensions=2, problem_bounds=problem_bounds,
-                                fitness_bounds=(0,100), population_size=pop_value, binary_display=True, precision=pre_value, p_of_mutation=mut_value, p_of_crossover=0.01,
+                                fitness_bounds=(0,100), population_size=pop_value, display="binary", precision=pre_value, p_of_mutation=mut_value, 
                                 max_evaluations=max_evals, reach_goal_value=desired_goal_value)
           point, goal_value = GA.SolveProblem()
           results.append((goal_value, point))
@@ -81,11 +81,11 @@ def TaskTwo():
     results = []
     for i in range(iterations):
       GA = GeneticAlgorithm(goal_function=f6, dimensions=d, problem_bounds=problem_bounds,
-                                    fitness_bounds=(0,100), population_size=20, binary_display=True, precision=4, p_of_mutation=0.01, p_of_crossover=0.01,
+                                    fitness_bounds=(0,100), population_size=20, display="binary", precision=4, p_of_mutation=0.01, 
                                     max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=divergence_at)
         
       # GA = GeneticAlgorithm(goal_function=f7, dimensions=d, problem_bounds=problem_bounds,
-                                  # fitness_bounds=(0,100), population_size=20, binary_display=True, precision=4, p_of_mutation=0.01, p_of_crossover=0.01,
+                                  # fitness_bounds=(0,100), population_size=20, display="binary", precision=4, p_of_mutation=0.01, 
                                   # max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=divergence_at)
 
       point, goal_value = GA.SolveProblem()
@@ -109,11 +109,11 @@ def TaskThree():
   for i in range(iterations):
     
     GA = GeneticAlgorithm(goal_function=f6, dimensions=d, problem_bounds=problem_bounds,
-                                fitness_bounds=(0,100), population_size=20, binary_display=binary_display, precision=4, p_of_mutation=0.01, p_of_crossover=0.01,
+                                fitness_bounds=(0,100), population_size=20, binary_display=binary_display, precision=4, p_of_mutation=0.01, 
                                 max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=divergence_at)
                                 
     # GA = GeneticAlgorithm(goal_function=f7, dimensions=d, problem_bounds=problem_bounds,
-                                # fitness_bounds=(0,100), population_size=20, binary_display=binary_display, precision=4, p_of_mutation=0.01, p_of_crossover=0.01,
+                                # fitness_bounds=(0,100), population_size=20, binary_display=binary_display, precision=4, p_of_mutation=0.01, 
                                 # max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=divergence_at)
                                 
     point, goal_value = GA.SolveProblem()
@@ -138,7 +138,7 @@ def TaskFour():
     results = []
     for i in range(iterations):   
       GA = GeneticAlgorithm(goal_function=f6, dimensions=2, problem_bounds=problem_bounds,
-                                  fitness_bounds=(0,100), population_size=100, binary_display=True, precision=4, p_of_mutation=mut_value, p_of_crossover=0.01,
+                                  fitness_bounds=(0,100), population_size=100, display="binary", precision=4, p_of_mutation=mut_value, 
                                   max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=divergence_at)
       
       point, goal_value = GA.SolveProblem()
@@ -163,7 +163,7 @@ def TaskFive():
   results = []
   for i in range(iterations):
     GA = GeneticAlgorithm(goal_function=f6, dimensions=2, problem_bounds=problem_bounds,
-                                fitness_bounds=(0,100), population_size=100, binary_display=True, precision=4, p_of_mutation=0.01, p_of_crossover=0.01,
+                                fitness_bounds=(0,100), population_size=100, display="binary", precision=4, p_of_mutation=0.01, 
                                 max_evaluations=max_evals, reach_goal_value=desired_goal_value, no_improvement_limit=divergence_at)
 
     point, goal_value = GA.SolveProblem()

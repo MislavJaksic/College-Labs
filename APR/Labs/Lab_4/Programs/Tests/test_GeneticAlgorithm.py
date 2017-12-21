@@ -1,4 +1,4 @@
-from Programs.GeneticAlgorithm import GeneticAlgorithm, BinaryCreature, FloatingPointCreature, BinaryPopulation, FloatingPointPopulation
+from Programs.GeneticAlgorithm import GeneticAlgorithm, BinaryCreature, FloatCreature, BinaryPopulation, FloatPopulation
 from Tasks.TaskFunctions import f3
 from Programs.Helpers.Matrix import Matrix
 
@@ -7,28 +7,28 @@ from copy import copy
 
 def test_GeneticAlgorithm_Binary_MaxEval_f3():
   algo = GeneticAlgorithm(goal_function=f3, dimensions=2, problem_bounds=(-50,150),
-                          fitness_bounds=(0,100), population_size=100, binary_display=True, precision=4, p_of_mutation=0.01, p_of_crossover=0.01,
+                          fitness_bounds=(0,100), population_size=100, display="binary", precision=4, p_of_mutation=0.01, 
                           max_evaluations=1000)
   result = algo.SolveProblem()
   assert True #the result cannot be interpreted
   
 def test_GeneticAlgorithm_FloatingPoint_MaxGen_f3():
   algo = GeneticAlgorithm(goal_function=f3, dimensions=5, problem_bounds=(-50,150),
-                          fitness_bounds=(0,100), population_size=100, binary_display=False, precision=0, p_of_mutation=0.01, p_of_crossover=0.01,
+                          fitness_bounds=(0,100), population_size=100, display="float", precision=0, p_of_mutation=0.01, 
                           max_generations=1000)
   result = algo.SolveProblem()
   assert True #the result cannot be interpreted
   
 def test_GeneticAlgorithm_FloatingPoint_GoalValue_f3():
   algo = GeneticAlgorithm(goal_function=f3, dimensions=2, problem_bounds=(-50,150),
-                          fitness_bounds=(0,100), population_size=100, binary_display=False, precision=0, p_of_mutation=0.01, p_of_crossover=0.01,
+                          fitness_bounds=(0,100), population_size=100, display="float", precision=0, p_of_mutation=0.01, 
                           reach_goal_value=(0.1)**3)
   result = algo.SolveProblem()
   assert True #the result cannot be interpreted
   
 def test_GeneticAlgorithm_FloatingPoint_ConvergedOnAPoint_f3():
   algo = GeneticAlgorithm(goal_function=f3, dimensions=2, problem_bounds=(-50,150),
-                          fitness_bounds=(0,100), population_size=100, binary_display=False, precision=0, p_of_mutation=0.01, p_of_crossover=0.01,
+                          fitness_bounds=(0,100), population_size=100, display="float", precision=0, p_of_mutation=0.01, 
                           no_improvement_limit=50)
   result = algo.SolveProblem()
   assert True #the result cannot be interpreted
@@ -45,7 +45,7 @@ def SimpleBinaryPopulation():
   p_of_mutation = 0.01
   population_size = 3
   precision = 4
-  population = BinaryPopulation(goal_function, dimensions, min_x, max_x, min_fitness, max_fitness, p_of_mutation, population_size, precision)
+  population = BinaryPopulation(goal_function, dimensions, min_x, max_x, min_fitness, max_fitness, population_size, precision, p_of_mutation)
   return population
   
 def test_BinaryPopulation_InitializeBestWorstCreatures(SimpleBinaryPopulation):
@@ -175,7 +175,7 @@ def test_BinaryPopulation_GetNextGeneration(SimpleBinaryPopulation):
   
 
 @pytest.fixture(scope='function')
-def SimpleFloatingPointPopulation():
+def SimpleFloatPopulation():
   goal_function = f3
   dimensions = 2
   min_x = -50
@@ -184,41 +184,41 @@ def SimpleFloatingPointPopulation():
   max_fitness = 100
   p_of_mutation = 0.01
   population_size = 3
-  population = FloatingPointPopulation(goal_function, dimensions, min_x, max_x, min_fitness, max_fitness, p_of_mutation, population_size)
+  population = FloatPopulation(goal_function, dimensions, min_x, max_x, min_fitness, max_fitness, population_size, p_of_mutation)
   return population
  
-def test_FloatingPointPopulation_EvaluatePopulation(SimpleFloatingPointPopulation):
-  for creature in SimpleFloatingPointPopulation.population:
+def test_FloatPopulation_EvaluatePopulation(SimpleFloatPopulation):
+  for creature in SimpleFloatPopulation.population:
     assert creature.goal_value != False
     assert creature.fitness_value >= 0
     
     
-def test_FloatingPointPopulation_ArithmeticCrossover(SimpleFloatingPointPopulation):
-  parent_one = SimpleFloatingPointPopulation.population[0]
-  parent_two = SimpleFloatingPointPopulation.population[1]
+def test_FloatPopulation_ArithmeticCrossover(SimpleFloatPopulation):
+  parent_one = SimpleFloatPopulation.population[0]
+  parent_two = SimpleFloatPopulation.population[1]
   value_one = parent_one.group_of_chromosomes[(2, 1)]
   value_two = parent_two.group_of_chromosomes[(2, 1)]
-  result = SimpleFloatingPointPopulation.ArithmeticCrossover(parent_one, parent_two)[(2,1)]
+  result = SimpleFloatPopulation.ArithmeticCrossover(parent_one, parent_two)[(2,1)]
   assert (value_one < result) and (result < value_two) or (value_two < result) and (result < value_one)
   
-def test_FloatingPointPopulation_HeuristicCrossover(SimpleFloatingPointPopulation):
-  parent_one = SimpleFloatingPointPopulation.population[0]
-  parent_two = SimpleFloatingPointPopulation.population[1]
+def test_FloatPopulation_HeuristicCrossover(SimpleFloatPopulation):
+  parent_one = SimpleFloatPopulation.population[0]
+  parent_two = SimpleFloatPopulation.population[1]
   value_one = parent_one.group_of_chromosomes[(2, 1)]
   value_two = parent_two.group_of_chromosomes[(2, 1)]
-  result = SimpleFloatingPointPopulation.HeuristicCrossover(parent_one, parent_two)[(2,1)]
+  result = SimpleFloatPopulation.HeuristicCrossover(parent_one, parent_two)[(2,1)]
   assert result != parent_one.group_of_chromosomes
   
   
-def test_FloatingPointPopulation_GaussianMutation(SimpleFloatingPointPopulation):
-  group_of_chromosomes = copy(SimpleFloatingPointPopulation.population[0].group_of_chromosomes)
-  result = SimpleFloatingPointPopulation.GaussianMutation(group_of_chromosomes)
-  assert result != SimpleFloatingPointPopulation.population[0].group_of_chromosomes
+def test_FloatPopulation_GaussianMutation(SimpleFloatPopulation):
+  group_of_chromosomes = copy(SimpleFloatPopulation.population[0].group_of_chromosomes)
+  result = SimpleFloatPopulation.GaussianMutation(group_of_chromosomes)
+  assert result != SimpleFloatPopulation.population[0].group_of_chromosomes
   
   
-def test_FloatingPointPopulation_GetNextGeneration(SimpleFloatingPointPopulation):
+def test_FloatPopulation_GetNextGeneration(SimpleFloatPopulation):
   for i in range (1000):
-    SimpleFloatingPointPopulation.GetNextGeneration()
+    SimpleFloatPopulation.GetNextGeneration()
   assert True #one of them is different
   
 
@@ -280,26 +280,26 @@ def test_BinaryCreature_SetPoint(SimpleBinaryCreature):
   
 
 @pytest.fixture(scope='function')
-def SimpleFloatingPointCreature():
+def SimpleFloatCreature():
   goal_function = f3
   dimensions = 2
   min_x = -50
   max_x = 50
   min_fitness = 0
   max_fitness = 100
-  creature = FloatingPointCreature(goal_function, dimensions, min_x, max_x, min_fitness, max_fitness)
+  creature = FloatCreature(goal_function, dimensions, min_x, max_x, min_fitness, max_fitness)
   return creature
   
-def test_FloatingPointCreature_CreateChromosome(SimpleFloatingPointCreature):
-  chromosome_matrix = SimpleFloatingPointCreature.CreateChromosome()
+def test_FloatCreature_CreateChromosome(SimpleFloatCreature):
+  chromosome_matrix = SimpleFloatCreature.CreateChromosome()
   assert chromosome_matrix._CountRows() == 2
   assert chromosome_matrix._CountColumns() == 1
   
-def test_FloatingPointCreature_CreateFloatingPointChromosome(SimpleFloatingPointCreature):
-  assert SimpleFloatingPointCreature.CreateFloatingPointChromosome(4.27487) == [4.27487]
+def test_FloatCreature_CreateFloatingPointChromosome(SimpleFloatCreature):
+  assert SimpleFloatCreature.CreateFloatingPointChromosome(4.27487) == [4.27487]
   
-def test_FloatingPointCreature_SetPoint(SimpleFloatingPointCreature):
-  point = SimpleFloatingPointCreature.SetPoint()
+def test_FloatCreature_SetPoint(SimpleFloatCreature):
+  point = SimpleFloatCreature.SetPoint()
   assert len(point) == 2
   assert (point[1] < 50 and  -50 < point[1])
   
