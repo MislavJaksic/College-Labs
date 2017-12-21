@@ -1,4 +1,5 @@
 import random, math
+from copy import copy
 from numpy.random import normal
 
 from Helpers.Matrix import Matrix
@@ -18,14 +19,14 @@ class GeneticAlgorithm(object):
   """
   def __init__(self, goal_function, dimensions, problem_bounds, fitness_bounds=(0,100),
                population_size=100, display="binary", precision=4, p_of_mutation=0.01, 
-               max_generations=False, max_evaluations=False, reach_goal_value=False, no_improvement_limit=False, time_limit=False):
+               max_generations=False, max_evaluations=False, reach_goal=False, no_improvement_limit=False, time_limit=False):
     self.goal_function = self.CountInvocations(goal_function) #!= as the fitness_function
     self.dimensions = dimensions
-    self.min_x = problem_bounds[0] #== dg
-    self.max_x = problem_bounds[1] #== gg
+    self.min_x = problem_bounds[0]
+    self.max_x = problem_bounds[1]
     
-    self.min_fitness = fitness_bounds[0] #== a
-    self.max_fitness = fitness_bounds[1] #== b
+    self.min_fitness = fitness_bounds[0]
+    self.max_fitness = fitness_bounds[1]
     self.population_size = population_size
     self.display = display
     self.precision = precision
@@ -33,7 +34,7 @@ class GeneticAlgorithm(object):
     
     self.max_generations = max_generations #suggested value is
     self.max_evaluations = max_evaluations #suggested value is 5000
-    self.reach_goal_value = reach_goal_value #suggested value is (0.1)**6
+    self.reach_goal = reach_goal #suggested value is (0.1)**6
     self.no_improvement_limit = no_improvement_limit #suggested value is 10% of evaluation limit
     self.time_limit = time_limit #suggested value is
     
@@ -55,32 +56,22 @@ class GeneticAlgorithm(object):
     
     while not (self.IsStoppingConditionReached(population)):
       population.GetNextGeneration()
-      
-      #self.PrintPopulationData(population)
-      if (self.goal_function.invocations % 250) == 0:
-        for creature in population.population:
-          print creature.point
-          
-        print "-.-.-.-.-.-.-.-.-.-.-"
-        
-    for creature in population.population:
-      print creature.point
     
     best_point = population.best_goal_creature.point
-    best_goal = population.best_goal_creature.goal_value
+    best_goal = population.best_goal_creature.goal
     return best_point, best_goal
       
-  def CreatePopulation(self):
+  def CreatePopulation(self, seed_creatures=[]):
     if self.display == "binary":
       population = BinaryPopulation(self.goal_function, self.dimensions, self.min_x, self.max_x, self.min_fitness, self.max_fitness,
-                                    self.population_size, self.precision, self.p_of_mutation)
+                                    self.population_size, self.precision, self.p_of_mutation, seed_creatures)
     elif self.display == "float":
       population = FloatPopulation(self.goal_function, self.dimensions, self.min_x, self.max_x, self.min_fitness, self.max_fitness,
-                                   self.population_size, self.p_of_mutation)                                      
+                                   self.population_size, self.p_of_mutation, seed_creatures)                                      
     else:
       raise Exception("Display can either be 'binary' or 'float'.")
                                            
-    self.last_best_goal = population.best_goal_creature.goal_value
+    self.last_best_goal = population.best_goal_creature.goal
     return population
   
   def IsStoppingConditionReached(self, population):
@@ -95,13 +86,9 @@ class GeneticAlgorithm(object):
         
     if self.IsGoalValueReached(population):
       return True
-        
-    # if (population.worst_goal_creature.goal_value == population.best_goal_creature.goal_value):
-      # print "Prevented division by zero."
-      # return True
     
-    if self.last_best_goal > population.best_goal_creature.goal_value:
-      self.last_best_goal = population.best_goal_creature.goal_value
+    if self.last_best_goal > population.best_goal_creature.goal:
+      self.last_best_goal = population.best_goal_creature.goal
       self.no_improvement_counter = 0
     else:
       self.no_improvement_counter += 1
@@ -132,9 +119,9 @@ class GeneticAlgorithm(object):
     return False
     
   def IsGoalValueReached(self, population):
-    if self.reach_goal_value == False:
+    if self.reach_goal == False:
       return False
-    if self.reach_goal_value > population.best_goal_creature.goal_value:
+    if self.reach_goal > population.best_goal_creature.goal:
       print "Reached the desired goal."
       return True
     return False
@@ -147,19 +134,22 @@ class GeneticAlgorithm(object):
       return True
     return False
     
+  def IsTimeToRestartPopulation(self, population):
+    if self.IsConvergedAroundASinglePoint():
+      return True
+    return False
+        
   def PrintPopulationData(self, population):
     if (self.goal_function.invocations % 500) == 0:
       self.DisplayData(population)
   
   def DisplayData(self, population):
-    #print "Generation:",
-    #print population.generation
     print "Goal function invocations:",
     print self.goal_function.invocations
     print "Best goal value:",
-    print population.best_goal_creature.goal_value
+    print population.best_goal_creature.goal
     print "Worst goal value:",
-    print population.worst_goal_creature.goal_value
+    print population.worst_goal_creature.goal
   
   
 class Population(object):
@@ -180,8 +170,12 @@ class Population(object):
     self.worst_fitness_creature = False
     self.best_fitness_creature = False
   
-  def SeedCreatures(seed_creatures):
+  def SeedCreatures(self, seed_creatures):
     for creature in seed_creatures:
+      self.population.append(creature)
+  
+  def SetPopulation(self, population):
+    for creature in population:
       self.population.append(creature)
   
   def InitializeBestWorstCreatures(self):
@@ -203,11 +197,11 @@ class Population(object):
     
   def SetGoalForAllCreatures(self):
     for creature in self.population:
-      creature.SetGoalValue()
+      creature.SetGoal()
       
   def SetFitnessForAllCreatures(self):
     for creature in self.population:
-      creature.SetFitnessValue(self.best_goal_creature.goal_value, self.worst_goal_creature.goal_value)
+      creature.SetFitness(self.worst_goal_creature.goal)
   
   def SetBestWorstGoalForAllCreatures(self):
     for creature in self.population:
@@ -218,17 +212,17 @@ class Population(object):
       self.SetBestWorstFitnessCreature(creature)
   
   def SetBestWorstGoalCreature(self, creature):
-    if self.IsBetterGoalThen(creature.goal_value, self.best_goal_creature.goal_value):
+    if self.IsBetterGoalThen(creature.goal, self.best_goal_creature.goal):
       self.best_goal_creature = creature
       
-    elif self.IsWorseGoalThen(creature.goal_value, self.worst_goal_creature.goal_value):
+    elif self.IsWorseGoalThen(creature.goal, self.worst_goal_creature.goal):
       self.worst_goal_creature = creature
       
   def SetBestWorstFitnessCreature(self, creature):
-    if self.IsBetterFitnessThen(creature.fitness_value, self.best_fitness_creature.fitness_value):
+    if self.IsBetterFitnessThen(creature.fitness, self.best_fitness_creature.fitness):
       self.best_fitness_creature = creature
       
-    elif self.IsWorseFitnessThen(creature.fitness_value, self.worst_fitness_creature.fitness_value):
+    elif self.IsWorseFitnessThen(creature.fitness, self.worst_fitness_creature.fitness):
       self.worst_fitness_creature = creature
       
   def IsUninitialized(self, variable):
@@ -257,25 +251,32 @@ class Population(object):
     return False
   
   
+  def GetNextGeneration(self):
+    worst_fitness_creature, other_creatures = self.KTournamentCreatureSelection()
+    parent_one = other_creatures[0]
+    parent_two = other_creatures[1]
+    
+    new_chromosomes = self.RandomlyChooseCrossover(parent_one, parent_two, self.crossover_functions)
+    
+    if self.IsRandomlyMutateCreature():
+      new_chromosomes = self.RandomlyChooseMutation(new_chromosomes, self.mutation_functions)
+    
+    self.ReplaceCreatureWithAnother(worst_fitness_creature, new_chromosomes)
+    
+    self.generation += 1
+  
   def KTournamentCreatureSelection(self, k=3):
     selected_creatures = self.ChooseKRandomCreatures(k)
     
     worst_fitness_creature = self.population[selected_creatures[0]]
-    #print "at first worst fitness_value",
-    #print self.population[selected_creatures[0]].fitness_value
+    
     other_creatures = []
     for i in selected_creatures[1:]:
-      if self.IsWorseFitnessThen(self.population[i].fitness_value, worst_fitness_creature.fitness_value):
-        #print "new worst fitness_value",
-        #print self.population[i].fitness_value
+      if self.IsWorseFitnessThen(self.population[i].fitness, worst_fitness_creature.fitness):
         other_creatures.append(worst_fitness_creature)
         worst_fitness_creature = self.population[i]  
-        #print "other creatures",
-        #print worst_fitness_creature.fitness_value
       else:
         other_creatures.append(self.population[i])
-        #print "other creatures",
-        #print self.population[i].fitness_value
         
     return worst_fitness_creature, other_creatures
     
@@ -293,48 +294,30 @@ class Population(object):
   def RandomlyChooseCrossover(self, parent_one, parent_two, crossover_functions):
     random_int = random.randint(0, len(crossover_functions) - 1)
     
-    new_group_of_chromosomes = crossover_functions[random_int](parent_one, parent_two)
-    return new_group_of_chromosomes
+    new_chromosomes = crossover_functions[random_int](parent_one, parent_two)
+    return new_chromosomes
   
-  def RandomlyChooseMutation(self, group_of_chromosomes, mutation_functions):
+  def RandomlyChooseMutation(self, chromosomes, mutation_functions):
     random_int = random.randint(0, len(mutation_functions) - 1)
     
-    new_group_of_chromosomes = mutation_functions[random_int](group_of_chromosomes)
-    return new_group_of_chromosomes
+    new_chromosomes = mutation_functions[random_int](chromosomes)
+    return new_chromosomes
   
-  
-  def ReplaceCreatureWithAnother(self, creature, new_group_of_chromosomes):
+  def ReplaceCreatureWithAnother(self, creature, new_chromosomes):
     if self.IsReplacingWorstCreature(creature):
-      creature.group_of_chromosomes = new_group_of_chromosomes
-      creature.SetPoint()
-    
-      creature.SetGoalValue()
+      creature.SetChromosomes(new_chromosomes)
+      creature.SetGoal()
       self.SetBestWorstGoalForAllCreatures()
       
       self.SetFitnessForAllCreatures()
       self.SetBestWorstFitnessForAllCreatures()
-        
     else:
-      creature.group_of_chromosomes = new_group_of_chromosomes
-      creature.SetPoint()
-      
-      creature.SetGoalValue()
-      
+      creature.SetChromosomes(new_chromosomes)
+      creature.SetGoal()
       self.SetBestWorstGoalCreature(creature)
       
-      creature.SetFitnessValue(self.best_goal_creature.goal_value, self.worst_goal_creature.goal_value)
+      creature.SetFitness(self.worst_goal_creature.goal)
       self.SetBestWorstFitnessCreature(creature)
-  
-  def IsDuplicate(self, new_group_of_chromosomes):
-    for creature in self.population:
-      if (creature.group_of_chromosomes == new_group_of_chromosomes):
-        return True
-    return False
-  
-  def IsBestWorstTheSame(self):
-    if (self.worst_goal_creature.goal_value == self.best_goal_creature.goal_value):
-      return True
-    return False
   
   def IsReplacingWorstCreature(self, creature):
     if creature == self.worst_goal_creature:
@@ -342,26 +325,59 @@ class Population(object):
     
     return False
   
+  
+  def __str__(self):
+    pretty_string = ""
+    
+    pretty_string += "Population size:"
+    pretty_string += str(self.population_size)
+    pretty_string += "\n"
+    
+    pretty_string += "Worst goal:"
+    pretty_string += str(self.worst_goal_creature.goal)
+    pretty_string += "\n"
+    
+    pretty_string += "Best goal:"
+    pretty_string += str(self.best_goal_creature.goal)
+    pretty_string += "\n"
+    
+    pretty_string += "Worst fitness:"
+    pretty_string += str(self.worst_goal_creature.fitness)
+    pretty_string += "\n"
+    
+    pretty_string += "Best fitness:"
+    pretty_string += str(self.best_goal_creature.fitness)
+    pretty_string += "\n"
+    
+    return pretty_string
+  
 
 class BinaryPopulation(Population):
   def __init__(self, goal_function, dimensions, min_x, max_x, min_fitness, max_fitness,
-               population_size, precision, p_of_mutation):
+               population_size, precision, p_of_mutation, seed_creatures=[]):
     super(BinaryPopulation, self).__init__(dimensions, min_fitness, max_fitness, population_size, p_of_mutation)
+    self.crossover_functions = [self.KPointCrossover, self.UniformCrossover]
+    self.mutation_functions = [self.SimpleMutation, self.UniformMutation]
     
     self.chromosome_length = self.CalculateChromosomeLength(min_x, max_x, precision)
     
-    self.population = self.CreateBinaryPopulation(goal_function, dimensions, min_x, max_x, min_fitness, max_fitness)
+    self.SeedCreatures(seed_creatures)
+    
+    new_population = self.CreateBinaryPopulation(goal_function, dimensions, min_x, max_x, min_fitness, max_fitness)
+    self.SetPopulation(new_population)
+    
     self.p_of_creature_mutation = self.CalculateCreatureMutationProbability(p_of_mutation)
     self.mutate_bits = self.CalculateHowManyBitsToMutate()
+    
     self.InitializeBestWorstCreatures()
     
     self.EvaluatePopulation()
     
   def CalculateChromosomeLength(self, min_x, max_x, precision):
     interval_length = max_x - min_x
-    log_10_of_floating_point_interval = math.log10(1 + interval_length * (10**precision))
+    log_10_of_interval = math.floor(math.log10(1 + interval_length * (10**precision)))
     log10_of_2 = math.log10(2)
-    chromosome_length = math.ceil(log_10_of_floating_point_interval / log10_of_2)
+    chromosome_length = math.ceil(log_10_of_interval / log10_of_2)
     return int(chromosome_length)
   
   def CalculateCreatureMutationProbability(self, p_of_mutation):
@@ -396,21 +412,21 @@ class BinaryPopulation(Population):
       crossover_points.append(random.randint(1, self.chromosome_length - 2))
     crossover_points.sort()
     
-    new_group_of_chromosomes = []
+    new_chromosomes = []
     for dimension in range(1, self.dimensions + 1):
       
       new_chromosome = []
-      current_chromosome = parent_one.group_of_chromosomes._GetMatrixRow(dimension)
+      current_chromosome = parent_one.chromosomes._GetMatrixRow(dimension)
       for i in range(self.chromosome_length):
         new_chromosome.append(current_chromosome[i])
         if i in crossover_points:
-          chromosome_one = parent_one.group_of_chromosomes._GetMatrixRow(dimension)
-          chromosome_two = parent_two.group_of_chromosomes._GetMatrixRow(dimension)
+          chromosome_one = parent_one.chromosomes._GetMatrixRow(dimension)
+          chromosome_two = parent_two.chromosomes._GetMatrixRow(dimension)
           current_chromosome = self.SwitchChromosome(current_chromosome, chromosome_one, chromosome_two)
       
-      new_group_of_chromosomes.append(new_chromosome)
+      new_chromosomes.append(new_chromosome)
     
-    return Matrix(new_group_of_chromosomes)
+    return Matrix(new_chromosomes)
     
   def SwitchChromosome(self, current_chromosome, chromosome_one, chromosome_two):
     if current_chromosome == chromosome_one:
@@ -428,19 +444,19 @@ class BinaryPopulation(Population):
     -------------
     N:  0001 1101
     """
-    new_group_of_chromosomes = []
+    new_chromosomes = []
     for dimension in range(1, self.dimensions + 1):
       
       new_chromosome = []
       for i in range(self.chromosome_length):
-        chromosome_one = parent_one.group_of_chromosomes._GetMatrixRow(dimension)
-        chromosome_two = parent_two.group_of_chromosomes._GetMatrixRow(dimension)
+        chromosome_one = parent_one.chromosomes._GetMatrixRow(dimension)
+        chromosome_two = parent_two.chromosomes._GetMatrixRow(dimension)
         bit = self.RandomBitIfParentBitsAreDifferent(chromosome_one, chromosome_two, i)
         new_chromosome.append(bit)
         
-      new_group_of_chromosomes.append(new_chromosome)
+      new_chromosomes.append(new_chromosome)
     
-    return Matrix(new_group_of_chromosomes)
+    return Matrix(new_chromosomes)
     
   def RandomBitIfParentBitsAreDifferent(self, chromosome_one, chromosome_two, i):
     if chromosome_one[i] == chromosome_two[i]:
@@ -451,54 +467,36 @@ class BinaryPopulation(Population):
     return bit
     
     
-  def SimpleMutation(self, group_of_chromosomes):
+  def SimpleMutation(self, chromosomes):
     """
     Change a few randomly selected bits.
     """
+    mutated_chromosomes = copy(chromosomes)
     for i in range(self.mutate_bits):
       mutate_bit = random.randint(1, self.chromosome_length)
       for chromosome in range(1, self.dimensions + 1):
-        if group_of_chromosomes[(chromosome, mutate_bit)] == 0:
-          group_of_chromosomes[(chromosome, mutate_bit)] = 1
+        if mutated_chromosomes[(chromosome, mutate_bit)] == 0:
+          mutated_chromosomes[(chromosome, mutate_bit)] = 1
         else:
-          group_of_chromosomes[(chromosome, mutate_bit)] = 0
+          mutated_chromosomes[(chromosome, mutate_bit)] = 0
           
-    return group_of_chromosomes
+    return mutated_chromosomes
     
-  def UniformMutation(self, group_of_chromosomes):
+  def UniformMutation(self, chromosomes):
     """
-    Change every single bit in the chromosome.
+    Change every single bit in the chromosomes.
     """
+    mutated_chromosomes = copy(chromosomes)
     for bit in range(1, self.chromosome_length + 1):
       for chromosome in range(1, self.dimensions + 1):
-        if group_of_chromosomes[(chromosome, bit)] == 0:
-          group_of_chromosomes[(chromosome, bit)] = 1
+        if mutated_chromosomes[(chromosome, bit)] == 0:
+          mutated_chromosomes[(chromosome, bit)] = 1
         else:
-          group_of_chromosomes[(chromosome, bit)] = 0
+          mutated_chromosomes[(chromosome, bit)] = 0
           
-    return group_of_chromosomes
+    return mutated_chromosomes
     
-    
-  def GetNextGeneration(self):
-    worst_fitness_creature, other_creatures = self.KTournamentCreatureSelection(k=3)
-    parent_one = other_creatures[0]
-    parent_two = other_creatures[1]
-    
-    crossover_functions = [self.KPointCrossover, self.UniformCrossover]
-    new_group_of_chromosomes = self.RandomlyChooseCrossover(parent_one, parent_two, crossover_functions)
-    
-    mutation_functions = [self.SimpleMutation, self.UniformMutation]
-    if self.IsRandomlyMutate():
-      new_group_of_chromosomes = self.RandomlyChooseMutation(new_group_of_chromosomes, mutation_functions)
-    
-    # while self.IsDuplicate(new_group_of_chromosomes):
-      # new_group_of_chromosomes = self.RandomlyChooseMutation(new_group_of_chromosomes, mutation_functions)
-    
-    self.ReplaceCreatureWithAnother(worst_fitness_creature, new_group_of_chromosomes)
-    
-    self.generation += 1
-    
-  def IsRandomlyMutate(self):
+  def IsRandomlyMutateCreature(self):
     if (random.random() < self.p_of_creature_mutation):
       return True
     return False
@@ -506,10 +504,16 @@ class BinaryPopulation(Population):
     
 class FloatPopulation(Population):
   def __init__(self, goal_function, dimensions, min_x, max_x, min_fitness, max_fitness,
-               population_size, p_of_mutation):
+               population_size, p_of_mutation, seed_creatures=[]):
     super(FloatPopulation, self).__init__(dimensions, min_fitness, max_fitness, population_size, p_of_mutation)
+    self.crossover_functions = [self.ArithmeticCrossover, self.HeuristicCrossover]
+    self.mutation_functions = [self.GaussianMutation]
     
-    self.population = self.CreateFloatPopulation(goal_function, dimensions, min_x, max_x, min_fitness, max_fitness)
+    self.SeedCreatures(seed_creatures)
+    
+    new_population = self.CreateFloatPopulation(goal_function, dimensions, min_x, max_x, min_fitness, max_fitness)
+    self.SetPopulation(new_population)
+      
     self.InitializeBestWorstCreatures()
     
     self.EvaluatePopulation()
@@ -526,77 +530,64 @@ class FloatPopulation(Population):
     
     
   def ArithmeticCrossover(self, parent_one, parent_two):
-    new_group_of_chromosomes = []
+    new_chromosomes = []
     a = random.random()
 
-    for dimension in range(1, self.dimensions + 1):
+    for chromosome in range(1, self.dimensions + 1):
       new_chromosome = []
       
-      value_one = parent_one.group_of_chromosomes[(dimension, 1)]
-      value_two = parent_two.group_of_chromosomes[(dimension, 1)]
+      value_one = parent_one.chromosomes[(chromosome, 1)]
+      value_two = parent_two.chromosomes[(chromosome, 1)]
       
       new_value = a * value_one + (1 - a) * value_two
       new_chromosome.append(new_value)
       
-      new_group_of_chromosomes.append(new_chromosome)
+      new_chromosomes.append(new_chromosome)
     
-    return Matrix(new_group_of_chromosomes)
+    return Matrix(new_chromosomes)
     
   def HeuristicCrossover(self, parent_one, parent_two):
-    new_group_of_chromosomes = []
+    new_chromosomes = []
     a = random.random()
 
-    for dimension in range(1, self.dimensions + 1):
+    for chromosome in range(1, self.dimensions + 1):
       new_chromosome = []
       
-      if parent_one.fitness_value > parent_two.fitness_value:
-        value_one = parent_two.group_of_chromosomes[(dimension, 1)]
-        value_two = parent_one.group_of_chromosomes[(dimension, 1)]
+      if parent_one.fitness > parent_two.fitness:
+        worse_value = parent_two.chromosomes[(chromosome, 1)]
+        better_value = parent_one.chromosomes[(chromosome, 1)]
       else:
-        value_one = parent_one.group_of_chromosomes[(dimension, 1)]
-        value_two = parent_two.group_of_chromosomes[(dimension, 1)]
+        worse_value = parent_one.chromosomes[(chromosome, 1)]
+        better_value = parent_two.chromosomes[(chromosome, 1)]
       
-      new_value = a * (value_two - value_one) + value_two
+      new_value = a * (better_value - worse_value) + better_value
       new_chromosome.append(new_value)
       
-      new_group_of_chromosomes.append(new_chromosome)
+      new_chromosomes.append(new_chromosome)
     
-    return Matrix(new_group_of_chromosomes)
+    return Matrix(new_chromosomes)
     
     
-  def GaussianMutation(self, group_of_chromosomes):
-    for row in range(1, self.dimensions + 1):
-      group_of_chromosomes[(row, 1)] = normal(group_of_chromosomes[(row, 1)], 1.0)
+  def GaussianMutation(self, chromosomes):
+    standard_deviation = 1.0
+    
+    mutated_chromosomes = []
+    for chromosome in range(1, self.dimensions + 1):
+      mean = chromosomes[(chromosome, 1)]
+      mutated_chromosomes.append([normal(mean, standard_deviation)])
       
-    return group_of_chromosomes
-    
-    
-  def GetNextGeneration(self):
-    worst_fitness_creature, other_creatures = self.KTournamentCreatureSelection(k=3)
-    parent_one = other_creatures[0]
-    parent_two = other_creatures[1]
-    
-    crossover_functions = [self.ArithmeticCrossover, self.HeuristicCrossover]
-    new_group_of_chromosomes = self.RandomlyChooseCrossover(parent_one, parent_two, crossover_functions)
-    
-    mutation_functions = [self.GaussianMutation]
-    if self.IsRandomlyMutate():
-      new_group_of_chromosomes = self.RandomlyChooseMutation(new_group_of_chromosomes, mutation_functions)
-          
-    # while self.IsDuplicate(new_group_of_chromosomes):
-      # new_group_of_chromosomes = self.RandomlyChooseMutation(new_group_of_chromosomes, mutation_functions)
-      
-    self.ReplaceCreatureWithAnother(worst_fitness_creature, new_group_of_chromosomes)
-    
-    self.generation += 1
-    
-  def IsRandomlyMutate(self):
-    if (random.randint(1, int(1 / self.p_of_mutation)) == 1):
+    return Matrix(mutated_chromosomes)
+       
+  def IsRandomlyMutateCreature(self):
+    if (random.random() < self.p_of_mutation):
       return True
     return False
     
   
 class Creature(object):
+  """
+  A creature has a solution, a solution representation (chromosomes), goal and fitness value.
+  """
   def __init__(self, goal_function, dimensions, min_x, max_x, min_fitness, max_fitness):
     self.goal_function = goal_function
     self.dimensions = dimensions
@@ -605,36 +596,83 @@ class Creature(object):
     self.min_fitness = min_fitness
     self.max_fitness = max_fitness
     
-    self.group_of_chromosomes = False
+    self.chromosomes = False
     self.point = False
     
-    self.goal_value = False
-    self.fitness_value = False
+    self.goal = False
+    self.fitness = False
     
-  def GenerateRandomFloatingPointValue(self):
-    floating_point = random.uniform(self.min_x, self.max_x)
-    return floating_point
+  def GenerateRandomFloat(self):
+    floating = random.uniform(self.min_x, self.max_x)
+    return floating
    
-  def SetGoalValue(self):
-    goal_value = self.goal_function(self.point)
-    self.goal_value = goal_value
-    return goal_value
+  def SetChromosomes(self, chromosomes):
+    self.chromosomes = chromosomes
+    self.SetPoint()
+    return True
+   
+  def SetGoal(self):
+    goal = self.goal_function(self.point)
+    self.goal = goal
+    return goal
     
-  def SetFitnessValue(self, best_goal_value, worst_goal_value):
+  def SetFitness(self, worst_goal):
+    fitness = worst_goal - self.goal
+    self.fitness = fitness
+    return fitness
+   
+  def SetWindowedFitness(self, best_goal, worst_goal):
     """
+    a is minimal fitness value
+    b is maximal fitness value
     Windowing:
     Fi = a + (b - a) * ((fi - f_worst) / (f_best - f_worst))
     """
-    #fitness_interval_length = self.max_fitness - self.min_fitness
-    #goal_value_minus_worst_goal_value = self.goal_value - worst_goal_value
-    #best_worst_goal_difference = best_goal_value - worst_goal_value
+    fitness_interval = self.max_fitness - self.min_fitness
+    goal_minus_worst_goal = self.goal - worst_goal
+    best_worst_goal_difference = best_goal - worst_goal
     
-    #fitness = self.min_fitness + (fitness_interval_length * goal_value_minus_worst_goal_value) / best_worst_goal_difference
-    
-    fitness = worst_goal_value - self.goal_value
-    self.fitness_value = fitness
+    fitness = self.min_fitness + (fitness_interval * goal_minus_worst_goal) / best_worst_goal_difference
+    self.fitness = fitness
     return fitness
-   
+  
+  
+  def __str__(self):
+    pretty_string = ""
+    
+    problem_bounds = [self.min_x, self.max_x]
+    pretty_string += "Problem_bounds: "
+    pretty_string += str(problem_bounds)
+    pretty_string += "\n"
+    
+    fitness_bounds = [self.min_fitness, self.max_fitness]
+    pretty_string += "Fitness_bounds: "
+    pretty_string += str(fitness_bounds)
+    pretty_string += "\n"
+    
+    pretty_string += "Chromosome_length: "
+    pretty_string += str(len(self.chromosomes._GetMatrixRow(0)))
+    pretty_string += "\n"
+    
+    pretty_string += "Chromosomes: "
+    pretty_string += "\n"
+    pretty_string += str(self.chromosomes)
+    pretty_string += "\n"
+    
+    pretty_string += "Points: "
+    pretty_string += str(self.point)
+    pretty_string += "\n"
+    
+    pretty_string += "Goal value: "
+    pretty_string += str(self.goal)
+    pretty_string += "\n"
+    
+    pretty_string += "Fitness value: "
+    pretty_string += str(self.fitness)
+    pretty_string += "\n"
+    
+    return pretty_string
+
    
 class BinaryCreature(Creature):
   def __init__(self, goal_function, dimensions, min_x, max_x, min_fitness, max_fitness, chromosome_length):
@@ -642,34 +680,37 @@ class BinaryCreature(Creature):
     
     self.chromosome_length = chromosome_length
     
-    self.group_of_chromosomes = self.CreateChromosome()
-    self.SetPoint()
+    chromosomes = self.CreateChromosome()
+    self.SetChromosomes(chromosomes)
     
   def CreateChromosome(self):
-    group_of_chromosomes = []
+    """
+    Matrix([[binary],[binary],[binary]])
+    """
+    chromosomes = []
     for i in range(self.dimensions):
-      random_number = self.GenerateRandomFloatingPointValue()
-      random_binary_number = self.ConvertFloatingPointToBinary(random_number)
+      random_number = self.GenerateRandomFloat()
+      random_binary_number = self.ConvertFloatToBinary(random_number)
       
       chromosome = self.CreateBinaryChromosome(random_binary_number)
-      group_of_chromosomes.append(chromosome)
+      chromosomes.append(chromosome)
       
-    return Matrix(group_of_chromosomes)
+    return Matrix(chromosomes)
   
-  def ConvertFloatingPointToBinary(self, floating_point):
+  def ConvertFloatToBinary(self, floating):
     interval_length = self.max_x - self.min_x
-    binary_value = (floating_point - self.min_x) / interval_length * (2**self.chromosome_length)
-    return int(round(binary_value))
+    binary = (floating - self.min_x) / interval_length * (2**self.chromosome_length - 1)
+    return int(round(binary))
     
-  def ConvertBinaryToFloatingPoint(self, binary_value):
-    floating_binary_value = float(binary_value)
+  def ConvertBinaryToFloat(self, binary):
+    floating = float(binary)
     interval_length = self.max_x - self.min_x
-    floating_point = self.min_x + floating_binary_value / (2**self.chromosome_length) * interval_length
-    return floating_point
+    floating = self.min_x + floating / (2**self.chromosome_length - 1) * interval_length
+    return floating
     
-  def CreateBinaryChromosome(self, binary_value):
+  def CreateBinaryChromosome(self, binary):
     binary_chromosome = []
-    dividend = binary_value
+    dividend = binary
     divisor = 2
     while (dividend > 0):
       remainder = dividend % divisor
@@ -695,23 +736,23 @@ class BinaryCreature(Creature):
       
     return chromosome
     
-  def ConvertBinaryChromosomeToBinaryValue(self, binary_chromosome):
+  def ConvertBinaryChromosomeToBinary(self, binary_chromosome):
     reverse_binary_chromosome = self.ReverseList(binary_chromosome)
     
     bit_position = 0
-    binary_value = 0
+    binary = 0
     for bit in reverse_binary_chromosome:
-      binary_value += bit * (2**bit_position)
+      binary += bit * (2**bit_position)
       bit_position += 1
       
-    return binary_value
+    return binary
     
   def SetPoint(self):
     point = []
     for chromosome in range(1, self.dimensions + 1):
-      binary_value = self.ConvertBinaryChromosomeToBinaryValue(self.group_of_chromosomes._GetMatrixRow(chromosome))
-      floating_point = self.ConvertBinaryToFloatingPoint(binary_value)
-      point.append(floating_point)
+      binary = self.ConvertBinaryChromosomeToBinary(self.chromosomes._GetMatrixRow(chromosome))
+      floating = self.ConvertBinaryToFloat(binary)
+      point.append(floating)
       
     self.point = point
     return point
@@ -721,30 +762,38 @@ class FloatCreature(Creature):
   def __init__(self, goal_function, dimensions, min_x, max_x, min_fitness, max_fitness):
     super(FloatCreature, self).__init__(goal_function, dimensions, min_x, max_x, min_fitness, max_fitness)
     
-    self.group_of_chromosomes = self.CreateChromosome()
-    self.SetPoint()
+    chromosomes = self.CreateChromosome()
+    self.SetChromosomes(chromosomes)
     
   def CreateChromosome(self):
-    group_of_chromosomes = []
+    """
+    Matrix([[floating],[floating],[floating]])
+    """
+    chromosomes = []
     for d in range(self.dimensions):
-      random_number = self.GenerateRandomFloatingPointValue()
+      random_float = self.GenerateRandomFloat()
       
-      chromosome = self.CreateFloatingPointChromosome(random_number)
-      group_of_chromosomes.append(chromosome)
+      chromosome = self.CreateFloatChromosome(random_float)
+      chromosomes.append(chromosome)
       
-    return Matrix(group_of_chromosomes)
+    return Matrix(chromosomes)
     
-  def CreateFloatingPointChromosome(self, floating_point):
-    floating_point_chromosome = []
-    floating_point_chromosome.append(floating_point)
+  def CreateFloatChromosome(self, floating):
+    floating_chromosome = []
+    floating_chromosome.append(floating)
     
-    return floating_point_chromosome
-      
+    return floating_chromosome
+     
   def SetPoint(self):
     point = []
     for chromosome in range(1, self.dimensions + 1):
-      point.append(self.group_of_chromosomes._GetMatrixRow(chromosome)[0])
+      point.append(self.chromosomes._GetMatrixRow(chromosome)[0])
       
     self.point = point
     return point
     
+
+  
+
+  
+""""""
