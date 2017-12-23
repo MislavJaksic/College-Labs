@@ -29,7 +29,7 @@ def TaskOne():
                                 # max_evaluations=max_evals, reach_goal=desired_goal_value, no_improvement_limit=divergence_at)
     
     GA = GeneticAlgorithm(goal_function=f7, dimensions=2, problem_bounds=problem_bounds,
-                                fitness_bounds=(0,100), population_size=20, display="binary", precision=4, p_of_mutation=0.01, 
+                                fitness_bounds=(0,100), population_size=100, display="float", precision=0, p_of_mutation=0.01, 
                                 max_evaluations=max_evals, reach_goal=desired_goal_value, no_improvement_limit=divergence_at)
     
     point, goal_value = GA.SolveProblem()
@@ -152,13 +152,13 @@ def ParamOpti():
   iterations = 21
   
   population_values = [30, 50, 100, 200] #[30, 50, 100, 200]
-  #mutation_values = [0.01] #[0.01,0.05,0.1,0.2,0.5]
-  #precision_values = [2,4]
-  for opti_value in population_values:
+  mutation_values = [0.01,0.05] #[0.01,0.05,0.1,0.2,0.5]
+  precision_values = [0,2,4,8,16]
+  for opti_value in mutation_values:
     results = []
     for i in range(iterations):
-      GA = GeneticAlgorithm(goal_function=f7, dimensions=2, problem_bounds=problem_bounds,
-                            fitness_bounds=(0,100), population_size=opti_value, display="float", precision=0, p_of_mutation=0.2, 
+      GA = GeneticAlgorithm(goal_function=f6, dimensions=2, problem_bounds=problem_bounds,
+                            fitness_bounds=(0,100), population_size=50, display="binary", precision=8, p_of_mutation=opti_value, 
                             max_evaluations=max_evals, reach_goal=desired_goal_value)
       point, goal_value = GA.SolveProblem()
       results.append((goal_value, point))

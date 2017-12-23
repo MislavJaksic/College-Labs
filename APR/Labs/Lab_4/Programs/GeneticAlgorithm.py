@@ -33,7 +33,7 @@ class GeneticAlgorithm(object):
     self.p_of_mutation = p_of_mutation
     
     self.max_generations = max_generations #suggested value is
-    self.max_evaluations = max_evaluations #suggested value is 5000
+    self.max_evaluations = max_evaluations #suggested value is 10000
     self.reach_goal = reach_goal #suggested value is (0.1)**6
     self.no_improvement_limit = no_improvement_limit #suggested value is 10% of evaluation limit
     self.time_limit = time_limit #suggested value is
