@@ -420,7 +420,7 @@ class Matrix(object):
     x = deepcopy(y)
     for i in range(self.n_rows, 0, -1):
       if self._IsFloatsEqual(U[(i, i)], 0.0):
-        # print "Upper(U) element" + "(" + str(i) + str(i) + ")" + "is very close to zero:" + str(U[(i, i)])
+        print "Upper(U) element" + "(" + str(i) + str(i) + ")" + "is very close to zero:" + str(U[(i, i)])
         raise ZeroDivisionError
       x[(i, 1)] /= float(U[(i, i)])
       for j in range(1, i):
