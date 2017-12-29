@@ -2,7 +2,7 @@ from Programs.Matrix import Matrix
 
 def SolveTasks(tasks):
   for task in tasks:
-    print "Solving task:"+task
+    print "Solving task:" + task
     TryToSolveATask(task)
     
 def TryToSolveATask(path):
@@ -20,14 +20,15 @@ def TryToSolveATask(path):
   try:
     print "-.-.- solveAxbWithLU -.-.-"
     x, y = Matrix.solveAxbWithLU(A, b)
-    ShowResults(x, y)
+    PrintResults(x, y)
   except ZeroDivisionError:
     print u"Cannot solve with LU"
     print
+    
   try:
     print "-.-.- solveAxbWithLUP -.-.-"
     x, y = Matrix.solveAxbWithLUP(A, b)
-    ShowResults(x, y)
+    PrintResults(x, y)
   except ZeroDivisionError:
     print u"Cannot solve with LUP"
     print
@@ -35,16 +36,16 @@ def TryToSolveATask(path):
 def CreateMatricies(path):
   A = Matrix.fromFile(path.replace("Y", "A"))
   b = Matrix.fromFile(path.replace("Y", "b"))
-  ShowLoaded(A, b)
+  PrintLoaded(A, b)
   return A, b
   
-def ShowLoaded(A, b):
+def PrintLoaded(A, b):
   print "A:"
   print A
   print "b:"
   print b
   
-def ShowResults(x, y):
+def PrintResults(x, y):
   print "x:"
   print x
   print "y:"

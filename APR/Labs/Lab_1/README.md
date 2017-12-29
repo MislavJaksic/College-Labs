@@ -1,6 +1,6 @@
 ## Lab One:
 
-Implement a Matrix class which will allows you to more easily manipulate with matrices.
+Implement a Matrix class which will allows you to effortlessly manipulate matrices.
 Functionalities:
   constructor. -> __init__
   deconstructor. -> del
@@ -14,5 +14,5 @@ Functionalities:
   read matrix from a file. -> fromFile
   output matrix to a file. -> toFile
 
-The Matrix class should implement forward and back substitution as well as both LU and LUP decomposition.
+The Matrix class should also implement forward and back substitution as well as LU and LUP decomposition.
 As a bonus, implement a method that inverses the matrix.
