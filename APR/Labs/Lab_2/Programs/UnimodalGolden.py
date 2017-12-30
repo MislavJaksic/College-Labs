@@ -104,10 +104,10 @@ def GoldenSectionSearch(startingValue, GoalFunction, epsilon=((0.1)**6), doUnimo
 
   C = B - (B - A) / golden_ratio
   D = A + (B - A) / golden_ratio
-  #_PrintPoints(A, C, D, B, F) #Deactivate during peformance analysis
+  _PrintPoints(A, C, D, B, F) #Deactivate during peformance analysis
   while _IsIntervalBig(A, B, epsilon):
     A, C, D, B = _CalculatePoints(A, C, D, B, F)
-    #_PrintPoints(A, C, D, B, F) #Deactivate during peformance analysis
+    _PrintPoints(A, C, D, B, F) #Deactivate during peformance analysis
       
   return (B + A) / 2
   

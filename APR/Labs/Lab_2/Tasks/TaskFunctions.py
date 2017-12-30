@@ -1,4 +1,4 @@
-"""All functions have a uniform interface, x is a list"""
+"""All functions have a uniform interface"""
 import math
 
 def f1(x):

@@ -1,22 +1,26 @@
 ﻿## APR
 
-APR stands for "Analiza i projektiranje računalom" (eng. Computer analysis and design).
+APR stands for "Analiza i projektiranje računalom" (eng. Computer Aided Analysis and Design).
 
-### Syllabus
 
-Translated from Croatian to English:
+### [Syllabus](http://www.fer.unizg.hr/en/course/apr)
 
-1) solving linear systems: these algorithms are used while solving more complex problems.
-2) nonlinear optimization processes: takes up most of the semester. There are problems which cannot be solved exactly.
-3) genetic and evolutionary algorithms: similar to 2), but they are stochastic algorithms.
-4) state transitions analysis: understand how solids and liquids can be simulated in an "engine". How to quickly calculate what will physically happen.
-5) error analysis: problems occur if the mistake has compounded. Kahn's algorithm.
-6) algorithm complexity: a well known subject.
+The following algorithms were taught during the course, but were not mplemented: Fibbonaci section search, Gauss-Newton, Levenberg-Marquardt, calculating the stability of numerical integration methods.
 
-### Labs
 
-Tasks which I had to solve and algorithms I had to implement to pass the course.
+### Laboratory exercices
 
-### Lectures
+Lab_1: Matrix class, LU and LUP decomposition, back and foward substitution
 
-A collection of notes I made during the lecture. The notes are written in Croatian.
+Lab_2: golden section search, Nealder-Mead simplex method, Hooke-Jeeves method on Rosenbrock's function
+
+Lab_3: gradient descent, Newton-Raphson method, Box method, constrained problem transformation on Rosenbrock's function
+
+Lab_4: genetic algorithm capable of finding a global minimum of Schaffer's F6 and F7
+
+Lab_5: fourth order Runge-Kutta numerical integration method
+
+
+### Lecture notes
+
+A collection of notes I made during the lectures. The notes are written in Croatian.

@@ -1,4 +1,4 @@
-## Lab One:
+## Lab One
 
 Implement a Matrix class which will allows you to effortlessly manipulate matrices.
 Functionalities:

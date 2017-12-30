@@ -1,7 +1,6 @@
 from copy import copy
 
 def HookeJeeves(startingPoint, GoalFunction, steps=[], epsilon=(0.1)**6):
-  """startingPoint is a Python list"""
   xb = xp = xn = []
   xb = xp = startingPoint
   F = GoalFunction
@@ -12,7 +11,7 @@ def HookeJeeves(startingPoint, GoalFunction, steps=[], epsilon=(0.1)**6):
   
   while(steps[0] > epsilon):
     xn = _FindBestStepPoint(xp, steps, F)
-    #_PrintRow(xb, xp, xn, F, steps[0]) #Deactivate during peformance analysis
+    _PrintRow(xb, xp, xn, F, steps[0]) #Deactivate during peformance analysis
     
     if _IsXBFartherFromMinThenXN(xb, xn, F):
       xp = _ReflectXBAccrossXN(xb, xn)

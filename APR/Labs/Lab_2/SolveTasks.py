@@ -18,8 +18,8 @@ def TaskOne():
 def TaskTwo():
   #function_value_pairs = [([-1.9,2.],f1)]
   #function_value_pairs = [([0.1,0.3],f2)]
-  #function_value_pairs = [([0,0,0,0,0],f3)]
-  function_value_pairs = [([5.1,1.1],f4)]
+  function_value_pairs = [([0,0,0,0,0],f3)]
+  #function_value_pairs = [([5.1,1.1],f4)]
   for startingPoint, function in function_value_pairs:
     Solve(startingPoint, function)
   
@@ -95,8 +95,8 @@ def CountInvocations(function):
   return interdictor
   
 #TaskOne()
-#TaskTwo()
+TaskTwo()
 #TaskThree()
 #TaskFour()
-TaskFive()
+#TaskFive()
 

@@ -11,8 +11,8 @@ ERROR = epsilon = (0.1)**6
 class Matrix(object):
   """'Private' methods are prefixed with an underscore (_).
      'Public' methods have a lowercase first letter.
-     CamelCase for both functions and variable names.
-     __method__ are Python data models (or "magic methods") that overrride or add Python functionalities.
+     CamelCase is used for both function and variable names.
+     __doubleUnderscoreMethods__ are Python data models (or "magic methods") that override or add Python functionalities.
      
      When an error if found, an exception is raised as soon the program exits the _Is boolean function.
        Its less complicated to raise an exception, then to return error codes and ensure robustness.
@@ -178,7 +178,7 @@ class Matrix(object):
   
   def __add__(self, other):
     if not self._IsMatricesSameDimension(other):
-      raise Exception(u"Matrices are not of the same dimnsion.")
+      raise Exception(u"Matrices are not of the same dimension.")
       
     zeroesMatrix = Matrix(self.n_rows, self.m_columns)
     for row in range(1, self.n_rows+1):
@@ -188,7 +188,7 @@ class Matrix(object):
     
   def __sub__(self, other):
     if not self._IsMatricesSameDimension(other):
-      raise Exception(u"Matrices are not of the same dimnsion.")
+      raise Exception(u"Matrices are not of the same dimension.")
       
     zeroesMatrix = Matrix(self.n_rows, self.m_columns)
     for row in range(1, self.n_rows+1):
@@ -211,7 +211,7 @@ class Matrix(object):
     
   def _GetMulDimensions(self, other):
     if not self._IsMulDimension(other):
-      raise Exception(u"Cannot multiply matricies.Inner dimensions are wrong:" + str(self.n_rows) + str(self.m_columns) + " " + str(other.n_rows) + str(other.m_columns))
+      raise Exception(u"Cannot multiply matricies. Inner dimensions are wrong:" + str(self.n_rows) + str(self.m_columns) + " " + str(other.n_rows) + str(other.m_columns))
     return self.n_rows, other.m_columns
     
   def _IsMulDimension(self, other):
@@ -354,6 +354,7 @@ class Matrix(object):
     for i in range(k+1, self.n_rows+1):
       if self._IsFloatsEqual(self[(k, k)], 0.0):
         print "Element" + "(" + str(k) + str(k) + ")" + "is very close to zero:" + str(self[(k, k)])
+        print "Raising error..."
         raise ZeroDivisionError
       self[(i, k)] = self[(i, k)] / float(self[(k, k)])
     print "Divided below the pivot element:"
@@ -374,6 +375,7 @@ class Matrix(object):
         l = i
     if self._IsFloatsEqual(pivot, 0.0):
       print "Largest pivot" + "(" + str(i) + str(k) + ")" + "is very close to zero:" + str(pivot)
+      print "Raising error..."
       raise ZeroDivisionError
     return l
   
@@ -419,6 +421,7 @@ class Matrix(object):
     for i in range(self.n_rows, 0, -1):
       if self._IsFloatsEqual(U[(i, i)], 0.0):
         print "Upper(U) element" + "(" + str(i) + str(i) + ")" + "is very close to zero:" + str(U[(i, i)])
+        print "Raising error..."
         raise ZeroDivisionError
       x[(i, 1)] /= float(U[(i, i)])
       for j in range(1, i):

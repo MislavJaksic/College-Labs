@@ -7,24 +7,22 @@ def CoordinateDescent(startingPoint, GoalFunction, steps=[], epsilon=((0.1)**6))
   if not steps:
     for i in range(len(x)):
       steps.append(1)
-  xPrevious = copy(x) #for the purpose of checking the while condition
+  xPrevious = copy(x)
   for i in range(len(x)):
     xPrevious[i] += (i + 1)
     
   while _IsAtLeastOnePointWasMoved(x, xPrevious, epsilon):
+    
     xPrevious = copy(x)
-    for i in range(len(x)):
-      KStartingValue = (0, steps[i])
+    for descentDimension in range(len(x)):
+      singleDimensionF = _CreateOneDimensionFunction(F, x, descentDimension)
       
-      compositePoint = _CreateCompositePoint(x, i)
-      KPoint = [x[i], 1]
-      singleDimensionF = _CreateOneDimensionFunction(F, compositePoint, i, KPoint)
-      
+      KStartingValue = (0, steps[descentDimension])
       KMinimum = GoldenSectionSearch(KStartingValue, singleDimensionF, epsilon, doUnimodal=True)
       
-      print "Minimum of " + str(compositePoint) + " is " + str(KMinimum)
+      print "Add " + str(KMinimum) + " to " + str(x[descentDimension])
       
-      x[i] += KMinimum
+      x[descentDimension] += KMinimum
       
   return x
     
@@ -34,23 +32,18 @@ def _IsAtLeastOnePointWasMoved(x, xPrevious, epsilon):
       return True
   return False
   
-def _CreateOneDimensionFunction(compositeFunction, compositePoint, KIndex, KPoint):
-  """baseF(x) = x[0]         **2 + x[1]**2 is given x = [1 + (2 * k), 3] which transforms baseF(x) into
-     compF(k) = (1 + (2 * k))**2 + 3   **2, where KFunction(k) = (1 + (2 * k))"""
+def _CreateOneDimensionFunction(F, x, descentDimension):
+  """F(x) = x[0]         **2 + x[1]**2 and x[0]=(1 + (2 * k)) and x[1]=3 into
+     F(k) = (1 + (2 * k))**2 + 3   **2, where KFunction(k) = (1 + (2 * k))"""
   def interdictor(value):
-    currentCompositePoint = copy(compositePoint)
-    currentCompositePoint[KIndex] = _KFunction(KPoint[0], KPoint[1]*value)
+    compositePoint = copy(x)
+    compositePoint[descentDimension] = _KFunction(x[descentDimension], value)
     
-    calculation = compositeFunction(currentCompositePoint)
+    calculation = F(compositePoint)
     return calculation
     
   return interdictor
   
 def _KFunction(a, b):
-  return a + b 
-  
-def _CreateCompositePoint(x, KIndex):
-  compositePoint = copy(x)
-  compositePoint[KIndex] = "KFunction"
-  return compositePoint
+  return a + b
   

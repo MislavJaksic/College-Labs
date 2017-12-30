@@ -15,17 +15,11 @@ def test_CoordinateDescent_IsAtLeastOnePointWasMovedF():
   epsilon = (0.1)**6
   assert Programs.CoordinateDescent._IsAtLeastOnePointWasMoved(x, xPrevious, epsilon) == False
   
-def test_CoordinateDescent_CreateCompositePoint():
-  x = [1,2,3,4]
-  i = 2
-  assert Programs.CoordinateDescent._CreateCompositePoint(x, i) == [1,2,"KFunction",4]
-  
 def test_CoordinateDescent_CreateOneDimensionFunction():
   compositeFunction = lambda x: x[0]**2 + x[1]**2 + x[2]**2
-  compositePoint = [1,2,"KFunction"]
-  KPoint = [3, 4]
-  result = Programs.CoordinateDescent._CreateOneDimensionFunction(compositeFunction, compositePoint, 2, KPoint)
-  assert result(5) == 534
+  compositePoint = [1,4,3]
+  result = Programs.CoordinateDescent._CreateOneDimensionFunction(compositeFunction, compositePoint, 2)
+  assert result(5) == 81
   
 def test_CoordinateDescent():
   startingPoint = [7,3]
