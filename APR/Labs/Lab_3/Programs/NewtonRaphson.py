@@ -23,7 +23,7 @@ def NewtonRaphson(startingPoint, GoalFunction, PartialDerivativeFunctions, Hessi
     
     x = _MovePoint(x, KMin, moveDirection)
       
-    #_PrintNewtonRaphson(gradientNorm, inverseHessian, x)
+    _PrintNewtonRaphson(gradientNorm, inverseHessian, x)
     
     if _IsDiverging(x, F, bestValue, epsilon):
       divergenceCounter += 1
@@ -33,7 +33,7 @@ def NewtonRaphson(startingPoint, GoalFunction, PartialDerivativeFunctions, Hessi
     if divergenceCounter > DIVERGENCE_THRESHOLD:
       print "Divergence limit has been reached"
       break
-    if not _IsGradientNormLarge(gradientNorm, epsilon):
+    if _IsGradientNormSmall(gradientNorm, epsilon):
       break
       
   return x._GetMatrixColumn(1)
@@ -126,8 +126,8 @@ def _CreateOneDimensionFunction(compositeFunction, KPoint, KVector):
 def _KFunction(a, b):
   return a + b 
   
-def _IsGradientNormLarge(gradientNorm, epsilon):
-  if epsilon < gradientNorm:
+def _IsGradientNormSmall(gradientNorm, epsilon):
+  if epsilon > gradientNorm:
     return True
   return False
 

@@ -5,18 +5,6 @@ from numpy.random import normal
 from Helpers.Matrix import Matrix
 
 class GeneticAlgorithm(object):
-  """
-  #create population
-  #evaluate the population
-  #repeat:
-  #  randomly choose 3 creatures 
-  #  kill the worst among them
-  #  new_creature = crossover(two surviving creatures)
-  #  mutate new_creature with some probability
-  #  evaluate the new_creature
-  #  add the new_creature to population
-  #until(stop condition has been reached)
-  """
   def __init__(self, goal_function, dimensions, problem_bounds, fitness_bounds=(0,100),
                population_size=100, display="binary", precision=4, p_of_mutation=0.01, 
                max_generations=False, max_evaluations=False, reach_goal=False, no_improvement_limit=False, time_limit=False):

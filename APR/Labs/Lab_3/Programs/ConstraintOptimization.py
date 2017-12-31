@@ -10,8 +10,6 @@ def ConstraintOptimization(startingPoint, GoalFunction, Inequalities, Equalities
   x, F, gs, hs = _MapToMathsNames(startingPoint, GoalFunction, Inequalities, Equalities)
   
   x = _PlacePointWithinConstraints(x, gs)
-  #print "Point is within constraints:"
-  #print x
   
   divergenceCounter = 0
   bestValue = LARGE_VALUE
