@@ -4,12 +4,12 @@ During the master's studies at the University of Zagreb, Faculty of Electrical E
 
 
 APR (eng. Computer Aided Analysis and Design):
-Solving systems of linear equations - matrix manipulation, foward and back substitution, LU and LUP decomposition
-Single variable nonlinear function optimization - golden section search, Nealder-Mead simplex method, Hooke-Jeeves method
-Multiple variable nonlinear function optimization - gradient descent, Newton-Raphson method
-Constrained optimization - Box method, constrained problem transformation
-Genetic algorithm - representation, crossover, mutation, optimal parameter search
-Numerical integration - Runge-Kutta methods
+* Solving systems of linear equations - matrix manipulation, foward and back substitution, LU and LUP decomposition
+* Single variable nonlinear function optimization - golden section search, Nealder-Mead simplex method, Hooke-Jeeves method
+* Multiple variable nonlinear function optimization - gradient descent, Newton-Raphson method
+* Constrained optimization - Box method, constrained problem transformation
+* Genetic algorithm - representation, crossover, mutation, optimal parameter search
+* Numerical integration - Runge-Kutta methods
 
 SU (eng. Machine Learning):
 
