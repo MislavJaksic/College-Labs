@@ -1,3 +1,7 @@
+from Helpers.Matrix import Matrix
+
+from copy import deepcopy
+
 def TrapezoidalRule(A, B, current_state, period, interval_length):
   """
   Solve dx = A*x + B with
@@ -22,9 +26,16 @@ def TrapezoidalRule(A, B, current_state, period, interval_length):
   return xs, time
   
 def ApproximateTrapezoidal(A, x, T):
+  I = Matrix([[1,0], [0,1]])
+  R = (I - deepcopy(A).scale(T/2.))
+  R.inverse()
+  next_x = R * (I + deepcopy(A).scale(T/2.)) * x
+  return next_x
+
+def RungeKuttaTwo(A, x, T):
   m1 = A * (x)
-  m2 = A * (x + m1.scale(T/2))
-  next_x = x + m2.scale(T)
+  m2 = A * (x + deepcopy(m1).scale(T/2.))
+  next_x = x + deepcopy(m2).scale(T)
   return next_x
   
 def RungeKuttaFour(A, B, current_state, period, interval_length):
@@ -55,11 +66,11 @@ def RungeKuttaFour(A, B, current_state, period, interval_length):
     
 def ApproximateRungeKutta(A, x, T):
   m1 = A * (x)
-  m2 = A * (x + m1.scale(T/2))
-  m3 = A * (x + m2.scale(T/2))
-  m4 = A * (x + m3.scale(T))
-  sum_ms = m1 + m2.scale(2) + m3.scale(2) + m4
-  next_x = x + sum_ms.scale(T/6)
+  m2 = A * (x + deepcopy(m1).scale(T/2.))
+  m3 = A * (x + deepcopy(m2).scale(T/2.))
+  m4 = A * (x + deepcopy(m3).scale(T))
+  sum_ms = m1 + deepcopy(m2).scale(2.) + deepcopy(m3).scale(2) + m4
+  next_x = x + sum_ms.scale(T/6.)
   return next_x
   
 def AppendVector(vector, vectors):

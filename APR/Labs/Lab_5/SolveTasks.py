@@ -27,9 +27,8 @@ def TaskThree():
   T = 0.01
   interval_length = 20
   
-  xs, time = TrapezoidalRule(A, B, x0, T, interval_length)
-  DrawGraph(xs, time)
-  interval_length = 100
+  #xs, time = TrapezoidalRule(A, B, x0, T, interval_length)
+  #DrawGraph(xs, time)
   xs, time = RungeKuttaFour(A, B, x0, T, interval_length)
   DrawGraph(xs, time)
   
@@ -57,12 +56,12 @@ def TaskFour():
   B = 0
   x0 = Matrix([[1],[-2]])
   T = 0.01
-  interval_length = 20
+  interval_length = 5
   
   xs, time = TrapezoidalRule(A, B, x0, T, interval_length)
   DrawGraph(xs, time)
-  xs, time = RungeKuttaFour(A, B, x0, T, interval_length)
-  DrawGraph(xs, time)
+  #xs, time = RungeKuttaFour(A, B, x0, T, interval_length)
+  #DrawGraph(xs, time)
   
 def TrueFunction(x, t):
   return x[0]*math.cos(t) + x[1]*math.sin(t)
@@ -76,6 +75,6 @@ def DrawGraph(xs, time):
 
 #TaskOne()
 #TaskTwo()
-#TaskThree()
+TaskThree()
 #TaskThreeTrueFunction()
-TaskFour()
+#TaskFour()
