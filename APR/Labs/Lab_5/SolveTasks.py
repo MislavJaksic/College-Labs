@@ -77,4 +77,4 @@ def DrawGraph(xs, time):
 #TaskTwo()
 TaskThree()
 #TaskThreeTrueFunction()
-#TaskFour()
+TaskFour()
