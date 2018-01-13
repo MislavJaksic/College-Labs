@@ -1,8 +1,0 @@
-AVL
-B
-RB
-Trie
-
-Gradijentni spust
-Neuronske mreze
-Genetski algoritmi
