@@ -74,7 +74,7 @@ def DrawGraph(xs, time):
   pyplot.show()
 
 #TaskOne()
-#TaskTwo()
-TaskThree()
+TaskTwo()
+#TaskThree()
 #TaskThreeTrueFunction()
-TaskFour()
+#TaskFour()

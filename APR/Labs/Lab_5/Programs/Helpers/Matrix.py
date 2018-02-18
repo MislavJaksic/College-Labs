@@ -343,8 +343,8 @@ class Matrix(object):
       
       A._SwapRows(pivotCoord, l)
       P._SwapRows(pivotCoord, l)
-      # print "Swapped rows:" + str(pivotCoord) + " and " + str(l)
-      # print A
+      print "Swapped rows:" + str(pivotCoord) + " and " + str(l)
+      print A
         
       A._DivideBelow(pivotCoord)
       A._SubBelowAndRightOf(pivotCoord)
@@ -355,18 +355,18 @@ class Matrix(object):
   def _DivideBelow(self, k):
     for i in range(k+1, self.n_rows+1):
       if self._IsFloatsEqual(self[(k, k)], 0.0):
-        # print "Element" + "(" + str(k) + str(k) + ")" + "is very close to zero:" + str(self[(k, k)])
+        print "Element" + "(" + str(k) + str(k) + ")" + "is very close to zero:" + str(self[(k, k)])
         raise ZeroDivisionError
       self[(i, k)] = self[(i, k)] / float(self[(k, k)])
-    # print "Divided below the pivot element:"
-    # print self
+    print "Divided below the pivot element:"
+    print self
   
   def _SubBelowAndRightOf(self, k):
     for i in range(k+1, self.n_rows+1):
       for j in range(k+1, self.n_rows+1):
         self[(i, j)] = self[(i, j)] - self[(i, k)] * self[(k, j)]
-    # print "Subtracted below and right of the pivot element:"
-    # print self
+    print "Subtracted below and right of the pivot element:"
+    print self
   
   def _FindRowWithLargestValueInColumn(self, k):
     pivot = 0.0
@@ -375,7 +375,7 @@ class Matrix(object):
         pivot = abs(self[(i, k)])
         l = i
     if self._IsFloatsEqual(pivot, 0.0):
-      # print "Largest pivot" + "(" + str(i) + str(k) + ")" + "is very close to zero:" + str(pivot)
+      print "Largest pivot" + "(" + str(i) + str(k) + ")" + "is very close to zero:" + str(pivot)
       raise ZeroDivisionError
     return l
   
@@ -430,10 +430,10 @@ class Matrix(object):
   @staticmethod
   def solveAxbWithLU(A, b):
     L, U = Matrix.LU(A)
-    # print "L:"
-    # print L
-    # print "U:"
-    # print U
+    print "L:"
+    print L
+    print "U:"
+    print U
     P = A._CreateI()
     y = A._solveLyPb(L, P, b)
     x = A._solveUxy(U, y)
@@ -442,12 +442,12 @@ class Matrix(object):
   @staticmethod  
   def solveAxbWithLUP(A, b):
     L, U, P = Matrix.LUP(A)
-    # print "L:"
-    # print L
-    # print "U:"
-    # print U
-    # print "P:"
-    # print P
+    print "L:"
+    print L
+    print "U:"
+    print U
+    print "P:"
+    print P
     y = A._solveLyPb(L, P, b)
     x = A._solveUxy(U, y)
     return x, y  

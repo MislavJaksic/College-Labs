@@ -2,14 +2,12 @@
 
 APR stands for "Analiza i projektiranje računalom" (eng. Computer Aided Analysis and Design).
 
-
 ### [Syllabus](http://www.fer.unizg.hr/en/course/apr)
 
-The following algorithms were taught during the course, but were not implemented:
-* Fibonacci section search, Gauss-Newton, Levenberg-Marquardt, calculating the stability of numerical integration methods.
+The following algorithms and concepts were taught during the course, but were not implemented:
+* Fibonacci section search, Gauss-Newton, Levenberg-Marquardt, calculating the stability of numerical integration methods, calculating floating point precision.
 
-
-### Laboratory exercises
+### Laboratory exercises (Labs)
 
 * Lab_1: Matrix class, LU and LUP decomposition, back and forward substitution
 
@@ -20,7 +18,6 @@ The following algorithms were taught during the course, but were not implemented
 * Lab_4: genetic algorithm capable of finding a global minimum of Schaffer's F6 and F7
 
 * Lab_5: fourth order Runge-Kutta numerical integration method
-
 
 ### Lectures
 
