@@ -191,8 +191,8 @@ def PrintResults(results, count, iterations):
   print results[iterations/2][1]
   
 
-cProfile.run("ParamOpti()")
-#TaskOne()
+#cProfile.run("ParamOpti()")
+TaskOne()
 #TaskTwo()
 #TaskThree()
 #TaskFour()
