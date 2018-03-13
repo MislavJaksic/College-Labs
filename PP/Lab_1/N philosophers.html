@@ -1,0 +1,83 @@
+
+<!-- saved from url=(0060)http://www.fer.unizg.hr/_download/repository/vjezba1[3].html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Language" content="hr">
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+
+<title>Paralelno programiranje - prva domaca zadaca</title>
+</head>
+
+<body>
+
+<h3>Paralelno programiranje </h3>
+<h2>Prva domać<span lang="hr">a zadaća</span></h2>
+<hr>
+<p><b>Zadatak</b>: uporabom MPI-a izraditi simulaciju raspodijeljenog problema
+<i>n</i> filozofa. </p>
+<p>Slično uobičajenoj inačici problema, model obuhva<span lang="hr">ća <i>n</i> 
+filozofa koji sjede za okruglim stolom na kojemu se nalazi hrana. Na 
+raspologanju je <i>n </i>vilica, od kojih za potrebe prehrane svaki filozof mora 
+koristiti dvije. Svaki filozof koristi točno određene vilice ('lijevu' i 
+'desnu'), tj. svaku pojedinačnu vilicu mogu koristiti samo dva susjedna 
+filozofa. Za razliku od uobičajenog rješenja sa zajedničkim spremnikom, filozofi 
+moraju biti implementirani kao procesi koji komuniciraju isključivo razmjenom 
+poruka (raspodijeljena okolina). Iz istog razloga, vilice ne stoje na stolu nego 
+se uvijek nalaze kod nekog od filozofa (procesa). Program se mora moći pokrenuti 
+u proizvoljnom broju procesa (<i>n</i> </span>&gt; 1), a ispis je potrebno 
+prilagoditi tako da svaki proces/filozof ispisuje promjene stanja uz uvla<span lang="hr">čenje 
+teksta </span>(<i>tabs</i>) <span lang="hr">proporcionalno indeksu procesa.</span></p>
+<pre><span lang="hr">Proces(i)
+</span>{	misli (slucajan broj sekundi);		// ispis: mislim
+	nabavi vilice;				// ispis: trazim vilicu (indeks)
+	jedi (slucajan broj sekundi);		// ispis: jedem
+}</pre>
+<p>Rješenje koje treba implementirati opisano je u radu
+<a href="http://www.fer.unizg.hr/_download/repository/Philosophers.pdf">
+K.M.Chandy, J. Misra: "The drinking philosophers problem"</a> (poglavlje 4), a 
+ukratko je objašnjeno u nastavku. </p>
+<p>Svaka od <i>n</i> vilica mo<span lang="hr">že biti <i>čista</i> ili <i>
+prljava</i>, te se u jednom trenutku može nalaziti samo kod jednog filozofa 
+(naravno). Na početku, sve su vilice <i>prljave</i>. Također, vilice su </span>
+<span lang="en-us">na po</span>č<span lang="hr">etku podijeljene tako da se 
+svaka vilica, koju mogu dijeliti dva susjedna filozofa, nalazi kod filozofa s 
+nižim rednim brojem (indeksom procesa). </span><span lang="en-us">Slijedom 
+navedenog, filozof s indeksom 0 na po</span>č<span lang="hr">etku ima dvije 
+vilice, a filozof s indeksom <i>n</i>-1<i> </i>niti jednu. Svi filozofi slijede ova pravila:</span></p>
+<ol>
+	<li><span lang="hr">nakon jela, obje korištene vilice postaju prljave.</span></li>
+	<li><span lang="hr">ako filozof želi jesti, šalje zahtjeve za vilicama koje 
+	nisu kod njega i čeka na odgovor.</span></li>
+	<li><span lang="hr">svaki filozof pamti zahtjeve za vilicama koje je dobio 
+	od svojih susjeda.</span></li>
+	<li><span lang="hr">ako filozof ne jede, a postoji zahtjev za <i>prljavu </i>
+	vilicu koja se nalazi kod njega, vilicu čisti i šalje je susjedu.</span></li>
+	<li><i>filozof <span lang="hr">jede ako je gladan i ako ima obje vilice (bez 
+	obzira jesu li čiste ili prljave ;)</span></i></li>
+</ol>
+<p>Iz navedenih pravila je vidljivo da filozof ne udovoljava zahtjevu za <i>
+čistom</i> vilicom - zahtjev će biti udovoljen tek kad vilica postane prljava 
+(nakon jela). Isto tako, ukoliko filozof misli (trenutno nije gladan), obvezan je odmah (što prije) 
+udovoljiti zahtjevima drugih filozofa. </p>
+<pre><span lang="hr">Proces(i)
+</span>{	misli (slucajan broj sekundi);			<span lang="en-us">	</span>	// ispis: mislim
+		i <span lang="en-us">'</span>istovremeno<span lang="en-us">'</span> odgovaraj na zahtjeve!<span lang="en-us">			// asinkrono, s povremenom provjerom</span>
+	dok (nemam <span lang="en-us">obje </span>vilice) {
+		posalji zahtjev za vilicom;		<span lang="en-us">	</span>	// ispis: trazim vilicu (i)
+<span lang="en-us">		ponavljaj {</span>
+	<span lang="en-us">	</span>	cekaj poruku (bilo koju!);
+	<span lang="en-us">	</span>	ako je poruka odgovor na zahtjev		// dobio vilicu
+	<span lang="en-us">	</span>		azuriraj vilice; 
+	<span lang="en-us">	</span>	inace ako je poruka zahtjev			// drugi traze moju vilicu
+	<span lang="en-us">	</span>		obradi zahtjev (odobri ili zabiljezi);
+<span lang="en-us">		} dok ne dobijes trazenu vilicu;</span>
+	}
+	jedi;						<span lang="en-us">	</span>	// ispis: jedem
+	<span lang="en-us">odgovori na</span> postojeće zahtjeve;			<span lang="en-us">	</span>	// ako ih je bilo
+}</pre>
+<p>&nbsp;</p>
+<hr>
+
+
+
+</body></html>

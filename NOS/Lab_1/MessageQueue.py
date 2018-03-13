@@ -2,11 +2,11 @@ from multiprocessing import Queue, Process, active_children, current_process, fr
 from time import sleep
 from Queue import Empty
 
-MISSIONARY_NUMBER = 2
-CANNIBAL_NUMBER = 2
+MISSIONARY_NUMBER = 8
+CANNIBAL_NUMBER = 10
 
 WAIT_ANCHORED = 4
-BOAT_SEATS = 1
+BOAT_SEATS = 3
 
 HANDSHAKE_TIME = (WAIT_ANCHORED / float(BOAT_SEATS + 4))
 
@@ -41,7 +41,7 @@ def EmbarkCannibal(confirm_queue, boat_queue):
   PutMessageIn("Cannibal embarked.", confirm_queue)
   PutMessageIn("Cannibal passenger.", boat_queue)
 
-def CrossRiverOnBoat():
+def CrossRiver():
   """The process can now be .join-ed"""
   pass
 
