@@ -1,0 +1,39 @@
+
+<!-- saved from url=(0081)http://www.zemris.fer.hr/predmeti/os2/komunikacija/z2_cjevovodi_N%20filozofa.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1250">
+<meta http-equiv="Content-Language" content="hr">
+
+<title>Cjevovodi</title>
+</head>
+
+<body>
+
+<h2>N filozofa</h2>
+<h3>Zadatak</h3>
+<p>Na nekoj konferenciji okupilo se <i>N</i> filozofa. Za razliku od 
+poznatog slučaja 5 filozofa, ovdje za stolom ima mjesta samo za jednu osobu, a 
+ne za 5. Dakle, pristup stolu je kritični odsječak jer samo jedan filozof može 
+biti u nekom trenutku za stolom ili je stol prazan. Na početku glavni proces 
+stvara <i>N</i> procesa filozofa (broj <i>N</i><span lang="en-us">&gt;2 se zadaje). 
+Procesi međusobno komuniciraju <b>cjevovodima</b> (svejedno: običnih ili 
+imenovanih).</span></p>
+<p><font face="Courier New" size="2"><span lang="en-us">proces filozof{<br>
+&nbsp;&nbsp; sudjeluj na konferenciji; // sleep(1);<br>
+&nbsp;&nbsp; pristupi stolu, jedi i ispiši "Filozof i je za stolom";&nbsp;&nbsp;&nbsp; 
+// sleep(3); (kritični odsječak)<br>
+&nbsp;&nbsp; sudjeluj na konferenciji; // sleep(1);<br>
+}</span></font></p>
+<p><span lang="en-us">Sinkronizirati <i>N</i> procesa filozofa koristeći:</span></p>
+<p>- Lamportov raspodijeljeni protokol (rješavaju studenti čija je <b>predzadnja</b> 
+znamenka JMBAG <b>parna</b>) ili<br>
+- protokol Ricarta i Agrawala (rješavaju studenti čija je <b>predzadnja</b> 
+znamenka JMBAG <b>neparna</b>).</p>
+
+<p>Svi procesi ispisuju poruku koju šalju i 
+poruku koju primaju. </p>
+<p>Sve što u zadatku nije zadano, riješiti na proizvoljan način.</p>
+
+
+
+
+</body></html>
