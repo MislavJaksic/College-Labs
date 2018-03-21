@@ -58,12 +58,13 @@ def CreateCannibals(cannibal_queue, confirm_queue, boat_queue):
     missionary.start()
 
     
-    
 def TransportPassengers(missionary_queue, cannibal_queue, confirm_queue, boat_queue):
-  while (1):
+  while (True):
     seats_empty = [BOAT_SEATS]
 
     EmbarkMixedPassengers(missionary_queue, cannibal_queue, confirm_queue, seats_empty)
+    #Possible states after mixed embarking: a)M = C, b)M = C+1, c)C = M+1
+    
     EmbarkMissionaries(missionary_queue, confirm_queue, seats_empty)
     EmbarkCannibals(cannibal_queue, confirm_queue, seats_empty)
     
@@ -79,7 +80,7 @@ def TransportPassengers(missionary_queue, cannibal_queue, confirm_queue, boat_qu
     print("")
     
 def EmbarkMixedPassengers(missionary_queue, cannibal_queue, confirm_queue, seats_empty):
-  while (IsPassengerWaitingIn(missionary_queue) and IsPassengerWaitingIn(cannibal_queue) and IsNumberOfSeatsEmpty(2, seats_empty)):
+  while IsTwoSeatsEmptyAndBothPassengersWaiting(missionary_queue, cannibal_queue, seats_empty):
     if (HandshakeMissionary(missionary_queue, confirm_queue)):
       DecreaseEmptySeatNumber(1, seats_empty)
     else:
@@ -89,17 +90,42 @@ def EmbarkMixedPassengers(missionary_queue, cannibal_queue, confirm_queue, seats
       DecreaseEmptySeatNumber(1, seats_empty)
     else:
       break
-
+      
+def IsTwoSeatsEmptyAndBothPassengersWaiting(missionary_queue, cannibal_queue, seats_empty):
+  if (IsPassengerWaitingIn(missionary_queue) and IsPassengerWaitingIn(cannibal_queue) and IsNumberOfSeatsEmpty(2, seats_empty)):
+    return True
+  return False
+  
 def EmbarkMissionaries(missionary_queue, confirm_queue, seats_empty):
-  while (IsPassengerWaitingIn(missionary_queue) and IsNumberOfSeatsEmpty(1, seats_empty)):
+  while IsEmptySeatAndPassengerWaiting(seats_empty, missionary_queue):
     if (HandshakeMissionary(missionary_queue, confirm_queue)):
       DecreaseEmptySeatNumber(1, seats_empty)
 
 def EmbarkCannibals(cannibal_queue, confirm_queue, seats_empty):
   if NoMissionariesOnBoat(seats_empty):
-    while (IsPassengerWaitingIn(cannibal_queue) and IsNumberOfSeatsEmpty(1, seats_empty)):
+    while IsEmptySeatAndPassengerWaiting(seats_empty, cannibal_queue):
       if (HandshakeCannibal(cannibal_queue, confirm_queue)):
         DecreaseEmptySeatNumber(1, seats_empty)
+        
+def IsEmptySeatAndPassengerWaiting(seats_empty, queue):
+  if (IsPassengerWaitingIn(queue) and IsNumberOfSeatsEmpty(1, seats_empty)):
+    return True
+  return False
+  
+def IsPassengerWaitingIn(queue):
+  if IsNoMessagesInQueue(queue):
+    return True
+  return False
+  
+def IsNoMessagesInQueue(queue):
+  if queue.empty():
+    return True
+  return False
+
+def IsNumberOfSeatsEmpty(number, seats_empty):
+  if (seats_empty[0] >= number):
+    return True
+  return False
 
 def HandshakeMissionary(missionary_queue, confirm_queue):
   PutMessageIn("A missionary can embark.", missionary_queue)
@@ -116,17 +142,7 @@ def HandshakeCannibal(cannibal_queue, confirm_queue):
     return True
   except Empty:
     return False
-
-def IsPassengerWaitingIn(queue):
-  if queue.empty():
-    return True
-  return False
-
-def IsNumberOfSeatsEmpty(number, seats_empty):
-  if (seats_empty[0] >= number):
-    return True
-  return False
-
+    
 def DecreaseEmptySeatNumber(number, seats_empty):
   seats_empty[0] = seats_empty[0] - number
 
@@ -135,16 +151,15 @@ def NoMissionariesOnBoat(seats_empty):
     return True
   return False
 
-def IsBoatEmpty(seats_empty):
-  if (seats_empty[0] == BOAT_SEATS):
-    return True
-  return False
-
 def CheckPassengersIn(queue):
   while (not queue.empty()):
     GetMessageFrom(queue)
 
-    
+def IsBoatEmpty(seats_empty):
+  if (seats_empty[0] == BOAT_SEATS):
+    return True
+  return False
+   
    
 def TerminateFinishedProcesses():
   for child_process in active_children():
@@ -152,7 +167,6 @@ def TerminateFinishedProcesses():
     child_process.join()
     print("Process " + pid + " joined.")
 
-    
     
 def PutMessageIn(text, queue):
   pid = str(current_process().pid)
@@ -164,11 +178,11 @@ def GetMessageFrom(queue, timeout=None):
   pid = str(current_process().pid)
   message = queue.get(timeout=timeout)
   print(pid + " receives - " + str(message))
-  
-  
+
   
 if __name__ == '__main__':
   freeze_support()
+  
   missionary_queue = Queue(1)
   cannibal_queue = Queue(1)
   confirm_queue = Queue(1)

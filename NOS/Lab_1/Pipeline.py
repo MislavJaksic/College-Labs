@@ -3,8 +3,8 @@ from time import sleep
 from copy import copy
 from heapq import heappush, heappop
 
-PHILOSOPHERS = 3
-TIMEOUT =  1 / float(PHILOSOPHERS - 1)
+PHILOSOPHER_NUMBER = 3
+TIMEOUT =  1 / float(PHILOSOPHER_NUMBER - 1)
 
 class Philosopher(object):
   def __init__(self, ID, pipes):
@@ -41,7 +41,10 @@ class Philosopher(object):
     if (time_stamp >= self.clock):
       self.clock = time_stamp + 1
     else:
-      self.clock = self.clock + 1
+      self.IncreaseClock()
+      
+  def IncreaseClock(self):
+    self.clock = self.clock + 1
     
   def ReplyToSender(self, sender_ID):
     reply = self.CreateReply()
@@ -49,7 +52,8 @@ class Philosopher(object):
     self.pipes[sender_ID].send(reply)
     
   def CreateReply(self):
-    reply = (self.clock, "Reply", self.ID) #do not increase the clock
+    time_stamp = self.CreateTimeStamp()
+    reply = (time_stamp, "Reply", self.ID)
     return reply
 
   def RemoveFromQueue(self):
@@ -71,12 +75,8 @@ class Philosopher(object):
     return request
     
   def CreateTimeStamp(self):
-    #IncreaseClock()
     time_stamp = self.clock
     return time_stamp
-
-  def IncreaseClock(self):
-    self.clock = self.clock + 1
     
   def SendMessageToAll(self, message):
     self.Say("Sending " + message[1] + " to all")
@@ -86,7 +86,7 @@ class Philosopher(object):
       pipe.send(message)
 
 
-  def WaitForReplies(self):
+  def WaitForYourTurnToEat(self):
     while (not (self.IsMyRequestFirstInQueue() and self.IsRecievedAllReplies())):
       self.ReceiveMessages()
       
@@ -99,7 +99,7 @@ class Philosopher(object):
     return False
     
   def IsRecievedAllReplies(self):
-    if (len(self.replies) == (PHILOSOPHERS - 1)):
+    if (len(self.replies) == (PHILOSOPHER_NUMBER - 1)):
       return True
     return False
 
@@ -113,7 +113,7 @@ class Philosopher(object):
     self.SendMessageToAll(release)
 
   def CreateRelease(self, message):
-    release = (message[0], "Release", self.ID) #do not increase the clock
+    release = (message[0], "Release", self.ID)
     return release
 
 
@@ -157,11 +157,11 @@ def EnjoyConference(philosopher):
 
 def Eat(philosopher):
   philosopher.SendRequest()
-  philosopher.WaitForReplies()
+  philosopher.WaitForYourTurnToEat()
   philosopher.DeleteReplies()
-  philosopher.Say("Eating")
+  philosopher.Say("--- Eating ---")
   sleep(2)
-  philosopher.Say("Done eating")
+  philosopher.Say("... Done eating ...")
   sleep(1)
   philosopher.SendRelease()
       
@@ -191,10 +191,12 @@ def CreateFalseValueMatrix(size):
 
   return array_of_arrays
 
+  
 def CreatePhilosophers(philosophers, pipe_matrix):
   for number in range(philosophers):
     philosopher = Process(target=Philosophize, args=(number, pipe_matrix[number],))
     philosopher.start()
+    
     
 def WaitUntilTheyAllFinish():
   active_processes = active_children()
@@ -203,10 +205,11 @@ def WaitUntilTheyAllFinish():
     sleep(10)
     active_processes = active_children()
 
+    
 if __name__ == '__main__':
   freeze_support()
 
-  pipe_matrix = CreatePipeMatrix(PHILOSOPHERS)
-  CreatePhilosophers(PHILOSOPHERS, pipe_matrix)
+  pipe_matrix = CreatePipeMatrix(PHILOSOPHER_NUMBER)
+  CreatePhilosophers(PHILOSOPHER_NUMBER, pipe_matrix)
 
   WaitUntilTheyAllFinish()
