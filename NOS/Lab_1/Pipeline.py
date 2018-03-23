@@ -27,14 +27,14 @@ class Philosopher(object):
     time_stamp, text, sender_ID = message
     self.Say("Recieved " + text + " from " + str(sender_ID))
     
+    self.SynchroniseClock(time_stamp)
+    
     if (text == "Request"):
-      self.SynchroniseClock(time_stamp)
       self.AddRequestToQueue(message)
       self.ReplyToSender(sender_ID)
     elif (text == "Release"):
       removed_request = self.RemoveFromQueue()
     elif (text == "Reply"):
-      self.SynchroniseClock(time_stamp)
       self.AddToReplies(message)
       
   def SynchroniseClock(self, time_stamp):

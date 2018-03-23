@@ -144,6 +144,26 @@ def TaskFive():
   count = CountSuccesses(results, desired_goal_value)
   PrintResults(results, count, iterations)
  
+def SIAMHundredDigitChallenge():
+  problem_bounds = (0,20)
+  max_evals = 100000
+  desired_goal_value = (-3.3068686473)
+  divergence_at = 5000
+
+  iterations = 501
+  results = []
+  for i in range(iterations):
+    GA = GeneticAlgorithm(goal_function=SIAMf, dimensions=2, problem_bounds=problem_bounds,
+                                fitness_bounds=(0,100), population_size=200, display="float", precision=0, p_of_mutation=0.01, 
+                                max_evaluations=max_evals, reach_goal=desired_goal_value, no_improvement_limit=divergence_at)
+    
+    point, goal_value = GA.SolveProblem()
+    results.append((goal_value, point))
+
+  results = SortGoalAndPoint(results)
+  count = CountSuccesses(results, desired_goal_value)
+  PrintResults(results, count, iterations)
+ 
 def ParamOpti():
   problem_bounds = (-50,150)
   max_evals = 10000
@@ -190,10 +210,14 @@ def PrintResults(results, count, iterations):
   print "point:",
   print results[iterations/2][1]
   
+  for i in range(len(results) / 5):
+    print results[i]
+  
 
 #cProfile.run("ParamOpti()")
-TaskOne()
+#TaskOne()
 #TaskTwo()
 #TaskThree()
 #TaskFour()
+SIAMHundredDigitChallenge()
 #cProfile.run("TaskFive()")

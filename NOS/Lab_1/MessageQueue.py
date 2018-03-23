@@ -10,36 +10,27 @@ BOAT_SEATS = 3
 
 HANDSHAKE_TIME = (WAIT_ANCHORED / float(BOAT_SEATS + 4))
 
-class Message(object):
-  def __init__(self, text):
-    self.text = text
 
-  def __repr__(self):
-    return self.text
-
-  def __str__(self):
-    return self.text
-
-def TravelAsMissionary(missionary_queue, confirm_queue, boat_queue):
-  WaitForBoatIn(missionary_queue)
-  EmbarkMissionary(confirm_queue, boat_queue)
+def TravelAsMissionary(ID, missionary_queue, confirm_queue, boat_queue):
+  WaitForBoatIn(ID, missionary_queue)
+  EmbarkMissionary(ID, confirm_queue, boat_queue)
   CrossRiver()
 
-def TravelAsCannibal(cannibal_queue, confirm_queue, boat_queue):
-  WaitForBoatIn(cannibal_queue)
-  EmbarkCannibal(confirm_queue, boat_queue)
+def TravelAsCannibal(ID, cannibal_queue, confirm_queue, boat_queue):
+  WaitForBoatIn(ID, cannibal_queue)
+  EmbarkCannibal(ID, confirm_queue, boat_queue)
   CrossRiver()
 
-def WaitForBoatIn(queue):
-  GetMessageFrom(queue)
+def WaitForBoatIn(ID, queue):
+  GetMessageFrom(ID, queue)
 
-def EmbarkMissionary(confirm_queue, boat_queue):
-  PutMessageIn("Missionary embarked.", confirm_queue)
-  PutMessageIn("Missionary passenger.", boat_queue)
+def EmbarkMissionary(ID, confirm_queue, boat_queue):
+  PutMessageIn(ID, "Missionary embarked.", confirm_queue)
+  PutMessageIn(ID, "Missionary passenger.", boat_queue)
 
-def EmbarkCannibal(confirm_queue, boat_queue):
-  PutMessageIn("Cannibal embarked.", confirm_queue)
-  PutMessageIn("Cannibal passenger.", boat_queue)
+def EmbarkCannibal(ID, confirm_queue, boat_queue):
+  PutMessageIn(ID, "Cannibal embarked.", confirm_queue)
+  PutMessageIn(ID, "Cannibal passenger.", boat_queue)
 
 def CrossRiver():
   """The process can now be .join-ed"""
@@ -49,12 +40,14 @@ def CrossRiver():
 
 def CreateMissionaries(missionary_queue, confirm_queue, boat_queue):
   for number in range(MISSIONARY_NUMBER):
-    missionary = Process(target=TravelAsMissionary, args=(missionary_queue, confirm_queue, boat_queue,))
+    ID = str(number) + "M"
+    missionary = Process(target=TravelAsMissionary, args=(ID, missionary_queue, confirm_queue, boat_queue,))
     missionary.start()
 
 def CreateCannibals(cannibal_queue, confirm_queue, boat_queue):
   for number in range(CANNIBAL_NUMBER):
-    missionary = Process(target=TravelAsCannibal, args=(cannibal_queue, confirm_queue, boat_queue,))
+    ID = str(number) + "C"
+    missionary = Process(target=TravelAsCannibal, args=(ID, cannibal_queue, confirm_queue, boat_queue,))
     missionary.start()
 
     
@@ -128,17 +121,17 @@ def IsNumberOfSeatsEmpty(number, seats_empty):
   return False
 
 def HandshakeMissionary(missionary_queue, confirm_queue):
-  PutMessageIn("A missionary can embark.", missionary_queue)
+  PutMessageIn("Boat", "A missionary can embark.", missionary_queue)
   try:
-    GetMessageFrom(confirm_queue, timeout=HANDSHAKE_TIME)
+    GetMessageFrom("Boat", confirm_queue, timeout=HANDSHAKE_TIME)
     return True
   except Empty:
     return False
 
 def HandshakeCannibal(cannibal_queue, confirm_queue):
-  PutMessageIn("A cannibal can embark.", cannibal_queue)
+  PutMessageIn("Boat", "A cannibal can embark.", cannibal_queue)
   try:
-    GetMessageFrom(confirm_queue, timeout=HANDSHAKE_TIME)
+    GetMessageFrom("Boat", confirm_queue, timeout=HANDSHAKE_TIME)
     return True
   except Empty:
     return False
@@ -153,7 +146,7 @@ def NoMissionariesOnBoat(seats_empty):
 
 def CheckPassengersIn(queue):
   while (not queue.empty()):
-    GetMessageFrom(queue)
+    GetMessageFrom("Boat", queue)
 
 def IsBoatEmpty(seats_empty):
   if (seats_empty[0] == BOAT_SEATS):
@@ -168,16 +161,15 @@ def TerminateFinishedProcesses():
     print("Process " + pid + " joined.")
 
     
-def PutMessageIn(text, queue):
+def PutMessageIn(ID, text, queue):
   pid = str(current_process().pid)
-  message = Message(pid + ": " + text)
-  print(pid + " sends - " + text)
+  message = ID + ": " + text
+  print(ID + " sends - " + text)
   queue.put(message)
 
-def GetMessageFrom(queue, timeout=None):
-  pid = str(current_process().pid)
+def GetMessageFrom(ID, queue, timeout=None):
   message = queue.get(timeout=timeout)
-  print(pid + " receives - " + str(message))
+  print(ID + " receives - " + message)
 
   
 if __name__ == '__main__':

@@ -23,3 +23,7 @@ def f7(x):
     squareSum += (x[i])**2
     
   return (squareSum**0.25) * (1 + math.sin( 50 * (squareSum**0.1) )**2)
+  
+def SIAMf(x):
+  result = math.exp( math.sin(50 * x[0]) ) + math.sin( 60 * math.exp(x[1]) ) + math.sin( 70 * math.sin(x[0]) ) + math.sin( math.sin( 80 * x[1]) ) - math.sin( 10 * x[0] + 10 * x[1] ) + (x[0]**2 + x[1]**2) / float(4)
+  return result
