@@ -1,0 +1,32 @@
+MODULE main
+VAR
+	proc0 : process user(proc1.flag);
+	proc1 : process user(proc0.flag);
+CTLSPEC EF (proc0.state = reading & proc1.state = reading & proc0.flag = TRUE & proc1.flag = TRUE)
+CTLSPEC EF (proc0.state = critical & proc1.state = critical)
+CTLSPEC AG ! (proc0.state = critical & proc1.state = critical)
+CTLSPEC AG (proc0.state = reading -> AF (proc0.state = critical))
+
+MODULE user(oflag)
+VAR
+	flag : boolean;
+	state  : {setflag, reading, critical, exiting, noncritical};
+ASSIGN
+	init(state) := {setflag};
+	init(flag) := FALSE;
+	next(state) :=
+		case
+			state = setflag : reading;
+			state = reading & !oflag : critical;
+			state = critical : {critical, exiting};
+			state = exiting : noncritical;
+			state = noncritical : {noncritical, setflag};
+			TRUE : state;
+		esac;
+	next(flag) :=
+		case
+			state = setflag : TRUE;
+			state = exiting : FALSE;
+			TRUE : flag;
+		esac;
+	
