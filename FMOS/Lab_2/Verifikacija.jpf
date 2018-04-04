@@ -1,0 +1,14 @@
+target = fv.Verifikacija
+
+velocity.class = gov.nasa.jpf.vm.choice.DoubleThresholdGenerator
+velocity.threshold = 60.0
+velocity.low = 20.0
+velocity.high = 100.0
+
+ 
+#Nonnull and Const configuration
+listener.autoload=\
+  javax.annotation.Nonnull,\
+  gov.nasa.jpf.annotation.Const
+listener.javax.annotation.Nonnull=.aprop.listener.NonnullChecker
+listener.gov.nasa.jpf.annotation.Const=.aprop.listener.ConstChecker
