@@ -5,8 +5,10 @@ VAR
 	proc1 : process user(turn, TRUE);
 ASSIGN
 	init(turn) := FALSE;
-CTLSPEC AG (proc0.state = exiting -> ! (E [! (proc1.state = critical) U ! ( (! (proc0.state = exiting) | proc1.state = critical) )]))
-CTLSPEC AG (proc0.state = exiting -> A [!(proc0.state = critical) U proc1.state = exiting])
+CTLSPEC EF (proc0.state = critical & proc1.state = critical)
+CTLSPEC AG ! (proc0.state = critical & proc1.state = critical)
+CTLSPEC AG (proc0.state = entering -> AF (proc0.state = critical))
+CTLSPEC AG (proc0.state = exiting -> A [! (proc0.state = critical) U proc1.state = exiting])
 
 MODULE user(turn, ind)
 VAR
