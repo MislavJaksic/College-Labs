@@ -1,4 +1,6 @@
 from Crypto.Cipher import AES, DES3
+from Crypto.PublicKey import RSA, ElGamal
+from Crypto.Hash import SHA, SHA224, SHA256, SHA384, SHA512
 from Crypto import Random
 
 crypto_safe_random = Random.new()
@@ -6,43 +8,82 @@ crypto_safe_random = Random.new()
 def DoEncryptionDecryption():
   message = ChooseMessage()
   construct = ChooseEncryptionConstruct()
+  print ""
   
   if construct == "envelope":
     sym_method = ChooseSymmetricMethod()
     asym_method = ChooseAsymmetricMethod()
+    padded_message = PadMessage(message, sym_method)
     
-    envelope = CreateDigitalEnvelope(message, sym_method, asym_method)
+    envelope = CreateDigitalEnvelope(padded_message, sym_method, asym_method)
     
   elif construct == "signature":
     asym_method = ChooseAsymmetricMethod()
-    digest = ChooseDigestAlgorithm()
+    digest_method = ChooseDigestAlgorithm()
+    
+    signature = CreateDigitalSignature(message, asym_method, digest_method)
     
   elif construct == "seal":
     sym_method = ChooseSymmetricMethod()
     asym_method = ChooseAsymmetricMethod()
-    digest = ChooseDigestAlgorithm()
+    digest_method = ChooseDigestAlgorithm()
+    padded_message = PadMessage(message, sym_method)
+    
+    seal = CreateDigitalSeal(message, sym_method, asym_method, digest_method)
     
   elif construct == "demo":
     RunDemoOne(message)
     RunDemoTwo(message)
+    
+    RunDemoThree(message)
+    RunDemoFour(message)
+    
+    RunDemoFive(message)
+    RunDemoSix(message)
   
 def RunDemoOne(message):
-  sym_method = {}
-  sym_method["algorithm"] = "AES"
-  sym_method["mode"] = "CBC"
-  sym_method["key_size"] = 32
+  sym_method = CreateMethodDataStructure("AES", 32, mode="CBC")
+  asym_method = CreateMethodDataStructure("RSA", 1024)
   
-  asym_method = ("RSA", 1024)
-  envelope = CreateDigitalEnvelope(message, sym_method, asym_method)
+  padded_message = PadMessage(message, sym_method)
+  envelope = CreateDigitalEnvelope(padded_message, sym_method, asym_method)
 
 def RunDemoTwo(message):
-  sym_method = {}
-  sym_method["algorithm"] = "3DES"
-  sym_method["mode"] = "OFB"
-  sym_method["key_size"] = 24
+  sym_method = CreateMethodDataStructure("3DES", 24, mode="OFB")
+  asym_method = CreateMethodDataStructure("RSA", 1024 + 256)
   
-  asym_method = ("ElGamal", 1024 + 256)
-  envelope = CreateDigitalEnvelope(message, sym_method, asym_method)
+  padded_message = PadMessage(message, sym_method)
+  envelope = CreateDigitalEnvelope(padded_message, sym_method, asym_method)
+  
+def RunDemoThree(message):
+  asym_method = CreateMethodDataStructure("RSA", 1024)
+  digest_method = "SHA-1"
+  
+  signature = CreateDigitalSignature(message, asym_method, digest_method)
+  
+def RunDemoFour(message):
+  asym_method = CreateMethodDataStructure("RSA", 1024)
+  digest_method = "SHA-2-384"
+  
+  signature = CreateDigitalSignature(message, asym_method, digest_method)
+  
+def RunDemoFive(message):
+  sym_method = CreateMethodDataStructure("AES", 32, mode="CBC")
+  asym_method = CreateMethodDataStructure("RSA", 1024)
+  digest_method = "SHA-1"
+  
+  padded_message = PadMessage(message, sym_method)
+  seal = CreateDigitalSeal(padded_message, sym_method, asym_method, digest_method)
+  
+def RunDemoSix(message):
+  sym_method = CreateMethodDataStructure("AES", 32, mode="CBC")
+  asym_method = CreateMethodDataStructure("RSA", 1024)
+  digest_method = "SHA-2-384"
+  
+  padded_message = PadMessage(message, sym_method)
+  seal = CreateDigitalSeal(padded_message, sym_method, asym_method, digest_method)
+  
+  
   
 def ChooseMessage():
   message = raw_input("What message do you want to send? (any)")
@@ -60,7 +101,7 @@ def ChooseSymmetricMethod():
   key_size = ChooseSymmetricKeySize()
   mode = ChooseEncryptionMode(algorithm)
   
-  sym_method = CreateAlgorithmDataStructure(algorithm, key_size, mode=mode)
+  sym_method = CreateMethodDataStructure(algorithm, key_size, mode=mode)
   
   return sym_method
 
@@ -70,7 +111,7 @@ def ChooseAsymmetricMethod():
   
   key_size = ChooseAsymmetricKeySize()
   
-  asym_method = CreateAlgorithmDataStructure(algorithm, key_size)
+  asym_method = CreateMethodDataStructure(algorithm, key_size)
   
   return asym_method
   
@@ -105,45 +146,14 @@ def SanitiseInput(input, acceptable_inputs):
   else:
     raise Exception("Acceptable inputs are:" + str(acceptable_inputs))
 
-def CreateAlgorithmDataStructure(algorithm, key_size, mode="NONE"):
+def CreateMethodDataStructure(algorithm, key_size, mode="NONE"):
   method = {}
   method["algorithm"] = algorithm
   method["mode"] = mode
   method["key_size"] = key_size
   
-  return algo
+  return method
 
-    
-def CreateDigitalEnvelope(message, sym_method, asym_method):
-  encrypter = CreateSymmetricCrypter(sym_method)
-  padded_message = PadMessage(message, sym_method)
-  
-  ciphertext_message = encrypter["cipher"].encrypt(padded_message)
-  print ciphertext_message
-  
-  decrypter = CreateSymmetricCrypter(sym_method, existing_cipher=encrypter)
-  print decrypter["cipher"].decrypt(ciphertext_message)
-  
-  #key_pair = CreatePublicPrivateKeyPair(asym_method)
-  #ciphertext_symmetric_key = EncryptSymmetricKey(symmetric_key, asym_method)
-  
-  #digital_envelope = ()
-
-def CreateDigitalSignature():
-  pass
-  
-def CreateDigitalSeal():
-  pass
-  
-def EncryptMesage():
-  pass
-  
-def EncryptSymmetricKey():
-  pass
-  
-def EncryptDigest():
-  pass
-  
 def PadMessage(message, sym_method):
   algorithm = sym_method["algorithm"]
   
@@ -161,6 +171,79 @@ def PadMessage(message, sym_method):
       padded_message += "0"
   
   return padded_message
+  
+  
+    
+def CreateDigitalEnvelope(message, sym_method, asym_method):
+  print "Digital Envelope: "
+  
+  ciphertext_message, symmetric_key = EncryptMesage(message, sym_method)
+  
+  ciphertext_symmetric_key = EncryptSymmetricKey(symmetric_key, asym_method)
+  
+  digital_envelope = (ciphertext_message, ciphertext_symmetric_key)
+  return digital_envelope
+
+def CreateDigitalSignature(message, asym_method, digest_method):
+  print "Digital Signiture: "
+  
+  ciphertext_digest = SignMessageDigest(message, asym_method, digest_method)
+  
+  digital_signature = (message, ciphertext_digest)
+  return digital_signature
+  
+def CreateDigitalSeal(message, sym_method, asym_method, digest_method):
+  print "Digital Seal: "
+  
+  envelope = CreateDigitalEnvelope(message, sym_method, asym_method)
+  
+  seal = CreateDigitalSignature(envelope, asym_method, digest_method)
+  return seal
+  
+def EncryptMesage(message, sym_method):
+  print "Message to encrypt: " + message
+  encrypter = CreateSymmetricCrypter(sym_method)
+  
+  ciphertext_message = encrypter["cipher"].encrypt(message)
+  print "Encrypted message: " + ciphertext_message
+  
+  # decrypter = CreateSymmetricCrypter(sym_method, existing_cipher=encrypter)
+  # print "Decrypted message: " + decrypter["cipher"].decrypt(ciphertext_message)
+  
+  print ""
+  return ciphertext_message, encrypter["key"]
+  
+def EncryptSymmetricKey(symmetric_key, asym_method):
+  print "Key to encrypt: ",
+  print symmetric_key
+  encrypter = CreateAsymmetricCrypter(asym_method)
+  
+  any_old_bits = 1234
+  ciphertext_symmetric_key = encrypter["cipher"].encrypt(symmetric_key, any_old_bits)
+  print "Encrypted key: ",
+  print ciphertext_symmetric_key
+  
+  # print "Decrypted key: ",
+  # print encrypter["cipher"].decrypt(ciphertext_symmetric_key)
+  
+  print ""
+  return ciphertext_symmetric_key
+  
+def SignMessageDigest(message, asym_method, digest_method):
+  digest = CreateMessageDigest(message, digest_method)
+  
+  crypter = CreateAsymmetricCrypter(asym_method)
+  signer = crypter["cipher"]
+  
+  signed_digest = signer.decrypt(digest) #signing
+  
+  #print signed_digest
+  #any_old_bits = 1234
+  #print signer.encrypt(signed_digest, any_old_bits)
+  
+  return signed_digest
+  
+  
   
 def CreateSymmetricCrypter(sym_method, existing_cipher=False):
   algorithm = sym_method["algorithm"]
@@ -239,34 +322,52 @@ def CreateCrypterDataStructure(cipher, key, init_vector):
 
   
   
-def AESEncryption():
-  plaintext_message = "hello"
-  plaintext_message = PadMessage("hello", ("AES", "CBC", 32))
-  key = CreateSymmetricKey(32)
-  encryption_mode = "OFB"
-  init_vector = crypto_safe_random.read(AES.block_size)
+def CreateAsymmetricCrypter(asym_method):
+  algorithm = asym_method["algorithm"]
+  key_size = asym_method["key_size"]
   
-  if encryption_mode == "ECB":
-    cipher = AES.new(key, AES.MODE_ECB, init_vector)
-  elif encryption_mode == "CBC":
-    cipher = AES.new(key, AES.MODE_CBC, init_vector)
-  elif encryption_mode == "OFB":
-    cipher = AES.new(key, AES.MODE_OFB, init_vector)
+  if algorithm == "RSA":
+    cipher = CreateRSACipher(key_size)
+  elif algorithm == "ElGamal":
+    cipher = CreateElGamalCipher(key_size)
   
-  ciphertext_message = cipher.encrypt(plaintext_message)
-  print ciphertext_message
+  crypter = {}
+  crypter["cipher"] = cipher
   
-  # WARNING: you can only encrypt/decrypt once with the same cipher
-  if encryption_mode == "ECB":
-    cipher = AES.new(key, AES.MODE_ECB, init_vector)
-  elif encryption_mode == "CBC":
-    cipher = AES.new(key, AES.MODE_CBC, init_vector)
-  elif encryption_mode == "OFB":
-    cipher = AES.new(key, AES.MODE_OFB, init_vector)
+  return crypter
   
-  print cipher.decrypt(ciphertext_message)
+def CreateRSACipher(key_size):
+  key = RSA.generate(key_size)
+  return key
+
+def CreateElGamalCipher(key_size):
+  key = ElGamal.generate(key_size, crypto_safe_random.read) #generaing a key takes a huge ammount of time
+  return key
   
-#AESEncryption()
+  
+  
+def CreateMessageDigest(message, digest_method):
+  if digest_method == "SHA-1":
+    digest = SHA.new()
+  elif digest_method == "SHA-2-224":
+    digest = SHA224.new()
+  elif digest_method == "SHA-2-256":
+    digest = SHA256.new()
+  elif digest_method == "SHA-2-384":
+    digest = SHA384.new()
+  elif digest_method == "SHA-2-512":
+    digest = SHA512.new()
+  
+  message = str(message)
+  
+  print "Message to digest: " + message
+  digest.update(message)
+  print "Digested message: " + digest.hexdigest()
+  
+  print ""
+  return digest.hexdigest()
+  
+  
 
 DoEncryptionDecryption()
 
