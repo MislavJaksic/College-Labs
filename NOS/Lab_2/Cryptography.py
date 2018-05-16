@@ -76,7 +76,7 @@ def RunDemoFive(message):
   seal = CreateDigitalSeal(padded_message, sym_method, asym_method, digest_method)
   
 def RunDemoSix(message):
-  sym_method = CreateMethodDataStructure("AES", 32, mode="CBC")
+  sym_method = CreateMethodDataStructure("AES", 32, mode="OFB")
   asym_method = CreateMethodDataStructure("RSA", 1024)
   digest_method = "SHA-2-384"
   
@@ -207,8 +207,8 @@ def EncryptMesage(message, sym_method):
   ciphertext_message = encrypter["cipher"].encrypt(message)
   print "Encrypted message: " + ciphertext_message
   
-  # decrypter = CreateSymmetricCrypter(sym_method, existing_cipher=encrypter)
-  # print "Decrypted message: " + decrypter["cipher"].decrypt(ciphertext_message)
+  decrypter = CreateSymmetricCrypter(sym_method, existing_cipher=encrypter)
+  print "Decrypted message: " + decrypter["cipher"].decrypt(ciphertext_message)
   
   print ""
   return ciphertext_message, encrypter["key"]
@@ -223,8 +223,8 @@ def EncryptSymmetricKey(symmetric_key, asym_method):
   print "Encrypted key: ",
   print ciphertext_symmetric_key
   
-  # print "Decrypted key: ",
-  # print encrypter["cipher"].decrypt(ciphertext_symmetric_key)
+  print "Decrypted key: ",
+  print encrypter["cipher"].decrypt(ciphertext_symmetric_key)
   
   print ""
   return ciphertext_symmetric_key
@@ -237,9 +237,11 @@ def SignMessageDigest(message, asym_method, digest_method):
   
   signed_digest = signer.decrypt(digest) #signing
   
-  #print signed_digest
-  #any_old_bits = 1234
-  #print signer.encrypt(signed_digest, any_old_bits)
+  print "Signed digest: " + signed_digest
+  any_old_bits = 1234
+  unsigned_digest = signer.encrypt(signed_digest, any_old_bits)
+  print "'Unsigned' digest: " + str(unsigned_digest)
+  print ""
   
   return signed_digest
   
