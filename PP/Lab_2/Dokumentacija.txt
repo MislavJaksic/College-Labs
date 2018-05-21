@@ -1,0 +1,11 @@
+Cetri u nizu igra, covjek protiv racunalo
+Dimenzije: beskonacno u visinu, 7 u sirinu
+Gravitacija postoji. Oznake padaju na dno stupca.
+
+Pretrazivanje prostora stanja do zadane dubine.
+1 za pobijedu, -1 sa poraz, inace neutralno 0 ili vrijednost dobivena rekurzijom.
+Nakon pretrazivanja do odredene dubine, rekurzivno se penji po stablu.
+
+Stanje: konfiguracija oznaka na ploci.
+Podatkovna struktura: uspravna ploca.
+
