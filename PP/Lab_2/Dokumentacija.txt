@@ -1,4 +1,4 @@
-Cetri u nizu igra, covjek protiv racunalo
+Cetri u nizu, covjek protiv racunalo
 Dimenzije: beskonacno u visinu, 7 u sirinu
 Gravitacija postoji. Oznake padaju na dno stupca.
 
@@ -8,4 +8,9 @@ Nakon pretrazivanja do odredene dubine, rekurzivno se penji po stablu.
 
 Stanje: konfiguracija oznaka na ploci.
 Podatkovna struktura: uspravna ploca.
+
+Podjela: najmanji moguci zadatak je izracunati jedan potez.
+Komunikacija: moram znati od koga dobivam zadatak, kome šaljem svoju vrsnu vrijednost i od koga primam vrijednost koja meni treba.
+Aglomeracija: neka svaki zadatak napravi dva poteza, jedan od racunala i jedan od igraca.
+Pridruzivanje: zadaci mogu biti rasporedeni od strane voditelja koji ce biti i vrsni cvor.
 

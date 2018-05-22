@@ -5,6 +5,8 @@ class ConnectFourGrid(object):
     self.tallest_column = 0
     self.grid = self.CreateGrid()
     
+    self.move_history = []
+    
   def CreateGrid(self):
     list_of_lists = []
     for number in range(self.width):
@@ -17,6 +19,7 @@ class ConnectFourGrid(object):
     self.grid[column].append(token)
     
     self.UpdateColumnHeight()
+    self.UpdateMoveHistory(token, column)
     
   def UpdateColumnHeight(self):
     for column in range(self.width):
@@ -24,6 +27,60 @@ class ConnectFourGrid(object):
       
       if (height > self.tallest_column):
         self.tallest_column = height
+    
+  def UpdateMoveHistory(self, token, column):
+    move = (token, column)
+    self.move_history.append(move)
+    
+    
+    
+  def CheckVictory(self):
+    move_row, move_column, token = self.CalculateLastMovePosition()
+    
+    self.CheckVertical(move_row, move_column, token)
+    self.CheckHorizontal(move_row, move_column, token)
+    self.CheckMainDiagonal(move_row, move_column, token)
+    self.CheckSecondDiagonal(move_row, move_column, token)
+    
+    
+  def CalculateLastMovePosition(self):
+    last_move = self.move_history[-1]
+    column = last_move[0]
+    token = last_move[1]
+    column_height = len(self.grid[column])
+    row = column_height
+    
+    return row, column, token
+    
+  def CheckVertical(self, move_row, move_column, token):
+    #check only those beneath
+    start_row = move_row
+    end_row = move_row - 3
+    
+    if end_row < 0:
+      return False
+      
+    column = self.grid[move_column][-4:-1]
+    for row_token in column:
+      if token != row_token:
+        return False
+        
+    return True
+    
+  def CheckHorizontal(self, move_row, move_column, token):
+    #check the whole row
+    consecutive_tokens = 0
+    
+    for column in range():
+      for row in range():
+        
+    
+    if consecutive_tokens >= 4:
+      return True
+      
+    return False
+    
+    
     
   def Print(self):
     string_list = []
