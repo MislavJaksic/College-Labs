@@ -37,18 +37,23 @@ class ConnectFourGrid(object):
   def CheckVictory(self):
     move_row, move_column, token = self.CalculateLastMovePosition()
     
-    self.CheckVertical(move_row, move_column, token)
-    self.CheckHorizontal(move_row, move_column, token)
-    self.CheckMainDiagonal(move_row, move_column, token)
-    self.CheckSecondDiagonal(move_row, move_column, token)
+    vertical_victory = self.CheckVertical(move_row, move_column, token)
+    horizontal_victory = self.CheckHorizontal(move_row, move_column, token)
+    main_diag_victory = self.CheckMainDiagonal(move_row, move_column, token)
+    second_diag_victory = self.CheckSecondDiagonal(move_row, move_column, token)
     
+    print (vertical_victory, horizontal_victory, main_diag_victory, second_diag_victory)
+    if True in (vertical_victory, horizontal_victory, main_diag_victory, second_diag_victory):
+      return True
+      
+    return False
     
   def CalculateLastMovePosition(self):
     last_move = self.move_history[-1]
-    column = last_move[0]
-    token = last_move[1]
-    column_height = len(self.grid[column])
-    row = column_height
+    token = last_move[0]
+    column = last_move[1]
+    column_height = len(self.grid[column]) 
+    row = column_height - 1
     
     return row, column, token
     
@@ -56,11 +61,12 @@ class ConnectFourGrid(object):
     #check only those beneath
     start_row = move_row
     end_row = move_row - 3
-    
+    print end_row
     if end_row < 0:
       return False
       
     column = self.grid[move_column][-4:-1]
+    print column
     for row_token in column:
       if token != row_token:
         return False
@@ -70,16 +76,96 @@ class ConnectFourGrid(object):
   def CheckHorizontal(self, move_row, move_column, token):
     #check the whole row
     consecutive_tokens = 0
-    
-    for column in range():
-      for row in range():
+    for column in range(self.width):
+      try:
+        grid_token = self.grid[column][move_row]
+        if grid_token == token:
+          consecutive_tokens += 1
+        else:
+          consecutive_tokens = 0
+          
+      except:
+        consecutive_tokens = 0
+      
+      if consecutive_tokens >= 4:
+        return True
         
+    return False
     
-    if consecutive_tokens >= 4:
-      return True
+  def CheckMainDiagonal(self, move_row, move_column, token):
+    # \ diagonal
+    start_row = move_row + 3
+    
+    start_column = move_column - 3
+    end_column = move_column + 3
+    
+    if start_row < 0:
+      start_row = 0
+      
+    if start_column < 0:
+      start_column = 0
+    if end_column > 6:
+      end_column = 6
+      
+    column = start_column
+    row = start_row
+    consecutive_tokens = 0
+    while (row >= 0 and column <= end_column):
+      try:
+        grid_token = self.grid[column][row]
+        if grid_token == token:
+          consecutive_tokens += 1
+        else:
+          consecutive_tokens = 0
+          
+      except:
+        consecutive_tokens = 0
+      
+      if consecutive_tokens >= 4:
+        return True
+        
+      row -= 1
+      column += 1
       
     return False
     
+  def CheckSecondDiagonal(self, move_row, move_column, token):
+    # / diagonal
+    start_row = move_row - 3
+    end_row = move_row + 3
+    start_column = move_column - 3
+    end_column = move_column + 3
+    
+    if start_row < 0:
+      start_row = 0
+      
+    if start_column < 0:
+      start_column = 0
+    if end_column > 6:
+      end_column = 6
+      
+    column = start_column
+    row = start_row
+    consecutive_tokens = 0
+    while (row <= end_row and column <= end_column):
+      try:
+        grid_token = self.grid[column][row]
+        if grid_token == token:
+          consecutive_tokens += 1
+        else:
+          consecutive_tokens = 0
+          
+      except:
+        consecutive_tokens = 0
+      
+      if consecutive_tokens >= 4:
+        return True
+        
+      row += 1
+      column += 1
+      
+    return False
+  
     
     
   def Print(self):
@@ -119,10 +205,4 @@ class ConnectFourGrid(object):
     return string_list
     
     
-    
-grid = ConnectFourGrid()
-grid.AddTokenToColumn("P", 3)
-grid.AddTokenToColumn("C", 3)
-grid.AddTokenToColumn("T", 3)
-grid.AddTokenToColumn("C", 6)
-grid.Print()
+def ConstructStates(top_state):
