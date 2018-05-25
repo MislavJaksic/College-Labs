@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 class ConnectFourGrid(object):
   def __init__(self):
     self.width = 7
@@ -42,7 +44,7 @@ class ConnectFourGrid(object):
     main_diag_victory = self.CheckMainDiagonal(move_row, move_column, token)
     second_diag_victory = self.CheckSecondDiagonal(move_row, move_column, token)
     
-    print (vertical_victory, horizontal_victory, main_diag_victory, second_diag_victory)
+    # print (vertical_victory, horizontal_victory, main_diag_victory, second_diag_victory)
     if True in (vertical_victory, horizontal_victory, main_diag_victory, second_diag_victory):
       return True
       
@@ -206,3 +208,42 @@ class ConnectFourGrid(object):
     
     
 def ConstructStates(top_state):
+  computer_states = ConstructComputerStates(top_state)
+  player_computer_states = ConstructPlayerStates(computer_states)
+  
+  for state in player_computer_states:
+    state.Print()
+  
+def ConstructComputerStates(top_state):
+  computer_states = []
+  for number in range(7):
+    state = deepcopy(top_state)
+    state.AddTokenToColumn("C", number)
+    computer_states.append(state)
+    
+  return computer_states
+  
+def ConstructPlayerStates(computer_states):
+  player_computer_states = []
+  for computer_state in computer_states:
+    for number in range(7):
+      state = deepcopy(computer_state)
+      state.AddTokenToColumn("P", number)
+      player_computer_states.append(state)
+      
+  return player_computer_states
+  
+def AssignComputerValues(computer_states):
+  computer_values = []
+  for computer_states in 
+  return computer_values
+  
+
+def AssignPlayerValues(player_computer_states):
+  
+  return player_computer_values
+ 
+state = ConnectFourGrid()
+ConstructStates(state)
+  
+  
