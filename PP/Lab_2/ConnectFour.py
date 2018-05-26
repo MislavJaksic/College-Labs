@@ -1,8 +1,13 @@
 from copy import deepcopy
 
+BOARD_WIDTH = 7
+COMPUTER_VICTORY = 1
+PLAYER_VICTORY = -1
+NEITHER_WIN = 0
+
 class ConnectFourGrid(object):
   def __init__(self):
-    self.width = 7
+    self.width = BOARD_WIDTH
     
     self.tallest_column = 0
     self.grid = self.CreateGrid()
@@ -63,12 +68,11 @@ class ConnectFourGrid(object):
     #check only those beneath
     start_row = move_row
     end_row = move_row - 3
-    print end_row
+    
     if end_row < 0:
       return False
       
     column = self.grid[move_column][-4:-1]
-    print column
     for row_token in column:
       if token != row_token:
         return False
@@ -207,43 +211,140 @@ class ConnectFourGrid(object):
     return string_list
     
     
+def CalculateTopStateValue(top_state):
+  computer_states, player_computer_states = ConstructStates(top_state)
+  computer_values, player_values = AssignValuesToStates(computer_states, player_computer_states)
+  top_value = PropagateStatesUpwards(top_state, computer_values, player_values)
+  
+  print top_value
+  
+  return top_value
+  
+  
 def ConstructStates(top_state):
-  computer_states = ConstructComputerStates(top_state)
-  player_computer_states = ConstructPlayerStates(computer_states)
+  computer_states = SimulateComputerMoves(top_state)
+  player_computer_states = SimulatePlayerMoves(computer_states)
   
-  for state in player_computer_states:
-    state.Print()
+  # for state in player_computer_states:
+    # state.Print()
+    
+  return computer_states, player_computer_states
   
-def ConstructComputerStates(top_state):
+def SimulateComputerMoves(top_state):
   computer_states = []
-  for number in range(7):
+  for number in range(BOARD_WIDTH):
     state = deepcopy(top_state)
     state.AddTokenToColumn("C", number)
     computer_states.append(state)
     
   return computer_states
   
-def ConstructPlayerStates(computer_states):
+def SimulatePlayerMoves(computer_states):
   player_computer_states = []
   for computer_state in computer_states:
-    for number in range(7):
+    for number in range(BOARD_WIDTH):
       state = deepcopy(computer_state)
       state.AddTokenToColumn("P", number)
       player_computer_states.append(state)
       
   return player_computer_states
+
   
-def AssignComputerValues(computer_states):
+def AssignValuesToStates(computer_states, player_computer_states):
+  computer_values = AssignComputerMoveValues(computer_states)
+  player_values = AssignPlayerMoveValues(player_computer_states)
+  
+  return computer_values, player_values
+  
+def AssignComputerMoveValues(computer_states):
   computer_values = []
-  for computer_states in 
+  for computer_state in computer_states:
+    if computer_state.CheckVictory():
+      computer_values.append(COMPUTER_VICTORY)
+    else:
+      computer_values.append(NEITHER_WIN)
+      
   return computer_values
   
-
-def AssignPlayerValues(player_computer_states):
+def AssignPlayerMoveValues(player_states):
+  player_values = []
+  for player_state in player_states:
+    if player_state.CheckVictory():
+      player_values.append(PLAYER_VICTORY)
+    else:
+      player_values.append(NEITHER_WIN)
+      
+  return player_values
+ 
   
-  return player_computer_values
+def PropagateStatesUpwards(top_state, computer_values, player_values):
+  propagated_values = PropagatePlayerValuesUpwards(computer_values, player_values)
+  
+  # for state in computer_states:
+    # state.Print()
+  # print propagated_values
+  
+  top_value = PropagateComputerValuesUpwards(top_state, propagated_values)
+  
+  return top_value
+  
+def PropagatePlayerValuesUpwards(computer_values, player_values):
+  propagated_values = []
+  for number in range(BOARD_WIDTH):
+    computer_move_value = computer_values[number]
+    
+    if computer_move_value == NEITHER_WIN:
+      relevant_player_values = player_values[number*BOARD_WIDTH:(number+1)*BOARD_WIDTH]
+      value = CalculateUpPropagationValue(relevant_player_values)
+      propagated_values.append(value)
+    elif computer_move_value == COMPUTER_VICTORY:
+      propagated_values.append(computer_move_value)
+    else:
+      raise Exception("ERROR")
+      
+  return propagated_values
+  
+def CalculateUpPropagationValue(player_values):
+  value_sum = 0
+  for value in player_values:
+    if value != PLAYER_VICTORY:
+      value_sum += value
+    else:
+      return PLAYER_VICTORY
+      
+  return float(value_sum) / BOARD_WIDTH
+  
+def PropagateComputerValuesUpwards(top_state, propagated_values):
+  if top_state.CheckVictory() == True:
+    return PLAYER_VICTORY
+  
+  value_sum = 0  
+  for value in propagated_values:
+    # if value != COMPUTER_VICTORY:
+      # value_sum += value
+    # else:
+      # return COMPUTER_VICTORY
+    value_sum += value
+      
+      
+  return float(value_sum) / BOARD_WIDTH
+      
+  
+ 
  
 state = ConnectFourGrid()
-ConstructStates(state)
+state.AddTokenToColumn("C", 2)
+state.AddTokenToColumn("C", 2)
+state.AddTokenToColumn("C", 2)
+state.AddTokenToColumn("C", 3)
+state.AddTokenToColumn("C", 3)
+state.AddTokenToColumn("C", 4)
+state.AddTokenToColumn("P", 2)
+state.AddTokenToColumn("P", 3)
+state.AddTokenToColumn("P", 4)
+CalculateTopStateValue(state)
+  
+  
+  
   
   
