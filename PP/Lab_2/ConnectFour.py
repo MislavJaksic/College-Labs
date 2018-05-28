@@ -396,8 +396,7 @@ def ComputerThinks(communicator, current_state):
   computer_states, player_computer_states = ConstructStates(current_state)
   tasks = player_computer_states
   
-  for state in player_computer_states:
-    results = DistributeTasksAndRecieveResults(task_tier)
+  results = DistributeTasksAndRecieveResults(tasks)
 
   
 
