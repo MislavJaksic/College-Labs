@@ -11,9 +11,9 @@ from copy import deepcopy
 BOARD_WIDTH = 7
 COMPUTER_VICTORY = 1
 PLAYER_VICTORY = -1
-NEITHER_WIN = 0
+UNDECIDED = 0
 
-NUMBER_OF_COMPUTER_MOVES = 3 # >3 can take a huge amount of time!
+NUMBER_OF_COMPUTER_MOVES = 2 # >3 can take a huge amount of time!
 
 class ConnectFourGrid(object):
   def __init__(self):
@@ -59,7 +59,6 @@ class ConnectFourGrid(object):
     main_diag_victory = self.CheckMainDiagonal(move_row, move_column, token)
     second_diag_victory = self.CheckSecondDiagonal(move_row, move_column, token)
     
-    # print (vertical_victory, horizontal_victory, main_diag_victory, second_diag_victory)
     if True in (vertical_victory, horizontal_victory, main_diag_victory, second_diag_victory):
       return True
       
@@ -221,18 +220,13 @@ class ConnectFourGrid(object):
     return string_list
     
     
+    
 def CalculateTopStateValue(top_state):
   all_state_tiers = CreateStatesToDesiredDepth(top_state)
-  # for tier in all_state_tiers:
-    # print len(tier)
   all_state_values = AssignValuesToStates(all_state_tiers)
-  # for values in all_state_values:
-    # print len(values)
-  top_value = PropagateStatesUpwards(top_state, all_state_values)
+  top_value, propagated_computer_values = PropagateStatesUpwards(top_state, all_state_values)
   
-  print top_value
-  
-  return top_value
+  return top_value, propagated_computer_values
   
   
 def CreateStatesToDesiredDepth(top_state):
@@ -243,7 +237,7 @@ def CreateStatesToDesiredDepth(top_state):
     computer_tier = []
     player_tier = []
     for branching_state in branching_states:
-      computer_states, player_after_computer_states = ConstructStates(branching_state)
+      computer_states, player_after_computer_states = ConstructComputerPlayerStates(branching_state)
       computer_tier.extend(computer_states)
       player_tier.extend(player_after_computer_states)
     
@@ -252,17 +246,13 @@ def CreateStatesToDesiredDepth(top_state):
     
     branching_states = player_tier
     
-  #all_states = reversed(all_states)
   return all_states
   
-def ConstructStates(top_state):
-  computer_states = SimulateComputerMoves(top_state)
-  player_computer_states = SimulatePlayerMoves(computer_states)
-  
-  # for state in player_computer_states:
-    # state.Print()
+def ConstructComputerPlayerStates(root_state):
+  states_after_computer_move = SimulateComputerMoves(root_state)
+  states_after_computer_and_then_player_move = SimulatePlayerMoves(computer_states)
     
-  return computer_states, player_computer_states
+  return states_after_computer_move, states_after_computer_and_then_player_move
   
 def SimulateComputerMoves(top_state):
   computer_states = []
@@ -290,31 +280,31 @@ def AssignValuesToStates(all_state_tiers):
     computer_states = all_state_tiers[depth*2]
     player_after_computer_states = all_state_tiers[depth*2 + 1]
     
-    computer_values = AssignComputerMoveValues(computer_states)
-    player_values = AssignPlayerMoveValues(player_after_computer_states)
+    computer_values = AssignValuesToComputerStates(computer_states)
+    player_values = AssignValuesToPlayerStates(player_after_computer_states)
     
     all_state_values.append(computer_values)
     all_state_values.append(player_values)
   
   return all_state_values
   
-def AssignComputerMoveValues(computer_states):
+def AssignValuesToComputerStates(computer_states):
   computer_values = []
   for computer_state in computer_states:
     if computer_state.CheckVictory():
       computer_values.append(COMPUTER_VICTORY)
     else:
-      computer_values.append(NEITHER_WIN)
+      computer_values.append(UNDECIDED)
       
   return computer_values
   
-def AssignPlayerMoveValues(player_states):
+def AssignValuesToPlayerStates(player_states):
   player_values = []
   for player_state in player_states:
     if player_state.CheckVictory():
       player_values.append(PLAYER_VICTORY)
     else:
-      player_values.append(NEITHER_WIN)
+      player_values.append(UNDECIDED)
       
   return player_values
  
@@ -336,14 +326,14 @@ def PropagateStatesUpwards(top_state, all_state_values):
   player_values = [top_state.CheckVictory()]
   top_value = PropagateComputerValuesUpwards(propagated_computer_values, player_values)
   
-  return top_value
+  return top_value[0], propagated_computer_values
   
 def PropagatePlayerValuesUpwards(computer_values, player_values):
   propagated_values = []
   for number in range(len(computer_values)):
     computer_move_value = computer_values[number]
     
-    if computer_move_value == NEITHER_WIN:
+    if computer_move_value == UNDECIDED:
       relevant_player_values = player_values[number*BOARD_WIDTH:(number+1)*BOARD_WIDTH]
       value = CalculateComputerUpPropagationValue(relevant_player_values)
       propagated_values.append(value)
@@ -369,7 +359,8 @@ def PropagateComputerValuesUpwards(computer_values, player_values):
   for number in range(len(player_values)):
     player_move_value = player_values[number]
     
-    if player_move_value == NEITHER_WIN:
+    #if player_move_value == UNDECIDED: #what if a foreign value apperas?
+    if player_move_value != PLAYER_VICTORY:
       relevant_computer_values = computer_values[number*BOARD_WIDTH:(number+1)*BOARD_WIDTH]
       value = CalculatePlayerUpPropagationValue(relevant_computer_values)
       propagated_values.append(value)
@@ -392,20 +383,73 @@ def CalculatePlayerUpPropagationValue(computer_values):
       
 
       
-def ComputerThinks(communicator, current_state):
-  computer_states, player_computer_states = ConstructStates(current_state)
-  tasks = player_computer_states
+def ComputerCalculatesBestMove(communicator, current_state):
+  computer_states, player_states = ConstructComputerPlayerStates(current_state)
+  values_of_computer_states = AssignValuesToComputerStates(computer_states)
   
-  results = DistributeTasksAndRecieveResults(tasks)
-
+  tasks = player_states
+  results = DistributeTasksAndRecieveResults(communicator, number_of_processes, tasks)
+  # print results
+  # print len(results)
   
+  propagated_computer_values = PropagatePlayerValuesUpwards(values_of_computer_states, results)
+  print propagated_computer_values
+  
+  best_move_value = max(propagated_computer_values)
+  for index in range(len(propagated_computer_values)):
+    value = propagated_computer_values[index]
+    if (value == best_move_value):
+      return index
+  
+def DistributeTasksAndRecieveResults(communicator, number_of_processes, tasks):
+  task_counter = 0
+  distribution_counter = 0
+  results = []
+  while True:
 
-
-
-def DistributeTasksAndRecieveResults(task_tier):
-  for state in task_tier:
-    pass
-  #communicator.send(message, dest=)
+    for process in range(1, number_of_processes):
+      task = tasks[task_counter]
+      communicator.send(task, dest=process)
+      
+      print "Master sent task " + str(task_counter) + " to process " + str(process)
+      task_counter += 1
+      distribution_counter += 1
+      if task_counter >= len(tasks):
+        break
+      
+    for process in range(1, number_of_processes):
+      distribution_counter -= 1
+      if distribution_counter < 0:
+        break
+      
+      result = communicator.recv(source=process)
+      results.append(result)
+      
+      print "Master recieved " + str(result) + " from process " + str(process)
+      
+    if distribution_counter < 0:
+      break
+    if task_counter >= len(tasks):
+      break
+  
+  return results
+    
+    
+    
+    
+def DoWork(communicator, process_rank):
+  while True:
+    
+    state = communicator.recv(source=0)
+    print "Worker rank " + str(process_rank) + " recieved state"
+    
+    if (state == 0):
+      break
+      
+    result, propagated_computer_values = CalculateTopStateValue(state)
+    
+    communicator.send(result, dest=0)
+    print "Worker rank " + str(process_rank) + " sent result"
 
       
 # state = ConnectFourGrid()
@@ -416,20 +460,67 @@ def DistributeTasksAndRecieveResults(task_tier):
 # CalculateTopStateValue(state)
       
       
-# if __name__ == "__main__":
-  # communicator = MPI.COMM_WORLD
-  # process_rank = communicator.Get_rank()
-  # number_of_processes = communicator.Get_size()
+if __name__ == "__main__":
+  communicator = MPI.COMM_WORLD
+  process_rank = communicator.Get_rank()
+  number_of_processes = communicator.Get_size()
   
-  # if process_rank == 0:
-    # current_state = ConnectFourGrid()
-    # ComputerThinks(communicator, current_state)
-  # else:
-    # pass
+  if process_rank == 0:
+    print "Supervisor rank: " + str(process_rank)
+    
+    current_state = ConnectFourGrid()
+    
+    current_state.AddTokenToColumn("C", 0)
+    current_state.AddTokenToColumn("C", 0)
+    current_state.AddTokenToColumn("C", 0)
+    current_state.AddTokenToColumn("P", 0)
+    
+    current_state.AddTokenToColumn("C", 1)
+    
+    current_state.AddTokenToColumn("P", 2)
+    current_state.AddTokenToColumn("P", 2)
+    current_state.AddTokenToColumn("C", 2)
+    
+    current_state.AddTokenToColumn("C", 3)
+    
+    current_state.AddTokenToColumn("P", 5)
+    current_state.AddTokenToColumn("P", 5)
+    current_state.AddTokenToColumn("C", 5)
+     
+    current_state.AddTokenToColumn("P", 6)
+    
+    while True:
+      move_to_make = ComputerCalculatesBestMove(communicator, current_state)
+      current_state.AddTokenToColumn("C", move_to_make)
+      current_state.Print()
+      
+      if current_state.CheckVictory():
+        print "Computer has won"
+        break
+      
+      player_move = raw_input("The Player may now make a move:")
+      
+      player_move = int(player_move)
+      current_state.AddTokenToColumn("P", player_move)
+      current_state.Print()
+      
+      if current_state.CheckVictory():
+        print "Plyaer has won"
+        break
+      
+      
+  else:
+    print "Worker rank: " + str(process_rank)
+    DoWork(communicator, process_rank)
   
-  #computer thinks
-  #computer makes a move
-  #player makes a move
+  #until game ends
+    #computer thinks
+    
+    #computer makes a move
+    #check victory condition
+    
+    #player makes a move
+    #check victory condition
 
   #computer think
     #create states until the desired depth
