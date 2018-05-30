@@ -1,5 +1,5 @@
-Cetri u nizu, covjek protiv racunalo
-Dimenzije: beskonacno u visinu, 7 u sirinu
+﻿Cetri u nizu, covjek protiv racunalo.
+Dimenzije: beskonacno u visinu, 7 u sirinu.
 Gravitacija postoji. Oznake padaju na dno stupca.
 
 Pretrazivanje prostora stanja do zadane dubine.
@@ -9,8 +9,26 @@ Nakon pretrazivanja do odredene dubine, rekurzivno se penji po stablu.
 Stanje: konfiguracija oznaka na ploci.
 Podatkovna struktura: uspravna ploca.
 
-Podjela: najmanji moguci zadatak je izracunati jedan potez.
-Komunikacija: moram znati od koga dobivam zadatak, kome šaljem svoju vrsnu vrijednost i od koga primam vrijednost koja meni treba.
-Aglomeracija: neka svaki zadatak napravi dva poteza, jedan od racunala i jedan od igraca.
-Pridruzivanje: zadaci mogu biti rasporedeni od strane voditelja koji ce biti i vrsni cvor.
+Podjela: najmanji moguci zadatak je izracunati jedan potez, bilo to racunala ili igraca. Kako bi se zadatak mogao izvrsiti samo je potrebno da sazna svoje vrsno stanje iz kojeg ce napraviti potez i propagirane vrijednosti koje dolaze od podstable ispod njega.
+Komunikacija: svaki zadatak mora znati od koga dobiva zadatak (od voditelja) i kome šaljem svoju vrsnu propagiranu vrijednost (ponovno, voditelju).
+Aglomeracija: svaki zadatak ce napraviti barem jedan potez igraca i jedan potez racunala, ali moze i vise ovisno o zadanoj dubini pretrage.
+Pridruzivanje: zadatke rasporeduje voditelja svojim radnicima. Ako je voditelj jedini proces, onda on napravi sav posao sam.
+
+Mjerenja:
+| Procesori | Vrijeme | Ucinkovitost | Ubrzanje |
+| -- | -- | -- | -- |
+| 1 | 25,02 | 1 | 1 |
+| 2 | 26,46 | 0,47 | 0,95 |
+| 3 | 15,21 | 0,55 | 1,64 |
+| 4 | 10,23 | 0,61 | 2,45 |
+| 5 | 7,32 | 0,68 | 3,42 |
+| 6 | 5,88 | 0,71 | 4,26 |
+| 7 | 5,37 | 0,67 | 4,66 |
+| 8 | 4,11 | 0,76 | 6,09 |
+
+Ucinkovitost E:
+
+Ubrzanje S:
+
+
 

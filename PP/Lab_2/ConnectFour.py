@@ -1,5 +1,6 @@
 from mpi4py import MPI
 from copy import deepcopy
+from time import time
 
 # Installing relevant packages: Anaconda 2.x; conda install mpi4py; works on linux
 
@@ -13,7 +14,7 @@ COMPUTER_VICTORY = 1
 PLAYER_VICTORY = -1
 UNDECIDED = 0
 
-NUMBER_OF_COMPUTER_MOVES = 2 # >3 can take a huge amount of time!
+NUMBER_OF_COMPUTER_MOVES = 3 # >3 can take a huge amount of time!
 
 class ConnectFourGrid(object):
   def __init__(self):
@@ -250,7 +251,7 @@ def CreateStatesToDesiredDepth(top_state):
   
 def ConstructComputerPlayerStates(root_state):
   states_after_computer_move = SimulateComputerMoves(root_state)
-  states_after_computer_and_then_player_move = SimulatePlayerMoves(computer_states)
+  states_after_computer_and_then_player_move = SimulatePlayerMoves(states_after_computer_move)
     
   return states_after_computer_move, states_after_computer_and_then_player_move
   
@@ -337,10 +338,8 @@ def PropagatePlayerValuesUpwards(computer_values, player_values):
       relevant_player_values = player_values[number*BOARD_WIDTH:(number+1)*BOARD_WIDTH]
       value = CalculateComputerUpPropagationValue(relevant_player_values)
       propagated_values.append(value)
-    elif computer_move_value == COMPUTER_VICTORY:
-      propagated_values.append(computer_move_value)
     else:
-      raise Exception("ERROR")
+      propagated_values.append(computer_move_value)
       
   return propagated_values
   
@@ -359,15 +358,12 @@ def PropagateComputerValuesUpwards(computer_values, player_values):
   for number in range(len(player_values)):
     player_move_value = player_values[number]
     
-    #if player_move_value == UNDECIDED: #what if a foreign value apperas?
-    if player_move_value != PLAYER_VICTORY:
+    if player_move_value == UNDECIDED:
       relevant_computer_values = computer_values[number*BOARD_WIDTH:(number+1)*BOARD_WIDTH]
       value = CalculatePlayerUpPropagationValue(relevant_computer_values)
       propagated_values.append(value)
-    elif player_move_value == PLAYER_VICTORY:
-      propagated_values.append(player_move_value)
     else:
-      raise Exception("ERROR")
+      propagated_values.append(player_move_value)
       
   return propagated_values
       
@@ -380,28 +376,49 @@ def CalculatePlayerUpPropagationValue(computer_values):
       return COMPUTER_VICTORY
       
   return float(value_sum) / BOARD_WIDTH
+     
+     
+     
+def CreateInterestingState(current_state):
+  # current_state.AddTokenToColumn("C", 0)
+  # current_state.AddTokenToColumn("C", 0)
+  # current_state.AddTokenToColumn("C", 0)
+  # current_state.AddTokenToColumn("P", 0)
+  
+  # current_state.AddTokenToColumn("C", 1)
+  
+  # current_state.AddTokenToColumn("P", 2)
+  # current_state.AddTokenToColumn("P", 2)
+  # current_state.AddTokenToColumn("C", 2)
+  
+  # current_state.AddTokenToColumn("C", 3)
+  
+  # current_state.AddTokenToColumn("P", 5)
+  # current_state.AddTokenToColumn("P", 5)
+  # current_state.AddTokenToColumn("C", 5)
+   
+  # current_state.AddTokenToColumn("P", 6)
+  
+  return current_state
+     
       
-
-      
-def ComputerCalculatesBestMove(communicator, current_state):
+def CalculateBestMove(communicator, number_of_processes, current_state):
   computer_states, player_states = ConstructComputerPlayerStates(current_state)
-  values_of_computer_states = AssignValuesToComputerStates(computer_states)
-  
   tasks = player_states
-  results = DistributeTasksAndRecieveResults(communicator, number_of_processes, tasks)
-  # print results
-  # print len(results)
   
+  if number_of_processes != 1:
+    results = DistributeTasksAndRecieveResults(communicator, number_of_processes, tasks)
+  else:
+    results = DoItAllAlone(tasks)
+  
+  values_of_computer_states = AssignValuesToComputerStates(computer_states)
   propagated_computer_values = PropagatePlayerValuesUpwards(values_of_computer_states, results)
   print propagated_computer_values
   
-  best_move_value = max(propagated_computer_values)
-  for index in range(len(propagated_computer_values)):
-    value = propagated_computer_values[index]
-    if (value == best_move_value):
-      return index
+  column_number = FindHighestValueIndex(propagated_computer_values)
+  return column_number
   
-def DistributeTasksAndRecieveResults(communicator, number_of_processes, tasks):
+def DistributeTasksAndRecieveResults(communicator, number_of_processes, tasks): #delicate, needs refactoring
   task_counter = 0
   distribution_counter = 0
   results = []
@@ -411,7 +428,7 @@ def DistributeTasksAndRecieveResults(communicator, number_of_processes, tasks):
       task = tasks[task_counter]
       communicator.send(task, dest=process)
       
-      print "Master sent task " + str(task_counter) + " to process " + str(process)
+      #print "Master sent task " + str(task_counter) + " to process " + str(process)
       task_counter += 1
       distribution_counter += 1
       if task_counter >= len(tasks):
@@ -425,7 +442,7 @@ def DistributeTasksAndRecieveResults(communicator, number_of_processes, tasks):
       result = communicator.recv(source=process)
       results.append(result)
       
-      print "Master recieved " + str(result) + " from process " + str(process)
+      #print "Master recieved " + str(result) + " from process " + str(process)
       
     if distribution_counter < 0:
       break
@@ -434,30 +451,32 @@ def DistributeTasksAndRecieveResults(communicator, number_of_processes, tasks):
   
   return results
     
+def FindHighestValueIndex(list):
+  highest_value = max(list)
+  length = len(list)
+  for index in range(length):
+    value = list[index]
+    if (value == highest_value):
+      return index
     
     
+def DoItAllAlone(tasks):
+  results = []
+  for task in tasks:
+    result, propagated_computer_values = CalculateTopStateValue(task)
+    results.append(result)
+  return results
     
-def DoWork(communicator, process_rank):
+  
+def DoWork(communicator):
   while True:
-    
     state = communicator.recv(source=0)
-    print "Worker rank " + str(process_rank) + " recieved state"
-    
     if (state == 0):
       break
       
     result, propagated_computer_values = CalculateTopStateValue(state)
-    
     communicator.send(result, dest=0)
-    print "Worker rank " + str(process_rank) + " sent result"
-
-      
-# state = ConnectFourGrid()
-# state.AddTokenToColumn("C", 0)
-# state.AddTokenToColumn("C", 1)
-# state.AddTokenToColumn("P", 5)
-# state.AddTokenToColumn("P", 6)
-# CalculateTopStateValue(state)
+    
       
       
 if __name__ == "__main__":
@@ -469,28 +488,17 @@ if __name__ == "__main__":
     print "Supervisor rank: " + str(process_rank)
     
     current_state = ConnectFourGrid()
-    
-    current_state.AddTokenToColumn("C", 0)
-    current_state.AddTokenToColumn("C", 0)
-    current_state.AddTokenToColumn("C", 0)
-    current_state.AddTokenToColumn("P", 0)
-    
-    current_state.AddTokenToColumn("C", 1)
-    
-    current_state.AddTokenToColumn("P", 2)
-    current_state.AddTokenToColumn("P", 2)
-    current_state.AddTokenToColumn("C", 2)
-    
-    current_state.AddTokenToColumn("C", 3)
-    
-    current_state.AddTokenToColumn("P", 5)
-    current_state.AddTokenToColumn("P", 5)
-    current_state.AddTokenToColumn("C", 5)
-     
-    current_state.AddTokenToColumn("P", 6)
+    current_state = CreateInterestingState(current_state)
     
     while True:
-      move_to_make = ComputerCalculatesBestMove(communicator, current_state)
+      start_time = time()
+    
+      move_to_make = CalculateBestMove(communicator, number_of_processes, current_state)
+      
+      end_time = time()
+      
+      print "Time:" + str(end_time - start_time)
+      
       current_state.AddTokenToColumn("C", move_to_make)
       current_state.Print()
       
@@ -498,42 +506,30 @@ if __name__ == "__main__":
         print "Computer has won"
         break
       
-      player_move = raw_input("The Player may now make a move:")
-      
+      print "The Player may now make a move or surrender: [0,1,2,3,4,5,6] / -1"
+      player_move = raw_input(":::")
       player_move = int(player_move)
+      
+      if (player_move == -1):
+        print "Player has surrendered"
+        break
+      
       current_state.AddTokenToColumn("P", player_move)
       current_state.Print()
       
       if current_state.CheckVictory():
-        print "Plyaer has won"
+        print "Player has won"
         break
+        
+    for process in range(1, number_of_processes):
+      communicator.send(0, dest=process)
       
       
   else:
     print "Worker rank: " + str(process_rank)
-    DoWork(communicator, process_rank)
-  
-  #until game ends
-    #computer thinks
+    DoWork(communicator)
+
     
-    #computer makes a move
-    #check victory condition
     
-    #player makes a move
-    #check victory condition
-
-  #computer think
-    #create states until the desired depth
-    #send tasks to be completed
-    #recieve results
-    #use results and create other tasks
-    #do so until the top
-
-  
-  
-
-  
-  
-  
-  
-  
+    
+    
