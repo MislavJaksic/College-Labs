@@ -26,9 +26,9 @@ Mjerenja:
 | 7 | 5,37 | 0,67 | 4,66 |
 | 8 | 4,11 | 0,76 | 6,09 |
 
-Ucinkovitost E:
+Ucinkovitost E: ucinkovitost ostro pada s 2 procesora jer je jedan prozvan voditeljem, a drugi radnikom sto znaci da samo jedan od dva procesora obavljaju korisan rad. Povecavanjem broja procesora jedinicna ucinkovitost se smanjuje jer svaki dodatni procesor dodaje sve manje racunalne moci naspram procesorskog vremena koje treba biti potreseno na komunikaciju.
 
-Ubrzanje S:
+Ubrzanje S: ubrzanje raste gotovo linearno sto znaci da je algoritam skalabilan naspram povecanja broja procesora.
 
 
 
