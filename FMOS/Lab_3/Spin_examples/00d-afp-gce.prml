@@ -1,0 +1,27 @@
+//00d-afp-gce.prml
+//gcd sa simulacijom,assert, ltl
+
+int x=75,y=100;
+
+#define p (x!=y)
+ltl LTL0 {[] p}
+
+active proctype gce() {
+
+ do
+ :: (x > y) -> x=x-y;
+ :: (x < y) -> y=y-x;
+ :: (x ==y) -> goto L;
+ od;
+
+L:
+  skip;
+//printf("(W) x=%d y=%d \n",x,y);
+//assert(x != y); //protuprimjer
+}
+
+
+//init {
+//  run gce(75,100);
+// printf("a=%d b=%d \n",x,y);
+//}

@@ -1,0 +1,42 @@
+// 20c-inc-dec-lock.prml  
+// single copy of ffox with multiple tabs
+int x = 0;
+bool doneinc = false;
+bool donedec = false;
+chan lock = [1] of {bool};
+
+proctype inc(){
+	 int tmp;
+	 lock!1;
+	 tmp = x;
+	 x = tmp + 1;
+	 lock?1;
+	 doneinc = true;
+}
+
+proctype dec(){
+	 lock!1;
+	 int tmp;
+	 tmp = x;
+	 x = tmp - 1;
+	 lock?1;
+	 donedec = true;
+}
+
+init {
+atomic{
+ 	run inc();
+ 	run dec();
+//}
+assert(x ==0)
+}
+
+}      
+
+//ltl finallyzero {
+//     always ((!(doneinc && donedec)) || x == 0);
+// //     [] !((!(doneinc && donedec)) || x == 0);
+//}
+
+
+

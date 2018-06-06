@@ -1,0 +1,25 @@
+// 12-abs-ProducerConsumer.prml
+// mijenjati N (active [N])
+//ne dode na -end- , znaci li to da nema zastoja "deadlock"
+mtype = {P, C};
+int label;
+
+mtype turn = P;
+
+active [1] proctype producer()
+{
+	do
+	:: (turn == P) ->
+		printf("Produce\n");
+		turn = C
+	od
+}
+
+active [1] proctype consumer()
+{
+	do
+	:: (turn == C) ->
+		printf("Consume\n");
+		turn = P
+	od
+}

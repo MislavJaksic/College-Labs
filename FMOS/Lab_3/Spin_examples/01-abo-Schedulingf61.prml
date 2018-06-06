@@ -1,0 +1,41 @@
+//01-abo-Schedulingf61.prml
+/*ex07 modified pp. 129 SPIN book*/
+// no statement merging: spin -o3 -run -l <this>
+// multiple trails ./pan -e -l
+
+proctype ex07_scheduler(int pc) 
+{
+
+S0:
+ (pc == 1) -> printf("l0 ");goto S1;
+
+S1:
+  (pc == 1) -> printf("l1 "); goto S2;
+
+S2:
+  if
+    ::(pc == 1) ->
+       printf("l2 ");
+       goto S1;
+    ::(pc == 1) ->
+       printf("l5 ");
+       goto end_S4;
+    ::(pc == 1) ->
+       printf("l3 ");
+       goto S3;
+  fi;
+
+S3:
+  (pc == 1) ->
+       printf("l4 ");
+       goto S2;
+
+end_S4: 
+  (pc == 1) ->
+    printf("END\n\n");
+    //assert(pc == 1);
+}  
+
+init{
+  run ex07_scheduler(1);
+}

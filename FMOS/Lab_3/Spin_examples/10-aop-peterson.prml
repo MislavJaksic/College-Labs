@@ -1,0 +1,52 @@
+//spin -a <this_file>.prml
+//peterson algoritam
+//gcc -o pan pan.c ili gcc -o -DBITSTATE pan pan.c
+//pan -v -m70000
+
+#define MAXPROC 4
+
+byte pos[MAXPROC];
+byte step[MAXPROC];
+
+proctype PROCESS(byte procNum) { 
+byte j=0;
+byte k=0;
+
+NCS: if
+       :: j = 1; goto wait; 
+fi;
+
+CS: if
+      :: pos[procNum]; goto NCS; 
+fi;
+
+wait: if
+	:: d_step {j<MAXPROC;pos[procNum] = j;}
+	   goto q2; 
+	:: j==MAXPROC; goto CS; 
+fi;
+
+q2: if
+	:: d_step {step[j-1] = procNum;k = 0;} goto q3; 
+
+fi;
+q3: if
+:: d_step {k<MAXPROC && (k==procNum || pos[k]<j);k = k+1;}
+   goto q3; 
+:: d_step {step[j-1]!=procNum || k==MAXPROC;j = j+1;}
+   goto wait; 
+fi;
+}
+
+init { 
+	run PROCESS(0);
+	run PROCESS(1);
+	run PROCESS(2);
+	run PROCESS(3);
+// 
+//	run PROCESS(4); 
+//	run PROCESS(5);
+//	run PROCESS(6);
+//	run PROCESS(7);
+}
+

@@ -1,0 +1,28 @@
+// "csp trace" expanded product
+// example Promela model for SPIN
+
+#define p (x >= 0)
+//#define p !(x >= 4)
+//#define p (x == 5)
+//#define q (x >=  0)
+
+int x;
+
+//ltl  LTL0 {<>  p}
+ltl  LTL1 {[] p}
+//ltl  LTL2 {<>[] p}
+//ltl  LTL3 {[]<> p}
+//ltl  LTL4 {p U q}
+
+active proctype csp_trace1(){
+  x=1; x=2; x=3; x=4; x=3;
+  x=3; x=0; x=9; x=7; x=5; x=4;
+infloop:
+//progress_infloop:
+  x=11; x=-1; x=0; x=3; x=2;
+  x=4; x=5; x=6; x=8; x=0;
+  x=1; x=5;
+goto infloop;
+//goto progress_infloop;
+end_trace:skip;
+}

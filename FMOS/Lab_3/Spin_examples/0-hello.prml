@@ -1,0 +1,20 @@
+// 0-hello.prml
+/* A "Hello World" Promela model for SPIN  */
+
+// active [1] proctype Hello() {
+// active [3] proctype Hello() {
+proctype Hello() {
+ printf("FMuOS: Hello process, my pid is: %d\n", _pid);
+}
+
+ init { 
+ int lastpid; 
+ printf("init process, my pid is: %d\n", _pid); 
+ lastpid = run Hello(); 
+ printf("last pid was: %d\n", lastpid);
+ printf("last pid was: %d\n", lastpid);
+   run Hello();
+   run Hello();
+   run Hello();
+   run Hello();
+ } 

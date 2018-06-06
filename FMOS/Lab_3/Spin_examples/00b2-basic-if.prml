@@ -1,0 +1,23 @@
+/*ex07 modified pp. 129 SPIN book*/
+/* basis if  fi command */
+
+bool pc=1;
+
+//proctype cmd_if()
+active proctype cmd_if()
+{
+
+if
+  ::(pc == 1) -> printf("l1\n ");
+  ::(pc == 1) -> printf("l2\n ");
+  ::(pc == 1) -> printf("l3\n ")// -> break;
+  ::(pc == 1) -> printf("l4\n ");
+  ::(pc == 1) -> printf("l5\n ");
+  :: timeout -> printf("TIMEOUT\n ");
+fi;
+}
+  
+//init{
+//  run cmd_if();
+//}
+

@@ -1,0 +1,65 @@
+//  03-adf-BrZ83.prml
+/*abf: Naive Client-Server Izl test lab.vj.
+// za 13.05 2011 god. EE (adf-prml-357-IzlTestLabvj-2011-BrZ83)*/
+// Brand D., P. Zafiropulo: "On Communicating Finite-State Machines",
+// IBM Zurich Research Laboratory, Rdschlikon, Switzerland
+
+#define N 0
+
+mtype = {req, done, ack, alarm};
+
+chan chS2U = [N] of {mtype};
+chan chU2S = [N] of {mtype};
+
+// #define p  (
+// ltl LTL1 { [] p } //no, syntax error
+
+int trap=0;
+
+  active [3] proctype   User()
+{
+  
+READY:
+  if
+    :: chU2S!req   -> goto WAIT;
+    :: chS2U?alarm -> assert(len(chS2U)==N);
+		      goto REGISTER;
+    :: timeout -> goto end_TRAP;		     
+  fi;
+  
+WAIT:
+  chS2U?done -> goto READY;
+
+REGISTER:
+  chU2S!ack  -> goto READY;  
+
+end_TRAP:
+  printf("TRAP User\n");
+//  assert(len(chS2U)==N);
+}
+
+/***************************************/
+active [2] proctype Server(){
+  
+IDLE:
+ if
+   :: chU2S?req   -> goto SERVICE;
+   :: chS2U!alarm -> goto FAULT;
+   :: timeout -> goto end_TRAP;		     		    
+ fi;
+
+SERVICE:
+  chS2U!done   -> goto IDLE;
+
+FAULT:
+  chU2S?ack   -> goto IDLE;
+
+end_TRAP:
+  assert(trap == 1);
+  printf("TRAP Server\n");
+}
+
+//init {
+//  run Server();
+//  run User()  ;
+//}

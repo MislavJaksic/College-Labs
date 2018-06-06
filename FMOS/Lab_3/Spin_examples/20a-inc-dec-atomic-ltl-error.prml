@@ -1,0 +1,27 @@
+//20a-inc-dec-atomic-ltl-error.prml
+int x = 0;
+bool doneinc = false;
+bool donedec = false;
+
+ltl LTL0 {always ((!(doneinc && donedec)) || x == 0);}
+
+proctype inc(){
+         int tmp;
+         atomic {tmp = x;
+         x = tmp + 1; }
+         doneinc = true;
+}
+
+proctype dec(){
+         int tmp;
+//  atomic {
+    tmp = x;
+    x = tmp - 1;
+//  }
+         donedec = true;
+}
+
+init {
+        run inc();
+        run dec();
+}

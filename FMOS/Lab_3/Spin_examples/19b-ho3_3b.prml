@@ -1,0 +1,59 @@
+//19b-ho3_3b.prml
+//defines:
+
+//chan:
+
+chan Q = [0] of {mtype};
+int bpmn;
+//ltl:
+
+//mtype 
+mtype {a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r}
+
+active proctype ho3(){
+
+p0:
+
+  if
+    :: Q?a -> goto end_p1;
+//    :: else -> goto end_OK;
+  fi;
+  
+end_p1:
+  if
+    ::Q?j -> goto end_p2;
+    ::Q?k -> goto end_p3;
+//    :: else -> goto end_OK; 	     
+  fi;
+  
+end_p2:
+ if
+    ::Q?a -> goto end_p1;
+   ::Q?k -> goto end_p3;
+  fi;
+  
+end_p3:
+  if
+    ::Q?j -> goto end_p2;
+//    :: else -> goto end_OK; 	     
+  fi;
+end_OK:skip;
+} 
+
+active proctype ho3_classify(){
+
+//do
+//    atomic{   Q!a; Q!j; Q!k;}
+    atomic{   Q!a; Q!j; Q!k;
+	      assert(ho3@end_p3)
+    }
+end_OK:skip;
+
+//  :: Q!a; Q!j; Q!k; Q!b
+//:: Q!a;Q!j;Q!k;
+//:: Q!a;Q!k;Q!b;
+//:: Q!a;Q!k;Q!c;
+//:: Q!a;Q!k;Q!g;
+//:: Q!a;Q!k;Q!j;
+//od
+}

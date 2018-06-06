@@ -1,0 +1,34 @@
+// naive threads, fairness, naive mutex
+// skip vise  kopija istog programa ?
+// mogu li i,j biti != 0 ili 1?
+// Da li je model korektan?
+
+byte i = 0;
+
+#define p (i==0 || i==1)
+
+ltl LTL0 {[]p}
+
+  active [1] proctype LA() {
+    do
+    :: //atomic{
+          (i == 0) ->
+      i++;//}    
+       skip; // here is safe area
+      i--;
+//printf("LA i=%d\n",i);
+    od;
+  }
+
+  active [1] proctype LB() {
+    do
+    ::  //atomic{
+    (i == 0) -> 
+      i++; //    }
+	skip;
+       i--;
+//printf("  LB i=%d\n",i);
+    od;
+  }
+
+

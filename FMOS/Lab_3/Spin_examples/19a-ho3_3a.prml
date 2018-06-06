@@ -1,0 +1,57 @@
+//  19a-ho3_3a.prml 
+// conformance testin (software and BPMN, owfn..)
+//defines:
+
+//chan:
+
+chan Q = [0] of {mtype};
+int bpmn;
+//ltl:
+
+//mtype 
+mtype {a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r}
+
+active proctype ho3(){
+
+pa:
+  atomic{
+
+  if      
+  :: atomic{Q?a};goto end_pj;
+  :: atomic{Q?a};goto end_pk;
+//    :: else
+  fi;	    
+	    
+end_pj:
+ if
+  :: atomic{Q?j};goto pa;
+  :: atomic{Q?j};goto end_pk;
+  fi;
+
+end_pk:
+  if
+  :: atomic{Q?k};goto end_pj;
+// ::else
+     fi;
+goto pa;
+
+}
+  
+//end_3a:
+  bpmn=1;
+
+} 
+
+active proctype ho3_classify(){
+
+//do
+    atomic{   Q!a; Q!j; Q!k;}
+end_OK:skip;
+//  :: Q!a; Q!j; Q!k; Q!b
+//:: Q!a;Q!j;Q!k;
+//:: Q!a;Q!k;Q!b;
+//:: Q!a;Q!k;Q!c;
+//:: Q!a;Q!k;Q!g;
+//:: Q!a;Q!k;Q!j;
+//od
+}

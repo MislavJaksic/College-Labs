@@ -1,0 +1,19 @@
+// 00b3-basic-break.prml
+// break command
+
+proctype cmd_break(int t1;int t2;int t3)
+{
+
+S1: do
+    :: t1 > t2
+    :: t3 
+         -> break
+    :: break	
+    od
+    ;
+S2: //skip;
+}
+
+init{
+run cmd_break(2,1,3);
+}

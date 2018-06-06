@@ -1,0 +1,124 @@
+// 06a-prml-hippies138.prml
+// igrica: derutni most i odlazak na koncert
+/* pn138.prml: hippies or 4ws1tob */
+
+#define N 4
+#define Tlimit 60
+//#define true 1
+//#define false 0
+
+byte i1=0;
+byte i2=0; //NOT IN USE
+
+int tk=0,ttot=0;
+
+bit  pu[N];
+bit  ps[N];
+byte ts[N];
+
+byte j;
+
+
+// with ltl the same
+#define p (ttot == Tlimit && pu[0] == 0 && pu[1] == 0 && pu[2] == 0 && pu[3] == 0 && ps[0] == 1 && ps[1] == 1 && ps[2] == 1 && ps[3] == 1)
+
+ltl ltl0 { []!p }
+//ltl ltl1 {<>p}
+
+proctype pn138()
+{
+toSafe:
+  atomic{
+  if
+    :: (pu[0] == 1 && ps[0] == 0) ->  pu[0] = 0; ps[0] = 1; i1=0;
+    :: (pu[1] == 1 && ps[1] == 0) ->  pu[1] = 0; ps[1] = 1; i1=1;
+    :: (pu[2] == 1 && ps[2] == 0) ->  pu[2] = 0; ps[2] = 1; i1=2;
+    :: (pu[3] == 1 && ps[3] == 0) ->  pu[3] = 0; ps[3] = 1; i1=3;
+	      :: else;skip; goto end_pn138_TRAP;    
+  fi;
+  if
+    :: (pu[0] == 1  && ps[0] == 0 && i1 != 0) ->  pu[0] = 0; ps[0] = 1; i2=0;
+    :: (pu[1] == 1  && ps[1] == 0 && i1 != 1) ->  pu[1] = 0; ps[1] = 1; i2=1;
+    :: (pu[2] == 1  && ps[2] == 0 && i1 != 2) ->  pu[2] = 0; ps[2] = 1; i2=2;
+    :: (pu[3] == 1  && ps[3] == 0 && i1 != 3) ->  pu[3] = 0; ps[3] = 1; i2=3;
+    :: else;skip;  goto end_pn138_TRAP;  
+  fi;
+  d_step{
+     tk = (ts[i1] >= ts[i2] -> ts[i1] : ts[i2]);
+     ttot = ttot + tk;
+    printf("=======>  i1=%d i2=%d  %d: pu(%d %d %d %d) ps(%d %d %d %d)  (%d,%d)\n",i1,i2,ttot, pu[0],pu[1],pu[2],pu[3],ps[0],ps[1],ps[2],ps[3],ts[i1],ts[i2]);
+  }   
+//
+LOOP:  atomic{
+ if
+   :: ((ttot <= Tlimit) && (pu[0] == 1 || pu[1] == 1 || pu[2] == 1 || pu[3] == 1)
+   		        && (ps[0] == 0 || ps[1] == 0 || ps[2] == 0 || ps[3] == 0))
+      -> printf("safe_step ttot=%d\n",ttot);
+         goto toUnsafe;
+
+   ::   (ttot > Tlimit)
+     // && (pu[0] == 1 || pu[1] == 1 || pu[2] == 1 || pu[3] == 1)
+     // && (ps[0] == 0 || ps[1] == 0 || ps[2] == 0 || ps[3] == 0))
+      -> printf(" iteration ttot=%d > tlimt \n",ttot);
+          ttot=0;
+	  pu[0]=1;   pu[1]=1;   pu[2]=1;   pu[3]=1;
+	  ps[0]=0;   ps[1]=0;   ps[2]=0;   ps[3]=0;  
+      goto toSafe;
+
+  :: (ttot == Tlimit && pu[0] == 0 && pu[1] == 0 && pu[2] == 0 && pu[3] == 0  
+                     && ps[0] == 1 && ps[1] == 1 && ps[2] == 1 && ps[3] == 1) -> goto end_pn138_OK;
+
+   :: else -> goto end_pn138_TRAP; 
+ fi;
+ } 
+//
+}     
+  
+toUnsafe:
+ atomic {
+  if
+    :: (ps[0] == 1 && pu[0] == 0) -> j=0;
+    :: (ps[1] == 1 && pu[1] == 0) -> j=1;
+    :: (ps[2] == 1 && pu[2] == 0) -> j=2;
+    :: (ps[3] == 1 && pu[3] == 0) -> j=3;									
+    :: else; skip; goto end_pn138_TRAP;
+  fi;
+    d_step{
+        pu[j]=1; ps[j]=0;
+        ttot = ttot + ts[j];
+      printf("<=======        j=%d  %d: pu(%d %d %d %d) ps(%d %d %d %d)  (%d)\n",j,ttot, pu[0],pu[1],pu[2],pu[3],ps[0],ps[1],ps[2],ps[3],ts[j]);
+      printf("unsafe_step ttot=%d\n",ttot); 
+    }
+         goto toSafe; 
+}
+
+
+end_pn138_OK:
+  //assert(ttot != Tlimit);
+  printf("__END__ %d: pu(%d %d %d %d) ps(%d %d %d %d)\n",ttot, pu[0],pu[1],pu[2],pu[3],ps[0],ps[1],ps[2],ps[3]);       
+  printf("THE END ttot=%d\n",ttot);
+  goto end_pn138;
+
+end_pn138_TRAP:
+  printf("\n__TRAP__\n");
+  printf("_TRAP_ %d: pu(%d %d %d %d) ps(%d %d %d %d)\n",ttot, pu[0],pu[1],pu[2],pu[3],ps[0],ps[1],ps[2],ps[3]);       
+  
+end_pn138:
+   skip;
+
+}
+
+init{
+d_step{
+  tk=0;
+  ttot=0;
+ts[0] = 5;
+ts[1] = 10;
+ts[2] = 20;
+ts[3] = 25;      
+  pu[0]=1;   pu[1]=1;   pu[2]=1;   pu[3]=1;
+  ps[0]=0;   ps[1]=0;   ps[2]=0;   ps[3]=0;  
+}
+printf("init %d: pu(%d %d %d %d) ps(%d %d %d %d)\n",ttot, pu[0],pu[1],pu[2],pu[3],ps[0],ps[1],ps[2],ps[3]);
+run pn138();
+}

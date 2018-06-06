@@ -1,0 +1,25 @@
+/* ex10-abt-SimpleComputation introducung if,do */
+// (template kratka-provjera-znanja) 
+ 
+byte a=1,b;
+
+active proctype FSA00()
+{
+   (a==1) -> a=a+2;               
+    b=5;
+S1:
+    if                   
+      :: (b <= 7)->  b++; goto S1;
+      :: (b > 7) ->   
+        do
+	  :: (a >   3) -> a++; 
+          :: (a <=  5) -> a--; goto end_OK;
+        od
+    fi;
+end_OK:
+  printf("end_OK: a=%d,b=%d\n",a,b);
+  assert (b >0);
+  assert (a <0); 
+  skip
+}
+

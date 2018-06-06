@@ -1,0 +1,64 @@
+//  11-adz-pw112.prml
+// EE/adz.prml: pw112 example
+// igra brojeva
+// rjesenje sa komunikacijom: preko glob.var, preko. ch
+// java implementacija i JPF, IoT, m2m ,
+// komunikacija preko ssh i XML, JSON, uvest dB: sqllite 
+//
+// Global-shared-variables
+int a0[4];
+int a1[4];
+
+//Processes
+int P,I;
+
+bit OK=false,NOK=false,F=false;
+
+#define I atomic{I=0;a0[0]=19999; a0[1]=82345; a0[2]=22624; a0[3]=513245};
+
+#define P0 atomic{P=0;a1[0]=((a0[0] > a0[1]) -> a0[0] - a0[1] : a0[1] - a0[0])}
+#define P1 atomic{P=1;a1[1]=((a0[1] > a0[2]) -> a0[1] - a0[2] : a0[2] - a0[1])}
+#define P2 atomic{P=2;a1[2]=((a0[2] > a0[3]) -> a0[2] - a0[3] : a0[3] - a0[2])}
+#define P3 atomic{P=3;a1[3]=((a0[3] > a0[0]) -> a0[3] - a0[0] : a0[0] - a0[3])}
+
+#define pOK (a0[0] == 0 && a0[1] == 0 && a0[2] == 0 && a0[3] == 0)
+#define pNOK (NOK==true)
+
+active proctype pw112() {
+  I;
+//Wprintf("WP0: %d %d %d %d\n", a0[0],a0[1],a0[2],a0[3]);  
+
+do
+::{
+  P0; // pre: a0[0] a0[1]  post: a1[0]
+  P1; // pre: a0[1] a0[2]  post: a1[1]
+  P2; // pre: a0[2] a0[3]  post: a1[2]
+  P3; // pre: a0[3] a0[0]  post: a1[3]
+           
+//Wprintf("WPa: %d %d %d %d ", a0[0],a0[1],a0[2],a0[3]);  printf("WPb: %d %d %d %d\n", a0[0],a0[1],a0[2],a0[3]);  
+           atomic{P=99;a0[0]=a1[0]; a0[1]=a1[1]; a0[2]=a1[2]; a0[3]=a1[3]};
+  }
+           
+//W
+   printf("WP1: %d %d %d %d\n", a0[0],a0[1],a0[2],a0[3]);
+  :: pOK -> goto l_OK;
+  :: timeout -> goto l_NOK;	    
+od;
+
+l_OK:
+  OK=true;
+//W  printf("\n\n\n\nEND %d %d %d %d\n", a0[0],a0[1],a0[2],a0[3]);
+//  counterexample (or find trace or event sequence to <this> place)
+  assert(!pOK);
+  goto end_Final;
+  
+l_NOK:   //skip;
+  NOK=true;
+//  counterexample (or find trace or event sequence to <this> place)
+  assert(!pNOK);
+  goto end_Final; // well, this is template, DO NOT REMOVE 
+
+end_Final:
+  F=true;
+  
+}

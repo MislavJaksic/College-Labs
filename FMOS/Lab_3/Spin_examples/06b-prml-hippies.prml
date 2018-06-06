@@ -1,0 +1,38 @@
+/* Hippies problem in Ruys */
+// derutni most, druga implementacija
+# define FINISHED (where[0] == 1 && where[1] == 1 && \
+		   where[2] == 1 && where[3] == 1)
+
+byte now = 0;
+byte time[4];
+bit  where[4];
+bit  torch;
+
+active proctype bridge() {
+byte i,j;
+  time[0] = 5; time[1] = 10;
+  time[2] = 20; time[3] = 25; 
+do
+:: now <= 60 ->
+   assert(! FINISHED);
+   if
+   :: where[0] == torch -> i = 0
+   :: where[1] == torch -> i = 1
+   :: where[2] == torch -> i = 2
+   :: where[3] == torch -> i = 3
+   fi;
+   if
+   :: where[0] == torch -> j = 0
+   :: where[1] == torch -> j = 1
+   :: where[2] == torch -> j = 2
+   :: where[3] == torch -> j = 3
+   fi;
+   where[i] = 1 - torch;
+   where[j] = 1 - torch;
+   torch = 1 - torch;
+   now = now + (time[i] <= time[j]  ->
+	time[j] : time[i])  /* max time[i], time[j] */
+:: else  -> break
+od
+}
+

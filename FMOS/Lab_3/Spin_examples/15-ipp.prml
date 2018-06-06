@@ -1,0 +1,27 @@
+//  15-ipp.prml 
+// memorijski prolemi... i moguca rjesenja
+// -m70000 -dfs
+
+int i=0;
+
+proctype ippP(){
+do
+:: i++; 
+:: printf("i=%d\n",i);
+od
+}
+
+
+proctype ippM(){
+do  
+:: i--; 
+:: printf("i=%d\n",i);
+od
+}
+
+
+init {
+run ippM();
+run ippP();
+assert(i <= 13);
+}

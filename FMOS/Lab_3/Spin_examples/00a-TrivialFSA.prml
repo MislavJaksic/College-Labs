@@ -1,0 +1,36 @@
+//00a-TrivialFSA.prml
+/*ex07 modified pp. 129 SPIN book*/
+
+proctype TrivialFSA(int pc)
+{
+
+S0: 
+ printf("l0 ");goto S1;
+
+/*  nastaviti dalje */
+
+
+S1:
+  (pc == 1) -> printf("l1 "); goto S2;
+
+S2:
+  if
+  ::(pc == 1) -> printf("l2 "); goto S1;
+  ::(pc == 1) -> printf("l5 "); goto S4;
+  ::(pc == 1) -> printf("l3 "); goto S3;
+  fi;
+
+S3:
+  (pc == 1) -> printf("l4 ");goto S2;
+//	printf("l4 ");goto S2;
+
+
+S4: 
+  (pc == 1) -> printf("END\n\n");
+   assert(pc == 3);
+  
+}  
+
+init{
+  run TrivialFSA(1);
+}

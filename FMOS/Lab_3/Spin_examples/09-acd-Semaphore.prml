@@ -1,0 +1,56 @@
+/* Semaphore from [Ben08] pp.#59 */
+byte sem= 1; // smije li poprimiti
+             //vrijednost osim 0 ili 1? 
+
+#define p (sem > 1)
+//#define p (sem == 1)
+//#define q (sem == 0)
+
+ltl LTL0 {[]!p} 
+
+active proctype LA() {
+do
+  :: //printf("Non-critical section LA sem=%d\n",sem);
+     atomic {
+       sem > 0;
+       sem--;       
+     }
+// printf("Critical section LA sem=%d\n",sem);
+// assert(sem == 0);
+     sem++;
+
+  od
+}
+
+active proctype LB() {
+do
+  :: // printf("Non-critical section LB sem=%d\n",sem);
+     atomic {
+       sem > 0;
+       sem--;       
+     }
+//     printf("Critical section LB sem=%d\n",sem);
+//assert(sem > 1); // Does it realy finds 'violations' ?!
+     sem++;
+  od;
+}
+
+//never {    /* [] (p U q) */
+//T0_init:
+//        if
+//        :: ((q)) -> goto accept_S9
+//        :: ((p)) -> goto T0_init
+//        fi;
+//accept_S9:
+//        if
+//        :: ((((p)) || ((q)))) -> goto T0_init
+//        fi;
+//}
+
+//never {    /* [] !p */
+//accept_init:
+//T0_init:
+//       if
+//        :: (!(p)) -> goto T0_init
+//        fi;
+//}

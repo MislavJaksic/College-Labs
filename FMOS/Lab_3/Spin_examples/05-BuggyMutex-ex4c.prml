@@ -1,0 +1,31 @@
+//  05-BuggyMutex-ex4c.prml
+// Gdje "bug" ?
+
+ byte ain;                                    /* file ex.4c */
+ byte x, y, z;
+
+ active [2] proctype user()
+ {
+printf ("pid=%d",_pid);
+	byte me = _pid+1;			/* me is 1 or 2 */
+ L1:	x = me;
+ L2:	if
+ 	:: (y != 0 && y != me) -> goto L1	/* try again */
+ 	:: (y == 0 || y == me)
+ 	fi;
+ L3:	z = me;
+ L4:	if
+ 	:: (x != me)  -> goto L1		/* try again */
+ 	:: (x == me)
+ 	fi;
+ L5:	y = me;
+ L6:	if
+ 	:: (z != me) -> goto L1			/* try again */
+ 	:: (z == me)
+ 	fi;
+ L7:						/* success */
+ 	ain = ain+1;
+ 	assert(ain == 1);
+ 	ain = ain - 1;
+ 	goto L1
+ }

@@ -1,0 +1,24 @@
+// 00b1-basic-do.prml
+/* uncomment and see output */
+
+//bool pc;
+
+proctype cmdDO(bool pc)
+{
+do
+  ::(pc == 1) -> printf(" l2\n");
+  ::(pc == 1) -> printf("    l5\n") -> // break;
+  ::(pc == 1) -> printf("  l3\n");
+  ::(pc == 1) -> printf("l1\n"); 
+  ::(pc == 1) -> printf("   l4\n");
+//  :: timeout -> break;
+//  ::timeout -> printf(" TIMEOUT \n ");
+//  :: printf("\nEND\n ") ->  break;
+od;
+}
+  
+init{
+  run cmdDO(1);
+//  run cmdDO(0);
+}
+

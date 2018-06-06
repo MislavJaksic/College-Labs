@@ -1,0 +1,23 @@
+#define p1 a > 0
+#define p2 b < 0
+
+byte a=1,b;
+
+active proctype FSA00()
+{
+ (a==1) -> a=a+2;
+ b=5;
+ S1:
+ if
+ :: (b <= 7)-> b++; goto S1;
+ :: (b > 7) ->
+ do
+ :: (a > 3) -> a++;
+ :: (a <= 3) -> a--; goto end_OK;
+ od
+ fi;
+ end_OK:
+ printf("end_OK: a=%d,b=%d\n",a,b);
+ assert (p2);
+ assert (p1);
+}

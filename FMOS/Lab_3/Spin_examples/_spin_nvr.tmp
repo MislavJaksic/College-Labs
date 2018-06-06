@@ -1,0 +1,9 @@
+never LTL0 {    /* !([] (! ((sem>1)))) */
+T0_init:
+	do
+	:: atomic { (! ((! ((sem>1))))) -> assert(!(! ((! ((sem>1)))))) }
+	:: (1) -> goto T0_init
+	od;
+accept_all:
+	skip
+}

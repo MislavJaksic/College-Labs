@@ -1,0 +1,10 @@
+active proctype LTL0() {    /* !([] ((x!=y))) */
+int x,y;
+T0_init:
+	do
+	:: atomic { (! (((x!=y)))) -> assert(!(! (((x!=y))))) }
+	:: (1) -> goto T0_init
+	od;
+end_a_ccept_all:
+	skip
+}

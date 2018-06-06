@@ -1,0 +1,13 @@
+// "csp trace" expanded product
+// unreached - "liveness"
+
+int x;
+
+active proctype csp_trace0(){
+x=1;x=2;x=1;x=2;x=3; x=3;
+goto L1;
+ x=7;
+L1:
+x=3;x=3; x=4; x=5;
+ x=5; x=5; x=5;
+}
