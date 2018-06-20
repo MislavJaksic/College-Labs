@@ -1,15 +1,16 @@
 ﻿## SU
 
-SU stands for "Strojno ucenje" (eng. Machine learning).
+SU stands for "Strojno učenje" (eng. Machine learning).
 
-### [Syllabus](http://www.fer.unizg.hr/en/course/su)
+### Syllabus
 
 The following algorithms and concepts were taught during the course, but were not implemented:
 * Inductive bias, perceptron, naive Bayes.
 
 ### Laboratory exercises (Labs)
 
-Tasks such as cross validation, feature, model and hyperparameter analysis were performed in multiple labs, so instead of writing them below in almost every lab, I've extracted these topic here.
+Tasks such as cross validation, feature, model and hyperparameter analysis were performed in multiple labs, so
+instead of writing them below in almost every lab, I've extracted those topic.
 
 * Lab_0: jupyter notebooks, python and sklearn library introductory exercises
 
@@ -27,4 +28,4 @@ Note: because the classes were taught in Croatian, all lab assignments are also 
 
 ### Lectures
 
-A collection of notes I made during the lecture. The notes are written in Croatian.
+I took down notes using a laptop. These notes are written in Croatian.
