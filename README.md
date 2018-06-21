@@ -18,11 +18,17 @@ computer labs.
 * Genetic algorithms - representation, crossover, mutation, optimal parameter search
 * Numerical integration - Runge-Kutta methods
 
-### [FMOS]()
+### [FMOS](http://www.fer.unizg.hr/en/course/fmisd) (eng. Formal Methods in System Design)
 
-### [NOS]()
+### [NOS](http://www.fer.unizg.hr/en/course/aos) (eng. Advanced Operating Systems)
 
-### [PP]()
+### [PP](http://www.fer.unizg.hr/en/course/parpro) (eng. Parallel Programming)
+
+* Introduction to High Performance Computing (HPC) - parallel programming models, properties and sequential to parallel conversion
+* Message Passing Interface (MPI) - process communication, MPI functions, blocking and non-blocking
+* Parallel Random Access Machine (PRAM) - synchronous and asynchronous, *_reduce algorithm
+* Designing parallel programs - phases, hypercube algorithm, N-tree algorithm
+* Quantitative analysis of parallel algorithms - time to execute, efficiency and isoefficiency, speedup, scalability
 
 ### [SU](http://www.fer.unizg.hr/en/course/su) (eng. Machine Learning)
 
