@@ -1,3 +1,5 @@
+## Documentation
+
 Four in a row, player versus computer.
 Dimensions: infinite height, 7 in width.
 Gravity on. Tokens fall to the bottom of the columns.

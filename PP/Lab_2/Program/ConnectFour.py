@@ -14,7 +14,7 @@ COMPUTER_VICTORY = 1
 PLAYER_VICTORY = -1
 UNDECIDED = 0
 
-NUMBER_OF_COMPUTER_MOVES = 3 # >3 can take a huge amount of time!
+NUMBER_OF_COMPUTER_MOVES = 2 # >3 can take a huge amount of time!
 
 class ConnectFourGrid(object):
   def __init__(self):
@@ -49,7 +49,6 @@ class ConnectFourGrid(object):
   def UpdateMoveHistory(self, token, column):
     move = (token, column)
     self.move_history.append(move)
-    
     
     
   def CheckVictory(self):
@@ -93,20 +92,26 @@ class ConnectFourGrid(object):
     #check the whole row
     consecutive_tokens = 0
     for column in range(self.width):
-      try:
+      if (self.IsColumnHighEnough(column, move_row)):
         grid_token = self.grid[column][move_row]
         if grid_token == token:
           consecutive_tokens += 1
         else:
           consecutive_tokens = 0
-          
-      except:
+      else:
         consecutive_tokens = 0
       
       if consecutive_tokens >= 4:
         return True
         
     return False
+
+  def IsColumnHighEnough(self, column_number, length):
+    column = self.grid[column_number]
+    if (len(column) > length):
+      return True
+    return False
+
     
   def CheckMainDiagonal(self, move_row, move_column, token):
     # \ diagonal
@@ -120,21 +125,20 @@ class ConnectFourGrid(object):
       
     if start_column < 0:
       start_column = 0
-    if end_column > 6:
-      end_column = 6
+    if end_column > (BOARD_WIDTH - 1):
+      end_column = (BOARD_WIDTH - 1)
       
     column = start_column
     row = start_row
     consecutive_tokens = 0
     while (row >= 0 and column <= end_column):
-      try:
+      if (self.IsColumnHighEnough(column, row)):
         grid_token = self.grid[column][row]
         if grid_token == token:
           consecutive_tokens += 1
         else:
           consecutive_tokens = 0
-          
-      except:
+      else:
         consecutive_tokens = 0
       
       if consecutive_tokens >= 4:
@@ -157,21 +161,20 @@ class ConnectFourGrid(object):
       
     if start_column < 0:
       start_column = 0
-    if end_column > 6:
-      end_column = 6
+    if end_column > (BOARD_WIDTH - 1):
+      end_column = (BOARD_WIDTH - 1)
       
     column = start_column
     row = start_row
     consecutive_tokens = 0
     while (row <= end_row and column <= end_column):
-      try:
+      if (self.IsColumnHighEnough(column, row)):
         grid_token = self.grid[column][row]
         if grid_token == token:
           consecutive_tokens += 1
         else:
           consecutive_tokens = 0
-          
-      except:
+      else:
         consecutive_tokens = 0
       
       if consecutive_tokens >= 4:
@@ -380,24 +383,24 @@ def CalculatePlayerUpPropagationValue(computer_values):
      
      
 def CreateInterestingState(current_state):
-  # current_state.AddTokenToColumn("C", 0)
-  # current_state.AddTokenToColumn("C", 0)
-  # current_state.AddTokenToColumn("C", 0)
-  # current_state.AddTokenToColumn("P", 0)
+  current_state.AddTokenToColumn("C", 0)
+  current_state.AddTokenToColumn("C", 0)
+  current_state.AddTokenToColumn("C", 0)
+  current_state.AddTokenToColumn("P", 0)
   
-  # current_state.AddTokenToColumn("C", 1)
+  current_state.AddTokenToColumn("C", 1)
   
-  # current_state.AddTokenToColumn("P", 2)
-  # current_state.AddTokenToColumn("P", 2)
-  # current_state.AddTokenToColumn("C", 2)
+  current_state.AddTokenToColumn("P", 2)
+  current_state.AddTokenToColumn("P", 2)
+  current_state.AddTokenToColumn("C", 2)
   
-  # current_state.AddTokenToColumn("C", 3)
+  current_state.AddTokenToColumn("C", 3)
   
-  # current_state.AddTokenToColumn("P", 5)
-  # current_state.AddTokenToColumn("P", 5)
-  # current_state.AddTokenToColumn("C", 5)
+  current_state.AddTokenToColumn("P", 5)
+  current_state.AddTokenToColumn("P", 5)
+  current_state.AddTokenToColumn("C", 5)
    
-  # current_state.AddTokenToColumn("P", 6)
+  current_state.AddTokenToColumn("P", 6)
   
   return current_state
      
