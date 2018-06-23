@@ -91,27 +91,23 @@ class ConnectFourGrid(object):
   def CheckHorizontal(self, move_row, move_column, token):
     #check the whole row
     consecutive_tokens = 0
+    
     for column in range(self.width):
+      
       if (self.IsColumnHighEnough(column, move_row)):
         grid_token = self.grid[column][move_row]
         if grid_token == token:
           consecutive_tokens += 1
         else:
           consecutive_tokens = 0
+          
       else:
         consecutive_tokens = 0
-      
+        
       if consecutive_tokens >= 4:
         return True
         
     return False
-
-  def IsColumnHighEnough(self, column_number, length):
-    column = self.grid[column_number]
-    if (len(column) > length):
-      return True
-    return False
-
     
   def CheckMainDiagonal(self, move_row, move_column, token):
     # \ diagonal
@@ -132,12 +128,14 @@ class ConnectFourGrid(object):
     row = start_row
     consecutive_tokens = 0
     while (row >= 0 and column <= end_column):
+    
       if (self.IsColumnHighEnough(column, row)):
         grid_token = self.grid[column][row]
         if grid_token == token:
           consecutive_tokens += 1
         else:
           consecutive_tokens = 0
+          
       else:
         consecutive_tokens = 0
       
@@ -168,12 +166,14 @@ class ConnectFourGrid(object):
     row = start_row
     consecutive_tokens = 0
     while (row <= end_row and column <= end_column):
+    
       if (self.IsColumnHighEnough(column, row)):
         grid_token = self.grid[column][row]
         if grid_token == token:
           consecutive_tokens += 1
         else:
           consecutive_tokens = 0
+          
       else:
         consecutive_tokens = 0
       
@@ -184,8 +184,13 @@ class ConnectFourGrid(object):
       column += 1
       
     return False
-  
     
+  def IsColumnHighEnough(self, column_number, length):
+    column = self.grid[column_number]
+    if (len(column) > length):
+      return True
+    return False
+  
     
   def Print(self):
     string_list = []
@@ -444,7 +449,6 @@ def DistributeTasksAndRecieveResults(communicator, number_of_processes, tasks): 
       
       result = communicator.recv(source=process)
       results.append(result)
-      
       #print "Master recieved " + str(result) + " from process " + str(process)
       
     if distribution_counter < 0:
@@ -470,6 +474,48 @@ def DoItAllAlone(tasks):
     results.append(result)
   return results
     
+    
+def ComputerMakesAMove(communicator, number_of_processes, current_state):
+  #start_time = time()
+  move_to_make = CalculateBestMove(communicator, number_of_processes, current_state)
+  #end_time = time()
+  #print "Time:" + str(end_time - start_time)
+  
+  current_state.AddTokenToColumn("C", move_to_make)
+  current_state.Print()
+  
+def PlayerMakesAMove(current_state):
+  print "The Player may now make a move or surrender: [0,1,2,3,4,5,6] / -1"
+  player_move = raw_input(":::")
+  player_move = int(player_move)
+  
+  if IsPlayerSurrender(player_move):
+    return player_move
+    
+  current_state.AddTokenToColumn("P", player_move)
+  current_state.Print()
+  
+  return player_move
+  
+def IsComputerVictorious(current_state):
+  if current_state.CheckVictory():
+    return True
+  return False
+  
+def IsPlayerSurrender(player_move):
+  if (player_move == -1):
+    return True
+  return False
+  
+def IfPlayerVictorious(current_state):
+  if current_state.CheckVictory():
+    return True
+  return False
+  
+def StopAllWorkers(communicator, number_of_processes):
+  for process in range(1, number_of_processes):
+    communicator.send(0, dest=process)
+    
   
 def DoWork(communicator):
   while True:
@@ -494,40 +540,21 @@ if __name__ == "__main__":
     current_state = CreateInterestingState(current_state)
     
     while True:
-      start_time = time()
-    
-      move_to_make = CalculateBestMove(communicator, number_of_processes, current_state)
-      
-      end_time = time()
-      
-      print "Time:" + str(end_time - start_time)
-      
-      current_state.AddTokenToColumn("C", move_to_make)
-      current_state.Print()
-      
-      if current_state.CheckVictory():
+      ComputerMakesAMove(communicator, number_of_processes, current_state)
+      if IsComputerVictorious(current_state):
         print "Computer has won"
         break
       
-      print "The Player may now make a move or surrender: [0,1,2,3,4,5,6] / -1"
-      player_move = raw_input(":::")
-      player_move = int(player_move)
-      
-      if (player_move == -1):
+      player_move = PlayerMakesAMove(current_state)
+      if IsPlayerSurrender(player_move):
         print "Player has surrendered"
         break
-      
-      current_state.AddTokenToColumn("P", player_move)
-      current_state.Print()
-      
-      if current_state.CheckVictory():
+      if IfPlayerVictorious(current_state):
         print "Player has won"
         break
         
-    for process in range(1, number_of_processes):
-      communicator.send(0, dest=process)
-      
-      
+    StopAllWorkers(communicator, number_of_processes)
+    
   else:
     print "Worker rank: " + str(process_rank)
     DoWork(communicator)
