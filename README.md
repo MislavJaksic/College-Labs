@@ -22,6 +22,14 @@ computer labs.
 
 ### [NOS](http://www.fer.unizg.hr/en/course/aos) (eng. Advanced Operating Systems)
 
+* Communication between processes - message queues, pipelines
+* Mutual exclusion in distributed systems - Lamport's distributed protocol, Ricart-Agrawala protocol
+* Cryptography - security demands, DES, AES, block ciphers, RSA, Miller-Rabin primality test, digital envelope, signature and seal, hash functions
+* Security protocols - Diffie-Hellman protocol, Needham–Schroeder protocol, Kerberos protocols, PKI
+* RAID
+
+* Key: DES is Data Encryption Standard, AES is Advanced Encryption Standard, RSA is Rivest–Shamir–Adleman, PKI is Public Key Infrastructure, RAID is Redundant Array of Inexpensive Disks
+
 ### [PP](http://www.fer.unizg.hr/en/course/parpro) (eng. Parallel Programming)
 
 * Introduction to High Performance Computing (HPC) - parallel programming models, properties and sequential to parallel conversion
