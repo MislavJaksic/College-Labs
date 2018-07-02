@@ -5,10 +5,6 @@ I've had the pleasure of documenting, testing and implementing a plethora of alg
 by course and each one has its own folder. Additional information about the course or exercise can be found in
 their respective folders.
 
-Note: the reason why the repository is called "College Labs" is because programming exercises were conducted in
-computer labs.
-
-
 ### [APR](http://www.fer.unizg.hr/en/course/apr) (eng. Computer Aided Analysis and Design)
 
 * Solving systems of linear equations - matrix manipulation, forward and back substitution, LU and LUP decomposition
@@ -28,7 +24,7 @@ computer labs.
 * Security protocols - Diffie-Hellman protocol, Needham–Schroeder protocol, Kerberos protocols, PKI
 * RAID
 
-* Key: DES is Data Encryption Standard, AES is Advanced Encryption Standard, RSA is Rivest–Shamir–Adleman, PKI is Public Key Infrastructure, RAID is Redundant Array of Inexpensive Disks
+Key: DES is Data Encryption Standard, AES is Advanced Encryption Standard, RSA is Rivest–Shamir–Adleman, PKI is Public Key Infrastructure, RAID is Redundant Array of Inexpensive Disks
 
 ### [PP](http://www.fer.unizg.hr/en/course/parpro) (eng. Parallel Programming)
 
@@ -45,3 +41,8 @@ computer labs.
 * Support vector machines, kernel functions, K nearest neighbours
 * Ensambles, maximum likelihood and aposteriori estimators
 * Probabilistic graphical models, clustering
+
+
+
+Note: the reason why the repository is called "College Labs" is because programming exercises were conducted in
+computer labs.
