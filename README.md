@@ -16,6 +16,15 @@ their respective folders.
 
 ### [FMOS](http://www.fer.unizg.hr/en/course/fmisd) (eng. Formal Methods in System Design)
 
+* Propositional logic, predicate logic, Computation Tree Logic (CTL), Kripke structure
+* NuSVM language and programming
+* Linear Temporal Logic (LTL), fixed point theory
+* JavaPathFinder tool and programming
+* Hardware Description Language (VHDL), Verilog
+* Promela language and Spin tool
+* Binary Decision Tree (BDD), Reduced Order BDD (ROBDD), ITE algorithm
+* DPLL, GRASP and Chaff methods
+
 ### [NOS](http://www.fer.unizg.hr/en/course/aos) (eng. Advanced Operating Systems)
 
 * Communication between processes - message queues, pipelines
