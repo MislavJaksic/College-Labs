@@ -1,4 +1,4 @@
-﻿## SU
+## SU
 
 SU stands for "Strojno učenje" (eng. Machine learning).
 
@@ -28,4 +28,4 @@ Note: because the classes were taught in Croatian, all lab assignments are also 
 
 ### Lectures
 
-I took down notes using a laptop. These notes are written in Croatian.
+I took down notes using a laptop. Those notes were written in Croatian.
