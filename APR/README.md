@@ -21,4 +21,4 @@ The following algorithms and concepts were taught during the course, but were no
 
 ### Lectures
 
-I took down notes using a laptop. Those notes were written in Croatian.
+I took down notes using a laptop. The notes are in Croatian.
