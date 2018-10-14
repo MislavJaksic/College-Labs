@@ -48,7 +48,7 @@ class PostgresConnector(object):
     try:
       connection = psycopg2.connect(**self.config)
     except (Exception) as error:
-      print(error)
+      self._ScreamError(error)
     return connection
     
   def _CreateCursor(self):
@@ -56,7 +56,7 @@ class PostgresConnector(object):
     try:
       cursor = self.connection.cursor()
     except (Exception) as error:
-      print(error)
+      self._ScreamError(error)
       self._CloseConnection()
     return cursor
   
@@ -65,12 +65,12 @@ class PostgresConnector(object):
   
   
   
-  def ExecuteCommandOrSQL(self, command_or_SQL, data=()):
+  def ExecuteSQL(self, SQL, data=()):
     try:
-      self.cursor.execute(command_or_SQL, data)
-      print("Executed--->  " + command_or_SQL)
+      self.cursor.execute(SQL, data)
+      print("Executed--->  " + SQL)
     except (Exception) as error:
-      print(error)
+      self._ScreamError(error)
       self.Close()
       
   def GetResults(self, number):
@@ -78,7 +78,7 @@ class PostgresConnector(object):
     try:
       results = self.cursor.fetchmany(number)
     except (Exception) as error:
-      print(error)
+      self._ScreamError(error)
       self.Close()
     if results is not None:
       print("Results-->  " + str(results[0]) + "...")
@@ -89,7 +89,7 @@ class PostgresConnector(object):
     try:
       results = self.cursor.fetchall()
     except (Exception) as error:
-      print(error)
+      self._ScreamError(error)
       self.Close()
     if results is not None:
       print("Results-->  " + str(results[0]) + "...")
@@ -113,3 +113,8 @@ class PostgresConnector(object):
     if self.cursor is not None:
       self.cursor.close()
       print("Cursor closed")
+      
+      
+      
+  def _ScreamError(self, error):
+    print("ERROR: " + str(error))

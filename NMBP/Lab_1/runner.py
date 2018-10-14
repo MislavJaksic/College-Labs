@@ -6,9 +6,12 @@ from PostgresManager import PostgresManager
 
 if __name__ == '__main__':
   with PostgresManager() as postgres:
-    print(postgres.SelectColumnsFromTable(["movie_id", "title"], "movies", 5))
+    print(postgres.GetCurrentDate())
     print(postgres.DescribeTable("movies"))
-    print(postgres.InsertIntoMovies("Hello, this is a test: is everything ok?"))
+    print(postgres.SelectColumnsFromTable(["title"], "movies", 5))
+    print(postgres.InsertIntoMovies("Test insertion. Pay no attention to it."))
+    print(postgres._Cheat())
+    print(postgres.FindInMovies(["Legend of", "Lord of", "Dance"], "OR"))
   
   
   
