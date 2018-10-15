@@ -67,8 +67,8 @@ class PostgresConnector(object):
   
   def ExecuteSQL(self, SQL, data=()):
     try:
+      print("Executing--->  " + SQL)
       self.cursor.execute(SQL, data)
-      print("Executed--->  " + SQL)
     except (Exception) as error:
       self._ScreamError(error)
       self.Close()
@@ -80,7 +80,7 @@ class PostgresConnector(object):
     except (Exception) as error:
       self._ScreamError(error)
       self.Close()
-    if results is not None:
+    if results:
       print("Results-->  " + str(results[0]) + "...")
     return results
   
@@ -91,7 +91,7 @@ class PostgresConnector(object):
     except (Exception) as error:
       self._ScreamError(error)
       self.Close()
-    if results is not None:
+    if results:
       print("Results-->  " + str(results[0]) + "...")
     return results
   
