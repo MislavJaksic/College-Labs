@@ -56,8 +56,17 @@ class PostgresSQLConstructor(object):
       
     return "ts_rank(" + self.Getto_TSVectorColumn(column) + "," + self.Getto_TSQueryPhrase(phrase) + ", " + str(penalty) + ") as " + alias
   
+  def Getts_rankDocumentByPhraseWithLengthPenaltyWithAlias(self, document, phrase, penalty=1, alias="rank"):
+    if penalty not in (0,1,2,4,8,16,32):
+      raise Exception("WARNING: incorrect penalty; possible penalties are 0,1,2,4,8,16,32")
+      
+    return "ts_rank(" + document + "," + self.Getto_TSQueryPhrase(phrase) + ", " + str(penalty) + ") as " + alias
+  
   def GetVectorColumnHasQueryPhrase(self, column, phrase):
     return self.Getto_TSVectorColumn(column) + self.GetFTSOperator() + self.Getto_TSQueryPhrase(phrase)
+    
+  def GetDocumentHasQueryPhrase(self, document, phrase):
+    return " " + document + self.GetFTSOperator() + self.Getto_TSQueryPhrase(phrase)
     
   def Getto_TSVectorColumn(self, column):
     return " to_TSVector('english', " + column + ")"

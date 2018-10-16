@@ -44,21 +44,40 @@ class PostgresQuerier(object):
     self.connector.ExecuteSQL(SQL)
     return self.connector.GetAllResults()
     
-  def FindWordsInColumnsInTable(self, search_words, columns, table, operation="OR"):
+  def FindWordsInColumnsInTableThenBoldAndRank(self, search_words, columns, table, operation="OR"):
     search_phrase = self.SQL_constructor.ConstructSearchPhrase(search_words, operation)
     
     headline_columns = self.SQL_constructor.GetHeadlineColumnsWithPhrase(columns, search_phrase)
     rank_column = self.SQL_constructor.Getts_rankColumnByPhraseWithLengthPenaltyWithAlias(columns[0], search_phrase, 1, "rank")
+    headline_columns.append(rank_column)
+    
+    vector_query_pairs = [self.SQL_constructor.GetVectorColumnHasQueryPhrase(x, search_phrase) for x in columns]
+    
+    SQL_select = self.SQL_constructor.GetSELECTColumns(headline_columns)
+    SQL_from = self.SQL_constructor.GetFROMTable(table)
+    SQL_where = self.SQL_constructor.GetWHERE()
+    SQL_conditions = " OR".join(vector_query_pairs)
+    SQL_order = self.SQL_constructor.GetORDERByAliasInDirection("rank", "DESC")
+
+    SQL = SQL_select + SQL_from + SQL_where + SQL_conditions + SQL_order
+    
+    self.connector.ExecuteSQL(SQL)
+    return self.connector.GetAllResults()
+  
+  def FindWordsInDocumentInTableThenBoldAndRank(self, search_words, document, table, operation="OR"):
+    search_phrase = self.SQL_constructor.ConstructSearchPhrase(search_words, operation)
+    document_columns = ["title", "categories", "summary", "description"]
+    
+    headline_columns = self.SQL_constructor.GetHeadlineColumnsWithPhrase(document_columns, search_phrase)
+    rank_column = self.SQL_constructor.Getts_rankDocumentByPhraseWithLengthPenaltyWithAlias(document, search_phrase, 1, "rank")
     
     headline_columns.append(rank_column)
     
     SQL_select = self.SQL_constructor.GetSELECTColumns(headline_columns)
     SQL_from = self.SQL_constructor.GetFROMTable(table)
     SQL_where = self.SQL_constructor.GetWHERE()
+    SQL_conditions = self.SQL_constructor.GetDocumentHasQueryPhrase(document, search_phrase)
     SQL_order = self.SQL_constructor.GetORDERByAliasInDirection("rank", "DESC")
-    
-    vector_query_pairs = [self.SQL_constructor.GetVectorColumnHasQueryPhrase(x, search_phrase) for x in columns]
-    SQL_conditions = " OR".join(vector_query_pairs)
     
     SQL = SQL_select + SQL_from + SQL_where + SQL_conditions + SQL_order
     
@@ -67,8 +86,8 @@ class PostgresQuerier(object):
     
     
     
-  def SuggestWordInColumnInTable(self, word, column, table):
-    similarity_function = self.SQL_constructor.GetSimilarityOfColumnAndStringWithAlias(column, word, "sameness")
+  def SuggestBasedOnPhraseInColumnInTable(self, phrase, column, table):
+    similarity_function = self.SQL_constructor.GetSimilarityOfColumnAndStringWithAlias(column, phrase, "sameness")
     
     SQL_select = self.SQL_constructor.GetSELECTColumns([column, similarity_function])
     SQL_from = self.SQL_constructor.GetFROMTable(table)
@@ -83,7 +102,7 @@ class PostgresQuerier(object):
     
   def InsertIntoMovies(self, title, categories="No categories.", summary="No summary.", description="No description."):
     table = "movies"
-    columns = self._GetTableColumnsAfterIndex(table, 1)
+    columns = ["title", "categories", "summary", "description"]
     values = [title, categories, summary, description]
     
     SQL_insert = self.SQL_constructor.GetINSERTIntoTableColumns(table, columns)

@@ -1,0 +1,1 @@
+CREATE INDEX TSVector_document_index ON movies USING GIN (TSVector_document);
