@@ -1,3 +1,4 @@
+from dateimte import datetime
 from PostgresManager import PostgresManager
 
 
@@ -17,5 +18,7 @@ if __name__ == '__main__':
     print(postgres.SuggestBasedOnPhraseInColumnInTable("sudent", "summary", "movies"))
     
     print(postgres.FindWordsInDocumentInTableThenBoldAndRank(["Dance", "Ancient Japan"], "tsvector_document", "movies", operation="OR"))
+    
+    print(postgres.PivotMovies(datetime(1999, 1, 9, 0), datetime(1999, 1, 12, 0), "hours"))
     #print(postgres.Prototype())
   

@@ -1,3 +1,4 @@
+import dateutil
 from PostgresConnector import PostgresConnector
 from PostgresSQLConstructor import PostgresSQLConstructor
 
@@ -97,7 +98,46 @@ class PostgresQuerier(object):
     
     self.connector.ExecuteSQL(SQL)
     return self.connector.GetResults(5)
+  
+
+
+  def PivotMovies(self, start_datetime, stop_datetime, granulation):
+    iso_start_datetime = start_datetime.isoformat(" ")
+    iso_end_datetime = stop_datetime.isoformat(" ")
     
+    diff = stop_datetime - start_datetime
+    days, seconds = diff.days, diff.seconds
+    hours = days * 24 + seconds // 3600
+    
+    if granulation == "hour":
+      format = [str(x) + " bigint" for x in range(hours)]
+    elif granulation == "day":
+      format = [str(x) + " bigint" for x in range(days)]
+    else:
+      pass
+    
+    format.insert(0, "query character varying(255)")
+    
+    sub_query = ("select query,"
+                 " extract(" + granulation + " from date_and_time) as periods,"
+                 " count(*)"
+                 " from queries"
+                 " where date_and_time >= ''" + iso_start_datetime + "'' and"
+                       " date_and_time <= ''" + iso_end_datetime + "''"
+                 " group by query, periods"
+                 " order by query, periods;")
+    sequence = ("select d"
+                " from generate_series(''" + iso_start_datetime + "''::timestamp,"
+                                      "''" + iso_end_datetime + "'',"
+                                      "''1 " + granulation + "'')"
+                " d;")
+    SQL = ("select * from crosstab('" + sub_query + "',"
+                                  "'" + sequence + "')"
+           "as ct(" + ", ".join(format) + ");"
+           
+    self.connector.ExecuteSQL(SQL)
+    return self.connector.GetResults(5)
+                 
     
     
   def InsertIntoMovies(self, title, categories="No categories.", summary="No summary.", description="No description."):
