@@ -110,16 +110,16 @@ class PostgresQuerier(object):
     hours = days * 24 + seconds // 3600
     
     if granulation == "hour":
-      format = [str(x) + " bigint" for x in range(hours)]
+      format = ["time_interval" + str(x) + " bigint" for x in range(hours + 1)]
     elif granulation == "day":
-      format = [str(x) + " bigint" for x in range(days)]
+      format = ["time_interval" + str(x) + " bigint" for x in range(days + 1)]
     else:
-      pass
+      raise Exception("WARNING: incorrect granulation; possible granulation are (hour, day)")
     
     format.insert(0, "query character varying(255)")
     
     sub_query = ("select query,"
-                 " extract(" + granulation + " from date_and_time) as periods,"
+                 " date_trunc(''" + granulation + "'', date_and_time) as periods,"
                  " count(*)"
                  " from queries"
                  " where date_and_time >= ''" + iso_start_datetime + "'' and"
@@ -133,10 +133,10 @@ class PostgresQuerier(object):
                 " d;")
     SQL = ("select * from crosstab('" + sub_query + "',"
                                   "'" + sequence + "')"
-           "as ct(" + ", ".join(format) + ");"
+           "as ct(" + ", ".join(format) + ");")
            
     self.connector.ExecuteSQL(SQL)
-    return self.connector.GetResults(5)
+    return self.connector.GetAllResults()
                  
     
     
