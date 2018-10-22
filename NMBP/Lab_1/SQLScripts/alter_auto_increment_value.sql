@@ -1,1 +1,1 @@
-ALTER SEQUENCE movies_movie_id_seq RESTART WITH 1000;
+ALTER SEQUENCE movies_movie_id_seq RESTART WITH 1001;
