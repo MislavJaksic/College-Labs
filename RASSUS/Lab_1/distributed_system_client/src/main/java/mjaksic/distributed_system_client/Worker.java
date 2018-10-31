@@ -73,28 +73,47 @@ public class Worker implements Runnable {
 			received_string = this.Read();
 
 			if (this.IsShutdownCommand(received_string)) {
-				this.Write("Shutting down...");
 				break;
 			}
 
-			uppercase_string = this.ToUpperCase(received_string);
+			uppercase_string = this.DoWork(received_string);
 
 			this.Write(uppercase_string);
 		}
 		this.Shutdown();
-
 	}
+	
+	
 
 	private String Read() {
 		String received_string = null;
 		try {
 			received_string = this.reader.readLine();
+			System.out.println("Worker recieved:::" + received_string);
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Worker recieved nothing");
 		}
 		return received_string;
 	}
 
+	private void Write(String string) {
+		this.writer.println(string);
+		System.out.println("Worker sent:::" + string);
+	}
+	
+	
+	
+	private String DoWork(String string) {
+		System.out.println("Doing work...");
+		return this.ToUpperCase(string);
+	}
+
+	private String ToUpperCase(String string) {
+		return string.toUpperCase();
+	}
+	
+	
+	
 	private boolean IsShutdownCommand(String string) {
 		if (string == null) {
 			return true;
@@ -104,21 +123,22 @@ public class Worker implements Runnable {
 		}
 		return false;
 	}
-
-	private void Write(String string) {
-		this.writer.println(string);
-	}
-
+	
 	private void Shutdown() {
-		this.is_running.set(false);
+		System.out.println("Shutdown has begun...");
+		this.SetRunningFlag(false);
 		this.DecrementActiveWorkers();
+		System.out.println("Shutdown successful");
 	}
-
-	private String ToUpperCase(String string) {
-		return string.toUpperCase();
+	
+	private void SetRunningFlag(boolean state) {
+		this.is_running.set(state);
+		boolean flag = this.is_running.get();
+		System.out.println("Running flag is " + flag);
 	}
-
+	
 	private void DecrementActiveWorkers() {
 		this.active_workers.getAndDecrement();
+		System.out.println("Decremented workers to " + this.active_workers.get());
 	}
 }

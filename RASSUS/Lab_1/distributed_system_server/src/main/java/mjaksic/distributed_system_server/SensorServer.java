@@ -1,7 +1,7 @@
 package mjaksic.distributed_system_server;
 
-public interface DestributedServer {
-	boolean register(SensorRegistrationForm form);
+public interface SensorServer {
+	boolean register(SensorRegistration form);
 	
 	SensorAddress SearchNeighbour(String username);
 	
