@@ -1,4 +1,4 @@
-package mjaksic.distributed_system_server;
+package mjaksic.distributed_system_client.service_communication;
 
 public class SensorAddress {
 

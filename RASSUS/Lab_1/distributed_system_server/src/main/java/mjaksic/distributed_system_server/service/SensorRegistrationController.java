@@ -1,4 +1,4 @@
-package mjaksic.distributed_system_server;
+package mjaksic.distributed_system_server.service;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,11 +20,12 @@ public class SensorRegistrationController {
 
 	private Map<String, SensorRegistration> sensors = new HashMap<>();
 	private Map<String, SensorRegistration> closest = new HashMap<>();
+	private Map<String, Measurement> measurements = new HashMap<>();
 
 	
 	
 	@PutMapping("/sensor/{id}")
-	public @ResponseBody SensorRegistration PutForm(@PathVariable("id") String id,
+	public @ResponseBody SensorRegistration PutRegistration(@PathVariable("id") String id,
 			@RequestBody SensorRegistration sensor) {
 		this.RegisterSensor(id, sensor);
 		this.RefreshClosestSensors();
@@ -66,6 +67,30 @@ public class SensorRegistrationController {
 
 	private SensorRegistration GetClosestSensor(String id) {
 		return this.closest.get(id);
+	}
+	
+	
+	
+	@PutMapping("/sensor/{id}/measurement")
+	public @ResponseBody Measurement PutMeasurement(@PathVariable("id") String id,
+			@RequestBody Measurement measurement) {
+		System.out.println(measurement.toString());
+		this.StoreMeasurement(id, measurement);
+
+		return measurement;
+	}
+	
+	private void StoreMeasurement(String id, Measurement measurement) {
+		this.measurements.put(id, measurement);
+		
+		this.LogString("Sensor id=" + id + " has stored "  + measurement.toString());
+	}
+	
+	
+	
+	@GetMapping("/sensor/{id}/measurement")
+	public @ResponseBody Measurement GetMeasurement(@PathVariable("id") String id) {
+		return this.measurements.get(id);
 	}
 	
 	

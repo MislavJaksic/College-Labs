@@ -1,4 +1,4 @@
-package mjaksic.distributed_system_server;
+package mjaksic.distributed_system_server.service;
 
 public class SensorRegistration extends SensorAddress {
 

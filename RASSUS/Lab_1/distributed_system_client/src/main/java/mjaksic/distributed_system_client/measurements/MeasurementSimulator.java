@@ -7,8 +7,8 @@ public class MeasurementSimulator {
 	private static final String file_name = "Measurements.csv";
 	private static final List<Measurement> measurements = MeasurementsReader.ReadFilesAsList(file_name);
 
-	public static Measurement GetMeasurementBasedOnTime(int seconds) {
-		int index = MeasurementSimulator.CalculateIndex(seconds);
+	public static Measurement GetMeasurementBasedOnTime(int time) {
+		int index = MeasurementSimulator.CalculateIndex(time);
 		return measurements.get(index);
 	}
 	
