@@ -34,13 +34,13 @@ public class MultiSigTransaction extends ScriptTransaction {
     }
     
     private void SetSameKeyForSenderReceiver() {
-    	this.trust_keychain = this.GetAdressKey();
-    	this.client_A_keychain = this.GetAdressKey();
-    	this.client_B_keychain = this.GetAdressKey();
-    	this.client_C_keychain = this.GetAdressKey();
+    	this.trust_keychain = this.GetAddressKey();
+    	this.client_A_keychain = this.GetAddressKey();
+    	this.client_B_keychain = this.GetAddressKey();
+    	this.client_C_keychain = this.GetAddressKey();
     }
     
-    private ECKey GetAdressKey() {
+    private ECKey GetAddressKey() {
     	return getWallet().freshReceiveKey();
     }
 

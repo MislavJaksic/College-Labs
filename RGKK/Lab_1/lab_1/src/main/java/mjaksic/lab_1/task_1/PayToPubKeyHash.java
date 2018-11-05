@@ -33,12 +33,12 @@ public class PayToPubKeyHash extends ScriptTransaction {
     }
     
     private void SetSameKeyForSenderReceiver() {
-    	ECKey keychain = this.GetAdressKey();
+    	ECKey keychain = this.GetAddressKey();
     	this.sender_keychain = keychain;
     	this.receiver_keychain = keychain;
     }
     
-    private ECKey GetAdressKey() {
+    private ECKey GetAddressKey() {
     	return getWallet().freshReceiveKey();
     }
 
