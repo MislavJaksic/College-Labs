@@ -1,6 +1,6 @@
 ## Lab Five
 
-Runge Kutta and trapezoidal method:
+Implemented both Runge Kutta and trapezoidal method which do the following:
 * repeat:
     * increase time
     * approximate next state

@@ -1,10 +1,10 @@
 ## Lab Four
 
-Genetic algorithm:
+Implemented a genetic algorithm that does the following:  
 *  create population
 *  evaluate the population
 *  repeat:
-    *    randomly choose 3 creatures 
+    *    choose 3 creatures at random 
     *    kill the worst among them
     *    new_creature = crossover(two surviving creatures)
     *    mutate new_creature with some probability
