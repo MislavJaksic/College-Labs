@@ -9,8 +9,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.opencsv.bean.CsvBindByName;
-
 import mjaksic.distributed_system_client.measurements.Measurement;
 import mjaksic.distributed_system_client.measurements.MeasurementSimulator;
 import mjaksic.distributed_system_client.service_communication.RESTInteractor;
