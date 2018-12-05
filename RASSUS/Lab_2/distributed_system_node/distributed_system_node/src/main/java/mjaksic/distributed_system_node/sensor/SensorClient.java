@@ -1,4 +1,4 @@
-package mjaksic.distributed_system_client.sensor;
+package mjaksic.distributed_system_node.sensor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,8 +9,8 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import mjaksic.distributed_system_client.measurement.Measurement;
-import mjaksic.distributed_system_client.measurement.MeasurementSimulator;
+import mjaksic.distributed_system_client.measurements.Measurement;
+import mjaksic.distributed_system_client.measurements.MeasurementSimulator;
 import mjaksic.distributed_system_client.service_communication.RESTInteractor;
 import mjaksic.distributed_system_client.service_communication.SensorAddress;
 import mjaksic.distributed_system_client.service_communication.SensorRegistration;

@@ -1,4 +1,4 @@
-package mjaksic.distributed_system_client.sensor;
+package mjaksic.distributed_system_node.sensor;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -8,8 +8,8 @@ import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import mjaksic.distributed_system_client.measurement.Measurement;
-import mjaksic.distributed_system_client.measurement.MeasurementSimulator;
+import mjaksic.distributed_system_client.measurements.Measurement;
+import mjaksic.distributed_system_client.measurements.MeasurementSimulator;
 
 public class Worker implements Runnable {
 	

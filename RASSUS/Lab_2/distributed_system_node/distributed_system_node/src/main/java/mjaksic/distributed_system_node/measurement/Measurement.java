@@ -1,4 +1,4 @@
-package mjaksic.distributed_system_node.measurements;
+package mjaksic.distributed_system_node.measurement;
 
 import com.opencsv.bean.CsvBindByName;
 

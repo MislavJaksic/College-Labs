@@ -1,6 +1,6 @@
-package mjaksic.distributed_system_client;
+package mjaksic.distributed_system_node;
 
-import mjaksic.distributed_system_client.sensor.Sensor;
+import mjaksic.distributed_system_node.sensor.Sensor;
 
 public class Runner {
 	

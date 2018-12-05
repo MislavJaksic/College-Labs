@@ -20,7 +20,7 @@ import org.apache.http.util.EntityUtils;
 
 import com.google.gson.Gson;
 
-import mjaksic.distributed_system_client.measurements.Measurement;
+import mjaksic.distributed_system_client.measurement.Measurement;
 
 public class RESTInteractor {
 	

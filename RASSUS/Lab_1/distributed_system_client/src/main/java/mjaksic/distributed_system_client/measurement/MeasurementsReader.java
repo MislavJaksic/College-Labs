@@ -1,4 +1,4 @@
-package mjaksic.distributed_system_node.measurements;
+package mjaksic.distributed_system_client.measurement;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
