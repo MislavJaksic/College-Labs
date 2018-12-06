@@ -1,46 +1,45 @@
 package mjaksic.distributed_system_node.sensor;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.Socket;
-import java.util.Random;
-import java.util.UUID;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicIntegerArray;
 
-import mjaksic.distributed_system_client.measurements.Measurement;
-import mjaksic.distributed_system_client.measurements.MeasurementSimulator;
-import mjaksic.distributed_system_client.service_communication.RESTInteractor;
-import mjaksic.distributed_system_client.service_communication.SensorAddress;
-import mjaksic.distributed_system_client.service_communication.SensorRegistration;
+import mjaksic.distributed_system_node.measurement.Measurement;
+import mjaksic.distributed_system_node.measurement.MeasurementSimulator;
+import mjaksic.distributed_system_node.message.Message;
+import mjaksic.distributed_system_node.network_simulator.SimpleSimulatedDatagramSocket;
+import mjaksic.distributed_system_node.serialisation.ByteSerialiser;
 
 public class SensorClient implements Runnable {
-
-	private static final double longitude_min = 15.87;
-	private static final double longitude_max = 16.0;
-	private static final double latitude_min = 45.75;
-	private static final double latitude_max = 45.85;
-	
 	private int start_time;
 	private AtomicBoolean server_running;
+	private AtomicInteger scalar_time;
+	private AtomicIntegerArray vector_time;
 	
-	private SensorRegistration registration;
-	private String client_id;
+	private int port;
+	private List<Integer> other_ports;
 	
-	private BufferedReader user_input_reader;
-	private BufferedReader neighbour_reader;
-	private Socket neighbour_socket;
+	private SimpleSimulatedDatagramSocket socket;
 	
-	public SensorClient(AtomicBoolean server_running, String server_ip, int server_port) {
+	
+	
+	public SensorClient(AtomicBoolean server_running, AtomicInteger scalar_time, AtomicIntegerArray vector_time,
+			List<Integer> ports, double loss_rate, int average_delay) {
 		this.start_time = this.GetTimeInSeconds();
 		this.server_running = server_running;
+		this.scalar_time = scalar_time;
+		this.vector_time = vector_time;
 		
-		this.registration = this.CreateRegistration(server_ip, server_port);
-		this.client_id = this.GenerateUUID();
+		this.port = ports.get(0);
+		this.other_ports = ports.subList(1, ports.size());
 		
-		this.user_input_reader = this.CreateUserInputReader();
-		this.RegisterSensor();
+		this.socket = this.CreateSocket(loss_rate, average_delay);
 	}
 	
 	private int GetTimeInSeconds() {
@@ -48,97 +47,61 @@ public class SensorClient implements Runnable {
 		return seconds;
 	}
 	
-	private SensorRegistration CreateRegistration(String ip, int port) {
-		double longitude = this.GenerateRandomDouble(longitude_min, longitude_max);
-		double latitude = this.GenerateRandomDouble(latitude_min, latitude_max);
-		SensorRegistration registration = new SensorRegistration(ip, port, longitude, latitude);
-		return registration; 
-	}
-	
-	private String GenerateUUID() {
-		return UUID.randomUUID().toString();
-	}
-	
-	private double GenerateRandomDouble(double min, double max) {
-		Random random_seed = new Random();
-		double random_value = min + (max - min) * random_seed.nextDouble();
-		return random_value;
-	}
-	
-	private BufferedReader CreateUserInputReader() {
-		InputStream stream = System.in;
-		InputStreamReader stream_reader = new InputStreamReader(stream);
-		BufferedReader user_input_reader = new BufferedReader(stream_reader);
-		return user_input_reader;
-	}
-	
-	
-	
-	private void RegisterSensor() {
-		RESTInteractor.Register(this.client_id, this.registration);
+	private SimpleSimulatedDatagramSocket CreateSocket(double loss_rate, int average_delay) {
+		SimpleSimulatedDatagramSocket server_socket = null;
+		try {
+			server_socket = new SimpleSimulatedDatagramSocket(loss_rate, average_delay);
+			System.out.println("Created server socket");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return server_socket;
 	}
 	
 	
 	
 	@Override
 	public void run() {
-		String user_input;
-
+		this.Sleep(20000);
 		while (true) {
-			user_input = this.ReadUserInput();
-
-			if (this.IsShutdownCommand(user_input)) {
-				break;
-			}
+			this.Sleep(1000);
 			
-			if (this.IsMeasureCommand(user_input)) {
-				this.Measure();
-			}
+			this.ResendMeasurements();
+			this.SendMeasurement();
 		}
-		this.Shutdown();
+		//this.Shutdown();
 	}
 	
-	
-	
-	private String ReadUserInput() {
-		String received_string = null;
+	private void Sleep(int miliseconds) {
+		System.out.println("Sleeping...");
 		try {
-			System.out.println("Awaiting user input::: ");
-			received_string = this.user_input_reader.readLine();
-		} catch (IOException e) {
+			Thread.sleep(miliseconds);
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		return received_string;
 	}
 	
-	private boolean IsShutdownCommand(String string) {
-		if (string == null) {
-			return true;
-		}
-		if (string.length() == 0) {
-			return true;
-		}
-		if (string.contains("shutdown")) {
-			return true;
-		}
-		return false;
-	}
-	
-	private boolean IsMeasureCommand(String string) {
-		if (string.contains("measure")) {
-			return true;
-		}
-		return false;
-	}
-	
-	
-	
-	private void Measure() {
-		Measurement measurement = this.GetMeasurement();
-		Measurement neighbour_measurement = this.GetNeighbourMeasurement();
+	private void ResendMeasurements() {
 		
-		Measurement average_measurement = this.AverageMeasurements(measurement, neighbour_measurement);
-		this.StoreMeasurement(this.client_id, average_measurement);
+	}
+	
+	private void SendMeasurement() {
+		Message message = CreateMeasurementMessage();
+		System.out.println("Sent: " + message);
+		byte[] byte_array = ByteSerialiser.Serialise(message);
+		
+		this.SendPacketsToOtherPorts(byte_array);
+	}
+	
+	private Message CreateMeasurementMessage() {
+		Measurement measurement = this.GetMeasurement();
+		int scalar_time = this.scalar_time.get();
+		List<Integer> vector_time = CreateMessageVectorTime();
+		boolean is_confirm = false;
+		
+		Message message = new Message(measurement, scalar_time, vector_time, is_confirm);
+		
+		return message;
 	}
 	
 	private Measurement GetMeasurement() {
@@ -152,183 +115,80 @@ public class SensorClient implements Runnable {
 		return current_time - this.start_time;
 	}
 	
-	private Measurement GetNeighbourMeasurement() {
-		SensorAddress address = this.GetNeighbourAddress();
+	private List<Integer> CreateMessageVectorTime() {
+		ArrayList<Integer> vector_time = new ArrayList<Integer>();
 		
-		Measurement measurement = this.ReceiveMeasurement(address);
-		return measurement;
+		for (int i = 0; i < this.vector_time.length(); i++) {
+			vector_time.add(this.vector_time.get(i));
+		}
+		
+		return vector_time;
 	}
 	
 	
-	private SensorAddress GetNeighbourAddress() {
-		SensorAddress address = RESTInteractor.GetClosest(this.client_id);
+	private void SendPacketsToOtherPorts(byte[] byte_array) {
+		InetAddress address = this.GetAddress();
+		DatagramPacket packet;
+		
+		for (int i = 0; i < this.other_ports.size(); i++) {
+			packet = new DatagramPacket(byte_array, byte_array.length, address, this.other_ports.get(i));
+	        this.SendPacket(packet);
+		}
+	}
+	
+	private InetAddress GetAddress() {
+		InetAddress address = null;
+		try {
+			address = InetAddress.getByName("localhost");
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		
 		return address;
 	}
 	
-	private Measurement ReceiveMeasurement(SensorAddress address) {
-		this.EstablishNeighbourConnection(address);
-		
-		String string_measurement = this.ReadMeasurement();
-		Measurement measurement = this.FromStringToMeasurement(string_measurement);
-		
-		return measurement;
-	}
-	
-	private void EstablishNeighbourConnection(SensorAddress address) {
-		if (this.IsNeighbourReaderMissing()) {
-			this.neighbour_socket = this.CreateClientSocket(address);
-			this.neighbour_reader = this.CreateReader();
-		}
-		}
-	
-	private boolean IsNeighbourReaderMissing() {
-		if (this.neighbour_reader == null) {
-			return true;
-		}
-		return false;
-	}
-	
-	private Socket CreateClientSocket(SensorAddress address) {
-		Socket socket = null;
+	private void SendPacket(DatagramPacket packet) {
 		try {
-			socket = new Socket(address.getIp(), address.getPort());
+			this.socket.send(packet);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return socket;
+	}
+	
+	
+	
+	void UpdateScalarTime(int received_scalar_time) {
+		int new_time = Math.max(this.scalar_time.get(), received_scalar_time);
+		this.scalar_time.set(new_time);
+		this.IncrementScalarTime();
+	}
+	
+	void UpdateVectorTime(List<Integer> receieved_vector_time) {
+		int length = this.vector_time.length();
+		int new_time;
+		for (int i = 0; i < length; i++) {
+			new_time = Math.max(this.vector_time.get(i), receieved_vector_time.get(i));
+			this.vector_time.set(i, new_time);
+		}
+		
+		this.IncrementVectorTime();
+	}
+	
+	void IncrementScalarTime() {
+		this.scalar_time.incrementAndGet();
 	}
 
-	private BufferedReader CreateReader() {
-		InputStream stream = this.CreateInputStream();
-		InputStreamReader stream_reader = new InputStreamReader(stream);
-		BufferedReader server_reader = new BufferedReader(stream_reader);
-		return server_reader;
-	}
-
-	private InputStream CreateInputStream() {
-		InputStream stream = null;
-		try {
-			stream = this.neighbour_socket.getInputStream();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return stream;
-	}
-	
-	
-	
-	private String ReadMeasurement() {
-		String received_string = null;
-		try {
-			received_string = this.neighbour_reader.readLine();
-			System.out.println("Sensor received:::" + received_string);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return received_string;
-	}
-	
-	private Measurement FromStringToMeasurement(String string) {
-		String[] measurement_data = string.split(",");
-		
-		Measurement measurement = new Measurement();
-		measurement.setTemperature(Integer.parseInt(measurement_data[0]));
-		measurement.setPressure(Integer.parseInt(measurement_data[1]));
-		measurement.setHumidity(Integer.parseInt(measurement_data[2]));
-		measurement.setCO(Integer.parseInt(measurement_data[3]));
-		measurement.setNO2(Integer.parseInt(measurement_data[4]));
-		measurement.setSO2(Integer.parseInt(measurement_data[5]));
-		
-		return measurement;
-	}
-	
-	
-	
-	private Measurement AverageMeasurements(Measurement measurement_A, Measurement measurement_B) {
-		Measurement average_measurement = new Measurement();
-		Integer number_A;
-		Integer number_B;
-		
-		number_A = measurement_A.getTemperature();
-		number_B = measurement_B.getTemperature();
-		if ((number_A.equals(0)) || (number_B.equals(0))) {
-			average_measurement.setTemperature(number_A + number_B);
-		} else {
-			average_measurement.setTemperature((number_A + number_B) / 2);
-		}
-		
-		number_A = measurement_A.getPressure();
-		number_B = measurement_B.getPressure();
-		if ((number_A == 0) || (number_B == 0)) {
-			average_measurement.setPressure(number_A + number_B);
-		} else {
-			average_measurement.setPressure((number_A + number_B) / 2);
-		}
-		
-		number_A = measurement_A.getHumidity();
-		number_B = measurement_B.getHumidity();
-		if ((number_A == 0) || (number_B == 0)) {
-			average_measurement.setHumidity(number_A + number_B);
-		} else {
-			average_measurement.setHumidity((number_A + number_B) / 2);
-		}
-		
-		number_A = measurement_A.getCO();
-		number_B = measurement_B.getCO();
-		if ((number_A == 0) || (number_B == 0)) {
-			average_measurement.setCO(number_A + number_B);
-		} else {
-			average_measurement.setCO((number_A + number_B) / 2);
-		}
-		
-		number_A = measurement_A.getNO2();
-		number_B = measurement_B.getNO2();
-		if ((number_A == 0) || (number_B == 0)) {
-			average_measurement.setNO2(number_A + number_B);
-		} else {
-			average_measurement.setNO2((number_A + number_B) / 2);
-		}
-		
-		number_A = measurement_A.getSO2();
-		number_B = measurement_B.getSO2();
-		if ((number_A == 0) || (number_B == 0)) {
-			average_measurement.setSO2(number_A + number_B);
-		} else {
-			average_measurement.setSO2((number_A + number_B) / 2);
-		}
-		return average_measurement;
-	}
-	
-	
-	
-	private void StoreMeasurement(String id, Measurement measurement) {
-		RESTInteractor.StoreMeasurement(id, measurement);
+	void IncrementVectorTime() {
+		int index = this.port % this.vector_time.length();
+		this.vector_time.incrementAndGet(index);
 	}
 	
 	
 	
 	private void Shutdown() {
 		System.out.println("Closing client...");
-		this.CloseReader();
-		this.CloseSocket();
 		this.SetServerRunningFlag(false);
 		System.out.println("Client closed");
-	}
-	
-	private void CloseReader() {
-		try {
-			this.neighbour_reader.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private void CloseSocket() {
-		try {
-			this.neighbour_socket.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	private void SetServerRunningFlag(boolean state) {

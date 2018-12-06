@@ -6,7 +6,6 @@ import java.util.List;
 import mjaksic.distributed_system_node.measurement.Measurement;
 
 public class Message implements Serializable {
-	
 	private static final long serialVersionUID = -8267139628691987323L;
 	
 	public Measurement measurement;
@@ -24,4 +23,13 @@ public class Message implements Serializable {
 		
 		this.is_confirm = is_confirm;
 	}
+
+
+
+	@Override
+	public String toString() {
+		return "Message [measurement=" + measurement + ", scalar_value=" + scalar_value + ", vector_value="
+				+ vector_value + ", is_confirm=" + is_confirm + "]";
+	}
+	
 }
