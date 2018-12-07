@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
 import mjaksic.distributed_system_node.measurement.Measurement;
 import mjaksic.distributed_system_node.measurement.MeasurementSimulator;
 import mjaksic.distributed_system_node.message.Message;
+import mjaksic.distributed_system_node.message.MessageManager;
 import mjaksic.distributed_system_node.network_simulator.SimpleSimulatedDatagramSocket;
 import mjaksic.distributed_system_node.serialisation.ByteSerialiser;
 
@@ -27,10 +28,12 @@ public class SensorClient implements Runnable {
 	
 	private SimpleSimulatedDatagramSocket socket;
 	
+	private MessageManager manager;
+	
 	
 	
 	public SensorClient(AtomicBoolean server_running, AtomicInteger scalar_time, AtomicIntegerArray vector_time,
-			List<Integer> ports, double loss_rate, int average_delay) {
+			List<Integer> ports, double loss_rate, int average_delay, MessageManager manager) {
 		this.start_time = this.GetTimeInSeconds();
 		this.server_running = server_running;
 		this.scalar_time = scalar_time;
@@ -38,8 +41,11 @@ public class SensorClient implements Runnable {
 		
 		this.port = ports.get(0);
 		this.other_ports = ports.subList(1, ports.size());
+		System.out.println("My port: " + this.port + ", other ports: " + this.other_ports);
 		
 		this.socket = this.CreateSocket(loss_rate, average_delay);
+		
+		this.manager = manager;
 	}
 	
 	private int GetTimeInSeconds() {
@@ -62,47 +68,29 @@ public class SensorClient implements Runnable {
 	
 	@Override
 	public void run() {
-		this.Sleep(20000);
+		this.Sleep(10000);
 		while (true) {
-			this.Sleep(1000);
+			this.Sleep(5000);
 			
 			this.ResendMeasurements();
-			this.SendMeasurement();
+			this.SendMeasurements();
 		}
 		//this.Shutdown();
-	}
-	
-	private void Sleep(int miliseconds) {
-		System.out.println("Sleeping...");
-		try {
-			Thread.sleep(miliseconds);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	private void ResendMeasurements() {
 		
 	}
 	
-	private void SendMeasurement() {
-		Message message = CreateMeasurementMessage();
-		System.out.println("Sent: " + message);
-		byte[] byte_array = ByteSerialiser.Serialise(message);
+	private void SendMeasurements() {
+		this.IncrementScalarTime();
+		this.IncrementVectorTime();
 		
-		this.SendPacketsToOtherPorts(byte_array);
+		Measurement measurement = this.GetMeasurement();
+		this.CreateMessage(measurement);
 	}
 	
-	private Message CreateMeasurementMessage() {
-		Measurement measurement = this.GetMeasurement();
-		int scalar_time = this.scalar_time.get();
-		List<Integer> vector_time = CreateMessageVectorTime();
-		boolean is_confirm = false;
-		
-		Message message = new Message(measurement, scalar_time, vector_time, is_confirm);
-		
-		return message;
-	}
+	
 	
 	private Measurement GetMeasurement() {
 		int elapsed_time = this.GetElapsedSeconds();
@@ -115,25 +103,41 @@ public class SensorClient implements Runnable {
 		return current_time - this.start_time;
 	}
 	
-	private List<Integer> CreateMessageVectorTime() {
-		ArrayList<Integer> vector_time = new ArrayList<Integer>();
+	
+	
+	private void CreateMessage(Measurement measurement) {
+		int scalar_time = this.GetScalarTime();
+		List<Integer> vector_time = this.GetVectorTime();
+		int port_of_origin = this.GetPortOfOrigin();
+		List<Integer> destination_ports = this.GetDestinationPorts();
 		
-		for (int i = 0; i < this.vector_time.length(); i++) {
-			vector_time.add(this.vector_time.get(i));
+		Message message = null;
+		for (int destination_port : destination_ports) {
+			message = new Message(measurement, scalar_time, vector_time, port_of_origin, destination_port);
+			
+			this.SendMessage(message);
+			System.out.println("Sent: " + message);
 		}
 		
-		return vector_time;
+		this.RecordSentMessage(message);
 	}
 	
 	
-	private void SendPacketsToOtherPorts(byte[] byte_array) {
-		InetAddress address = this.GetAddress();
-		DatagramPacket packet;
+	
+	private void SendMessage(Message message) {
+		byte[] byte_array = ByteSerialiser.Serialise(message);
+		int destination_port = message.destination_port;
 		
-		for (int i = 0; i < this.other_ports.size(); i++) {
-			packet = new DatagramPacket(byte_array, byte_array.length, address, this.other_ports.get(i));
-	        this.SendPacket(packet);
-		}
+		this.SendBytesToDestination(byte_array, destination_port);
+	}
+	
+	
+	
+	private void SendBytesToDestination(byte[] byte_array, int destination_port) {
+		InetAddress address = this.GetAddress();
+		DatagramPacket packet = new DatagramPacket(byte_array, byte_array.length, address, destination_port);
+		
+	    this.SendPacket(packet);
 	}
 	
 	private InetAddress GetAddress() {
@@ -147,6 +151,8 @@ public class SensorClient implements Runnable {
 		return address;
 	}
 	
+	
+	
 	private void SendPacket(DatagramPacket packet) {
 		try {
 			this.socket.send(packet);
@@ -157,30 +163,56 @@ public class SensorClient implements Runnable {
 	
 	
 	
-	void UpdateScalarTime(int received_scalar_time) {
-		int new_time = Math.max(this.scalar_time.get(), received_scalar_time);
-		this.scalar_time.set(new_time);
-		this.IncrementScalarTime();
+	private void RecordSentMessage(Message message) {
+		List<Integer> destination_ports = this.GetDestinationPorts();
+		
+		this.manager.AddUnconfirmedMessageForPorts(message, destination_ports);
 	}
 	
-	void UpdateVectorTime(List<Integer> receieved_vector_time) {
-		int length = this.vector_time.length();
-		int new_time;
-		for (int i = 0; i < length; i++) {
-			new_time = Math.max(this.vector_time.get(i), receieved_vector_time.get(i));
-			this.vector_time.set(i, new_time);
+	
+	
+	private int GetScalarTime() {
+		return this.scalar_time.get();
+	}
+	
+	private List<Integer> GetVectorTime() {
+		ArrayList<Integer> vector_time = new ArrayList<Integer>();
+		
+		for (int i = 0; i < this.vector_time.length(); i++) {
+			vector_time.add(this.vector_time.get(i));
 		}
 		
-		this.IncrementVectorTime();
+		return vector_time;
 	}
 	
-	void IncrementScalarTime() {
+	private void IncrementScalarTime() {
 		this.scalar_time.incrementAndGet();
 	}
 
-	void IncrementVectorTime() {
-		int index = this.port % this.vector_time.length();
+	private void IncrementVectorTime() {
+		int index = this.GetPortOfOrigin() % this.vector_time.length();
 		this.vector_time.incrementAndGet(index);
+	}
+	
+	
+	
+	private int GetPortOfOrigin() {
+		return this.port;
+	}
+	
+	private List<Integer> GetDestinationPorts() {
+		return this.other_ports;
+	}
+	
+	
+	
+	private void Sleep(int miliseconds) {
+		//System.out.println("Sleeping...");
+		try {
+			Thread.sleep(miliseconds);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	

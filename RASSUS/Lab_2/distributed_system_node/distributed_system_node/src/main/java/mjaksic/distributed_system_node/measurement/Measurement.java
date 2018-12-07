@@ -22,6 +22,27 @@ public class Measurement implements Serializable {
 	public String toString() {
 		return "Measurement [CO=" + CO + "]";
 	}
-	
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Measurement other = (Measurement) obj;
+		if (CO != other.CO)
+			return false;
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + CO;
+		return result;
+	}
 
 }

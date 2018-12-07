@@ -2,12 +2,16 @@ package mjaksic.distributed_system_node.sensor;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
 import mjaksic.distributed_system_node.message.Message;
+import mjaksic.distributed_system_node.message.MessageManager;
 import mjaksic.distributed_system_node.network_simulator.SimpleSimulatedDatagramSocket;
 import mjaksic.distributed_system_node.serialisation.ByteSerialiser;
 
@@ -21,9 +25,13 @@ public class SensorServer implements Runnable {
 	private List<Integer> other_ports;
 
 	private SimpleSimulatedDatagramSocket socket;
+	
+	private MessageManager manager;
+	
+	
 
 	public SensorServer(AtomicBoolean server_running, AtomicInteger scalar_time, AtomicIntegerArray vector_time,
-			List<Integer> ports, double loss_rate, int average_delay) {
+			List<Integer> ports, double loss_rate, int average_delay, MessageManager manager) {
 		this.server_running = server_running;
 		this.scalar_time = scalar_time;
 		this.vector_time = vector_time;
@@ -32,6 +40,8 @@ public class SensorServer implements Runnable {
 		this.other_ports = ports.subList(1, ports.size());
 
 		this.socket = this.CreateSocketWithFixedPort(loss_rate, average_delay);
+		
+		this.manager = manager;
 	}
 
 	private SimpleSimulatedDatagramSocket CreateSocketWithFixedPort(double loss_rate, int average_delay) {
@@ -53,6 +63,8 @@ public class SensorServer implements Runnable {
 		this.Shutdown();
 	}
 
+	
+	
 	private void ListenForIncomingMessages() {
 		Message message;
 		while (this.IsRunningFlagUp()) {
@@ -66,14 +78,16 @@ public class SensorServer implements Runnable {
 		return flag;
 	}
 
+	
+	
 	private Message ReceiveMessage() {
-		byte[] byte_array = ReceivePacket();
+		byte[] byte_array = ReceiveBytes();
 		Message message = (Message) ByteSerialiser.Deserialise(byte_array);
 
 		return message;
 	}
 
-	private byte[] ReceivePacket() {
+	private byte[] ReceiveBytes() {
 		byte[] byte_array = new byte[1024];
 		DatagramPacket packet = new DatagramPacket(byte_array, byte_array.length);
 
@@ -82,38 +96,114 @@ public class SensorServer implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+		
 		return byte_array;
 	}
 
+	
+	
 	private void ActOnMessage(Message message) {
 		System.out.println("Received: " + message);
-		if (message.is_confirm) {
-			this.ActOnConfirm(message);
+		if (this.IsConfirmationMessage(message)) {
+			this.ActOnConfirmationMessage(message);
 		} else {
 			this.ActOnMeasurement(message);
 		}
 	}
-
-	private void ActOnConfirm(Message message) {
-		
+	
+	private boolean IsConfirmationMessage(Message message) {
+		if (message.port_of_origin == this.GetPortOfOrigin()) {
+			return true;
+		}
+		return false;
 	}
 
+	
+	
+	private void ActOnConfirmationMessage(Message message) {
+		this.RecordReceivedConfirmationMessage(message);
+	}
+	
+	private void RecordReceivedConfirmationMessage(Message message) {
+		this.manager.RecogniseConformationMessage(message);
+	}
+
+	
+	
 	private void ActOnMeasurement(Message message) {
+		UpdateScalarTime(message.scalar_time);
+		UpdateVectorTime(message.vector_time);
 		
+		//TODO return confirmation message when you receive a measurement message
+		this.SendConfirmationMessage(message);
+	}
+	
+	private void SendConfirmationMessage(Message message) {
+		byte[] byte_array = ByteSerialiser.Serialise(message);
+		int return_port = message.port_of_origin;
+		System.out.println("Confirmation: " + "CO=" + message.measurement.getCO() + " to port " + return_port);
+		
+		this.SendBytesToDestination(byte_array, return_port);
+	}
+	
+	
+	
+	private void SendBytesToDestination(byte[] byte_array, int destination_port) {
+		InetAddress address = this.GetAddress();
+		DatagramPacket packet = new DatagramPacket(byte_array, byte_array.length, address, destination_port);
+		
+	    this.SendPacket(packet);
+	}
+	
+	private InetAddress GetAddress() {
+		InetAddress address = null;
+		try {
+			address = InetAddress.getByName("localhost");
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		
+		return address;
+	}
+	
+	
+	
+	private void SendPacket(DatagramPacket packet) {
+		try {
+			this.socket.send(packet);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	
 	
-	void UpdateScalarTime(int received_scalar_time) {
+	private int GetScalarTime() {
+		return this.scalar_time.get();
+	}
+	
+	private List<Integer> GetVectorTime() {
+		ArrayList<Integer> vector_time = new ArrayList<Integer>();
+		
+		for (int i = 0; i < this.vector_time.length(); i++) {
+			vector_time.add(this.vector_time.get(i));
+		}
+		
+		return vector_time;
+	}
+	
+	private void UpdateScalarTime(int received_scalar_time) {
 		int new_time = Math.max(this.scalar_time.get(), received_scalar_time);
+		
 		this.scalar_time.set(new_time);
+		
 		this.IncrementScalarTime();
 	}
 	
-	void UpdateVectorTime(List<Integer> receieved_vector_time) {
+	private void UpdateVectorTime(List<Integer> receieved_vector_time) {
 		int length = this.vector_time.length();
 		int new_time;
+		
 		for (int i = 0; i < length; i++) {
 			new_time = Math.max(this.vector_time.get(i), receieved_vector_time.get(i));
 			this.vector_time.set(i, new_time);
@@ -122,15 +212,23 @@ public class SensorServer implements Runnable {
 		this.IncrementVectorTime();
 	}
 	
-	void IncrementScalarTime() {
+	private void IncrementScalarTime() {
 		this.scalar_time.incrementAndGet();
 	}
 
-	void IncrementVectorTime() {
-		int index = this.port % this.vector_time.length();
+	private void IncrementVectorTime() {
+		int index = this.GetPortOfOrigin() % this.vector_time.length();
 		this.vector_time.incrementAndGet(index);
 	}
 
+	
+	private int GetPortOfOrigin() {
+		return this.port;
+	}
+	
+	private List<Integer> GetDestinationPorts() {
+		return this.other_ports;
+	}
 	
 	
 	public void Shutdown() {
@@ -139,13 +237,11 @@ public class SensorServer implements Runnable {
 		System.out.println("Server closed");
 	}
 	
-
 	private void CloseServer() {
 		System.out.println("Closing server...");
 		this.CloseServerSocket();
 	}
 	
-
 	private void CloseServerSocket() {
 		this.socket.close();
 		System.out.println("Server socket closed");
