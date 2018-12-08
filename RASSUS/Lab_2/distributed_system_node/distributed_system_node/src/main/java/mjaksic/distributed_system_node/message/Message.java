@@ -7,31 +7,54 @@ import mjaksic.distributed_system_node.measurement.Measurement;
 
 public class Message implements Serializable {
 	private static final long serialVersionUID = 8197605027819193331L;
-	
+
 	public Measurement measurement;
 	public int scalar_time;
 	public List<Integer> vector_time;
-	
+
 	public int port_of_origin;
 	public int destination_port;
 
-	
-	
-	public Message(Measurement measurement, int scalar_time, List<Integer> vector_time, int port_of_origin, int destination_port) {
+
+
+	public Message(Measurement measurement, int scalar_time, List<Integer> vector_time, int port_of_origin,
+			int destination_port) {
 		this.measurement = measurement;
 		this.scalar_time = scalar_time;
 		this.vector_time = vector_time;
-		
+
 		this.port_of_origin = port_of_origin;
 		this.destination_port = destination_port;
+	}
+
+	public Message(Message message) {
+		this.measurement = new Measurement();
+		this.measurement.setCO(message.measurement.getCO());
+		this.scalar_time = message.scalar_time;
+		this.vector_time = message.vector_time;
+
+		this.port_of_origin = message.port_of_origin;
+		this.destination_port = message.destination_port;
 	}
 
 
 
 	@Override
 	public String toString() {
-		return "Message [" + measurement + ", " + scalar_time + ", " + vector_time
-				+ ", " + port_of_origin + ", " + destination_port + "]";
+		return "[" + measurement + ", " + scalar_time + ", " + vector_time + ", " + port_of_origin + ", "
+				+ destination_port + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + destination_port;
+		result = prime * result + ((measurement == null) ? 0 : measurement.hashCode());
+		result = prime * result + port_of_origin;
+		result = prime * result + scalar_time;
+		result = prime * result + ((vector_time == null) ? 0 : vector_time.hashCode());
+		return result;
 	}
 
 	@Override
@@ -62,16 +85,4 @@ public class Message implements Serializable {
 		return true;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + destination_port;
-		result = prime * result + ((measurement == null) ? 0 : measurement.hashCode());
-		result = prime * result + port_of_origin;
-		result = prime * result + scalar_time;
-		result = prime * result + ((vector_time == null) ? 0 : vector_time.hashCode());
-		return result;
-	}
-	
 }

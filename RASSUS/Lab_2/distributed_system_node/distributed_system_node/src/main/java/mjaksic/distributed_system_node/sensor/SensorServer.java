@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,38 +15,51 @@ import mjaksic.distributed_system_node.network_simulator.SimpleSimulatedDatagram
 import mjaksic.distributed_system_node.serialisation.ByteSerialiser;
 
 public class SensorServer implements Runnable {
-
-	private AtomicBoolean server_running;
+	//private AtomicBoolean server_running;
+	
 	private AtomicInteger scalar_time;
 	private AtomicIntegerArray vector_time;
 
 	private int port;
-	private List<Integer> other_ports;
 
 	private SimpleSimulatedDatagramSocket socket;
 	
-	private MessageManager manager;
+	private MessageManager message_manager;
 	
 	
 
 	public SensorServer(AtomicBoolean server_running, AtomicInteger scalar_time, AtomicIntegerArray vector_time,
-			List<Integer> ports, double loss_rate, int average_delay, MessageManager manager) {
-		this.server_running = server_running;
+			List<Integer> ports, double loss_rate, int average_delay, MessageManager message_manager) {
+		//this.server_running = server_running;
+		
+		this.SetLogicClocks(scalar_time, vector_time);
+		
+		this.SetPorts(ports);
+
+		this.SetSocket(loss_rate, average_delay);
+		
+		this.SetMessageManager(message_manager);
+	}
+	
+	private void SetLogicClocks(AtomicInteger scalar_time, AtomicIntegerArray vector_time) {
 		this.scalar_time = scalar_time;
 		this.vector_time = vector_time;
-
+	}
+	
+	private void SetPorts(List<Integer> ports) {
 		this.port = ports.get(0);
-		this.other_ports = ports.subList(1, ports.size());
-
-		this.socket = this.CreateSocketWithFixedPort(loss_rate, average_delay);
-		
-		this.manager = manager;
+	}
+	
+	private void SetSocket(double loss_rate, int average_delay) {
+		this.socket = this.CreateSocket(loss_rate, average_delay);
 	}
 
-	private SimpleSimulatedDatagramSocket CreateSocketWithFixedPort(double loss_rate, int average_delay) {
+	private SimpleSimulatedDatagramSocket CreateSocket(double loss_rate, int average_delay) {
+		int my_port = this.GetPortOfOrigin();
+		
 		SimpleSimulatedDatagramSocket server_socket = null;
 		try {
-			server_socket = new SimpleSimulatedDatagramSocket(this.port, loss_rate, average_delay);
+			server_socket = new SimpleSimulatedDatagramSocket(my_port, loss_rate, average_delay);
 			System.out.println("Created server socket");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -55,28 +67,31 @@ public class SensorServer implements Runnable {
 		return server_socket;
 	}
 
+	private void SetMessageManager(MessageManager message_manager) {
+		this.message_manager = message_manager;
+	}
+	
 	
 	
 	@Override
 	public void run() {
 		this.ListenForIncomingMessages();
-		this.Shutdown();
+		//this.Shutdown();
 	}
-
-	
 	
 	private void ListenForIncomingMessages() {
 		Message message;
-		while (this.IsRunningFlagUp()) {
+		//while (this.IsRunningFlagUp()) {
+		while(true) {
 			message = this.ReceiveMessage();
 			this.ActOnMessage(message);
 		}
 	}
 
-	private boolean IsRunningFlagUp() {
+	/*private boolean IsRunningFlagUp() {
 		boolean flag = this.server_running.get();
 		return flag;
-	}
+	}*/
 
 	
 	
@@ -103,15 +118,19 @@ public class SensorServer implements Runnable {
 	
 	
 	private void ActOnMessage(Message message) {
-		System.out.println("Received: " + message);
-		if (this.IsConfirmationMessage(message)) {
-			this.ActOnConfirmationMessage(message);
+		int scalar_time = message.scalar_time;
+		List<Integer> vector_time = message.vector_time;
+		
+		this.UpdateLogicalClocks(scalar_time, vector_time);
+		
+		if (this.IsResponse(message)) {
+			this.ActOnResponse(message);
 		} else {
 			this.ActOnMeasurement(message);
 		}
 	}
 	
-	private boolean IsConfirmationMessage(Message message) {
+	private boolean IsResponse(Message message) {
 		if (message.port_of_origin == this.GetPortOfOrigin()) {
 			return true;
 		}
@@ -120,30 +139,29 @@ public class SensorServer implements Runnable {
 
 	
 	
-	private void ActOnConfirmationMessage(Message message) {
-		this.RecordReceivedConfirmationMessage(message);
+	private void ActOnResponse(Message message) {
+		//System.out.println("Received response: " + message);
+		this.RecordResponse(message);
 	}
 	
-	private void RecordReceivedConfirmationMessage(Message message) {
-		this.manager.RecogniseConformationMessage(message);
-	}
-
 	
 	
 	private void ActOnMeasurement(Message message) {
-		UpdateScalarTime(message.scalar_time);
-		UpdateVectorTime(message.vector_time);
+		//System.out.println("Received message: " + message);
 		
-		//TODO return confirmation message when you receive a measurement message
-		this.SendConfirmationMessage(message);
+		this.IncrementLogicalClocks();
+		
+		this.SendResponse(message);
+		
+		this.RecordMeasurementMessage(message);
 	}
 	
-	private void SendConfirmationMessage(Message message) {
+	private void SendResponse(Message message) {
 		byte[] byte_array = ByteSerialiser.Serialise(message);
-		int return_port = message.port_of_origin;
-		System.out.println("Confirmation: " + "CO=" + message.measurement.getCO() + " to port " + return_port);
+		int destination_port = message.port_of_origin;
+		//System.out.println("Response sent: " + message);
 		
-		this.SendBytesToDestination(byte_array, return_port);
+		this.SendBytesToDestination(byte_array, destination_port);
 	}
 	
 	
@@ -178,20 +196,21 @@ public class SensorServer implements Runnable {
 
 	
 	
-	private int GetScalarTime() {
-		return this.scalar_time.get();
+	private void RecordMeasurementMessage(Message message) {
+		this.message_manager.PutMeasurementMessage(message);
 	}
 	
-	private List<Integer> GetVectorTime() {
-		ArrayList<Integer> vector_time = new ArrayList<Integer>();
-		
-		for (int i = 0; i < this.vector_time.length(); i++) {
-			vector_time.add(this.vector_time.get(i));
-		}
-		
-		return vector_time;
+	private void RecordResponse(Message message) {
+		this.message_manager.RegisterResponse(message);
 	}
 	
+	
+	
+	private void UpdateLogicalClocks(int received_scalar_time, List<Integer> receieved_vector_time) {
+		this.UpdateScalarTime(received_scalar_time);
+		this.UpdateVectorTime(receieved_vector_time);
+	}
+		
 	private void UpdateScalarTime(int received_scalar_time) {
 		int new_time = Math.max(this.scalar_time.get(), received_scalar_time);
 		
@@ -212,6 +231,11 @@ public class SensorServer implements Runnable {
 		this.IncrementVectorTime();
 	}
 	
+	private void IncrementLogicalClocks() {
+		this.IncrementScalarTime();
+		this.IncrementVectorTime();
+	}
+	
 	private void IncrementScalarTime() {
 		this.scalar_time.incrementAndGet();
 	}
@@ -222,13 +246,11 @@ public class SensorServer implements Runnable {
 	}
 
 	
+	
 	private int GetPortOfOrigin() {
 		return this.port;
 	}
 	
-	private List<Integer> GetDestinationPorts() {
-		return this.other_ports;
-	}
 	
 	
 	public void Shutdown() {

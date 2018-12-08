@@ -6,10 +6,12 @@ import com.opencsv.bean.CsvBindByName;
 
 public class Measurement implements Serializable {
 	private static final long serialVersionUID = -4961340919562810234L;
-	
+
 	@CsvBindByName
 	private int CO;
 
+	
+	
 	public int getCO() {
 		return CO;
 	}
@@ -18,9 +20,19 @@ public class Measurement implements Serializable {
 		this.CO = CO;
 	}
 
+	
+	
 	@Override
 	public String toString() {
-		return "Measurement [CO=" + CO + "]";
+		return "[CO=" + CO + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + CO;
+		return result;
 	}
 
 	@Override
@@ -35,14 +47,6 @@ public class Measurement implements Serializable {
 		if (CO != other.CO)
 			return false;
 		return true;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + CO;
-		return result;
 	}
 
 }
