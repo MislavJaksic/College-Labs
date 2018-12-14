@@ -2,7 +2,7 @@
 
 During my graduate studies at the University of Zagreb, Faculty of Electrical Engineering and Computing,
 I've had the pleasure of documenting, testing and implementing a plethora of algorithms.  
-The solutions are grouped by course/class and each one has its own folder.  
+The solutions are grouped into folders by course.  
 Additional information about the course or exercise can be found in its respective folders.  
 
 ### [APR](http://www.fer.unizg.hr/en/course/apr) (eng. Computer Aided Analysis and Design)
@@ -33,13 +33,6 @@ Additional information about the course or exercise can be found in its respecti
 * Security protocols - Diffie-Hellman protocol, Needham–Schroeder protocol, Kerberos protocols, PKI
 * RAID
 
-NOS keys:  
-DES is Data Encryption Standard,  
-AES is Advanced Encryption Standard,  
-RSA is Rivest–Shamir–Adleman,  
-PKI is Public Key Infrastructure,  
-RAID is Redundant Array of Inexpensive Disks.  
-
 ### [PP](http://www.fer.unizg.hr/en/course/parpro) (eng. Parallel Programming)
 
 * Introduction to High Performance Computing (HPC) - parallel programming models, properties and sequential to parallel conversion
@@ -55,3 +48,11 @@ RAID is Redundant Array of Inexpensive Disks.
 * Support vector machines, kernel functions, K nearest neighbours
 * Ensambles, maximum likelihood and aposteriori estimators
 * Probabilistic graphical models, clustering
+
+
+Keys:  
+DES is Data Encryption Standard,  
+AES is Advanced Encryption Standard,  
+RSA is Rivest–Shamir–Adleman,  
+PKI is Public Key Infrastructure,  
+RAID is Redundant Array of Inexpensive Disks.  
