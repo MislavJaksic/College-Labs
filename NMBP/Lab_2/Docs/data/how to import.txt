@@ -1,0 +1,30 @@
+﻿Nešto ovog tipa (Windows):
+
+kopirati si u neki folder i onda iz njega (prilagoditi path od mongoimporta):
+
+"D:\Program Files\MongoDB\Server\4.0\bin\mongoimport" --db nmbp --collection cards --file cards.json
+
+znacenje parametara:
+-d (ili --db) 		ime baze na Mongu
+-c (ili --collection)	ime kolekcije u bazi
+--file			ime konkretne datoteke s podacima (ukljucujuci i ekstenziju)
+--type			daje se skripti do znanja kojega su tipa podaci u datoteci
+-u 			username
+-p			password
+--authenticationDatabase  naziv autentifikacijske baze za korisnika sa navedenim korisnickim imenom 
+
+
+-------------------
+Ako imate uspostavljenu autentifikaciju (po defaultu nemate):
+-------------------
+( preduvjeti:
+  - Mongo je dodan u System Path varijablu pa mogu pozivati s bilo koje pozicije iz cmd-a naredbe mongo/mongoimport/itd.
+  - na razini Monga je kreiran user (naravno ima passw.)  Authentication db mu je baza "admin". User ima dozvole za "sve" na db "nmbp" na Mongu
+  - kreirana je baza nmbp u robomongu ("rucno")
+)
+- pozicinirati se u folder gdje su .json fajlovi
+- naredba koja je upalila  (s time da su naravno "username" i "password" nesto drugo sto je top secret:) ):
+
+mongoimport -u username -p password --authenticationDatabase admin -d nmbp -c cards --type json --file cards.json
+
+
