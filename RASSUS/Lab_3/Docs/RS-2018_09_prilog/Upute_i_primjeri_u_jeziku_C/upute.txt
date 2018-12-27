@@ -1,0 +1,1 @@
+Sve u ovom direktoriju je dosta zastarjelo pa se preporuča koristiti implementaciju u Javi!
