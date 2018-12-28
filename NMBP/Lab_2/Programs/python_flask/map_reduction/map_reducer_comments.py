@@ -33,14 +33,27 @@ function (key, values) {
 
 
 start = time.time()
-results = collection.map_reduce(map_function, reduce_function, "article_comments")
+collection.map_reduce(map_function, reduce_function, "article_comments")
 end = time.time()
 print(end - start)
-print(results)
+
+
+
+collection = db["article_comments"]
+
+
+
+cursor = collection.find().sort("value", pymongo.DESCENDING).limit(5)
+for result in cursor:
+  print(result)
 
 
 
 client.close()
+
+
+
+
 
 
 

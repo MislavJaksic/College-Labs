@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <form method="post">
+    <textarea name="comment" id="comment">{{ request.form["comment"] }}</textarea>
+    <input type="submit" value="Comment">
+  </form>
+{% endblock %}

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from data_generation.data_functions import GetRandomTitle, GetRandomAuthor, GetRandomText, GetRandomPicture, GetRandomYear, GetRandomMonth, GetRandomDay
+from data_generation.data_functions import GetRandomTitle, GetRandomAuthor, GetRandomText, GetRandomImage, GetRandomYear, GetRandomMonth, GetRandomDay
 
 import datetime
 
@@ -13,11 +13,11 @@ collection = db["articles"]
 
 
 
-for index in range(19995):
+for index in range(20000):
   title = GetRandomTitle()
   author = GetRandomAuthor()
   text = GetRandomText()
-  picture = GetRandomPicture()
+  image = GetRandomImage()
   comments = []
 
   year = GetRandomYear()
@@ -28,7 +28,7 @@ for index in range(19995):
   random_data = {"title": title,
                  "author": author,
                  "text": text,
-                 "picture": picture,
+                 "image": image,
                  "timestamp": timestamp,
                  "comments": comments}  
   

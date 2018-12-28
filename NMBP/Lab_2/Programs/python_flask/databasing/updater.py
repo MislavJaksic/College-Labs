@@ -14,8 +14,8 @@ collection = db["articles"]
 
 start = time.time()
 
-collection.update({"_id" : ObjectId("5c1e774ee380c811099f8824")},
-                  {"$push" : {"comments" : "Yet another..."}})
+collection.update({"_id" : ObjectId("5c223e76e380c80f43933d60")},
+                  {"$push" : {"comments" : "Hello world!"}})
 end = time.time()
 print(end - start)
 

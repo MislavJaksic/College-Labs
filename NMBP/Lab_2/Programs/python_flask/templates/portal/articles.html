@@ -1,0 +1,25 @@
+{% block content %}
+    {% for article in articles %}
+        <article class="articles">
+            <header>
+                <div>
+                    <h1>{{ article["title"] }}</h1>
+                    <div class="about">by {{ article["author"] }} on {{ article["timestamp"].strftime("%Y-%m-%d") }}</div>
+                </div>
+            </header>
+            <p class="image">
+	        <img src="{{ url_for('static', filename= 'images/' + article['image']) }}" alt="A picture has not been found">
+	    </p>
+            <p class="body">{{ article["text"] }}</p>
+	    <ul>
+	    {% for comment in article["comments"] %}
+	        <li>{{ comment }}</li>
+	    {% endfor %}
+	    </ul>
+            <a class="action" href="{{ url_for('portal.Comment', id=article['_id']) }}">Comment</a>
+        </article>
+        {% if not loop.last %}
+            <hr>
+        {% endif %}
+    {% endfor %}
+{% endblock %}

@@ -4,7 +4,7 @@
 import random
 
 def GetRandomYear():
-  return random.randint(2000, 2010)
+  return random.randint(1990, 2020)
 
 def GetRandomMonth():
   return random.randint(1,12)
@@ -441,7 +441,7 @@ def GetRandomText():
 
 
 
-pictures = ["sea.jpeg",
+images = ["sea.jpeg",
 "island.jpeg",
 "utopia.jpeg",
 "hill.jpeg",
@@ -458,9 +458,9 @@ pictures = ["sea.jpeg",
 "mesa.jpeg",
 "pasture.jpeg"]
 
-def GetRandomPicture():
-  index = random.randint(0,len(pictures) - 1)
-  return pictures[index]
+def GetRandomImage():
+  index = random.randint(0,len(images) - 1)
+  return images[index]
 
 
 
