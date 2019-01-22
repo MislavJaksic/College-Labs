@@ -3,7 +3,7 @@
 During my graduate studies at the University of Zagreb, Faculty of Electrical Engineering and Computing,
 I've had the pleasure of documenting, testing and implementing a plethora of algorithms.  
 The solutions are grouped into folders by course.  
-Additional information about the course or exercise can be found in its respective folders.  
+Additional information about the course or exercise can be found in its respective folder.  
 
 ### [APR](http://www.fer.unizg.hr/en/course/apr) (eng. Computer Aided Analysis and Design)
 
@@ -25,6 +25,18 @@ Additional information about the course or exercise can be found in its respecti
 * Binary Decision Tree (BDD), Reduced Order BDD (ROBDD), ITE algorithm
 * DPLL, GRASP and Chaff methods
 
+### [NMBP](https://www.fer.unizg.hr/en/course/advdat) (eng. Advanced Databases)
+
+* Text search  
+* Advanced SQL - aggregate functions, OVER, PARTITION BY, BY ROWS, BY RANGE, Common Table Expressions (CTE)  
+* Object, spatial and temporal databases  
+* Two Phase Commit Protocol (2PC)  
+* NoSQL databases - document, column family, graph databases  
+* MapReduce algorithm and combinable reducers  
+* Fragmentation and replication  
+* Consistency, Availability, Partition tolerance (CAP) and Basically Available, Soft state, Eventually consistent (BASE)  
+* Semantic web - Resource Description Framework (RDF), Turtle and OWL language  
+
 ### [NOS](http://www.fer.unizg.hr/en/course/aos) (eng. Advanced Operating Systems)
 
 * Communication between processes - message queues, pipelines
@@ -40,6 +52,10 @@ Additional information about the course or exercise can be found in its respecti
 * Parallel Random Access Machine (PRAM) - synchronous and asynchronous, *_reduce algorithm
 * Designing parallel programs - phases, hypercube algorithm, N-tree algorithm
 * Quantitative analysis of parallel algorithms - time to execute, efficiency and isoefficiency, speedup, scalability
+
+### [RASSUS](https://www.fer.unizg.hr/en/course/dissys) (eng. Distributed Systems)
+
+### [RGKK](https://www.fer.unizg.hr/en/course/rgkk) (eng. Distributed ledgers and cryptocurrencies)
 
 ### [SU](http://www.fer.unizg.hr/en/course/su) (eng. Machine Learning)
 

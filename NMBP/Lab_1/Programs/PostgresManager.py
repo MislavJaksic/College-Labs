@@ -2,8 +2,6 @@ from PostgresQuerier import PostgresQuerier
 
 
 
-
-
 class PostgresManager(object):
 
   def __init__(self):

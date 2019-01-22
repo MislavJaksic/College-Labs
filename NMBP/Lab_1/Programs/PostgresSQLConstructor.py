@@ -2,12 +2,7 @@ from psycopg2 import sql
 
 
 
-
-
 class PostgresSQLConstructor(object):
-  """
-  Constructs SQL statements, takes care of idenifiers and literals.
-  """
   def __init__(self):
     pass
     

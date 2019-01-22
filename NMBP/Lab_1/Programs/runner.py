@@ -3,8 +3,6 @@ from PostgresManager import PostgresManager
 
 
 
-
-
 TABLE_NAME = "movies"
 COLUMN_NAMES = ["movie_id", "title", "categories", "summary", "description", "tsvector_document"]
 
@@ -20,5 +18,4 @@ if __name__ == '__main__':
     print(postgres.FindWordsInDocumentInTableThenBoldAndRank(["Dance", "Ancient Japan"], "tsvector_document", "movies", operation="OR"))
     
     print(postgres.PivotMovies(datetime(1999, 1, 9, 0), datetime(1999, 1, 12, 0), "hour"))
-    #print(postgres.Prototype())
   

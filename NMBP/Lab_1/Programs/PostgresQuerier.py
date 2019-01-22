@@ -4,8 +4,6 @@ from PostgresSQLConstructor import PostgresSQLConstructor
 
 
 
-
-
 CONFIG_FILE_NAME = "database.ini"
 CONFIG_SECTION_NAME = "postgresql"
 
