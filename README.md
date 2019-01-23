@@ -57,6 +57,12 @@ Additional information about the course or exercise can be found in its respecti
 
 ### [RGKK](https://www.fer.unizg.hr/en/course/rgkk) (eng. Distributed ledgers and cryptocurrencies)
 
+* Blockchain and cryptography
+* Consensus, forks and mining
+* Bitcoin, Bitcoin protocol and Script language
+* Ethereum, smart contracts and Solidity language
+* Finance, proof-of-X, alt-coins and scaling
+
 ### [SU](http://www.fer.unizg.hr/en/course/su) (eng. Machine Learning)
 
 * Linear regression, cross validation, feature, model and hyperparameter analysis
