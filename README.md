@@ -73,8 +73,8 @@ Additional information about the course or exercise can be found in its respecti
 
 
 Keys:  
-DES is Data Encryption Standard,  
-AES is Advanced Encryption Standard,  
-RSA is Rivest–Shamir–Adleman,  
-PKI is Public Key Infrastructure,  
-RAID is Redundant Array of Inexpensive Disks.  
+DES -> Data Encryption Standard,  
+AES -> Advanced Encryption Standard,  
+RSA -> Rivest–Shamir–Adleman,  
+PKI -> Public Key Infrastructure,  
+RAID -> Redundant Array of Inexpensive Disks.  
