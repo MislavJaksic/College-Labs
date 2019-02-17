@@ -18,7 +18,3 @@ The following algorithms and concepts were taught during the course, but were no
 * Lab_4: genetic algorithm capable of finding a global minimum of Schaffer's [F6](https://www.cs.unm.edu/~neal.holts/dga/benchmarkFunction/schafferf6.html) and [F7](https://www.cs.unm.edu/~neal.holts/dga/benchmarkFunction/schafferf7.html)
 
 * Lab_5: fourth order Runge-Kutta numerical integration method
-
-### Lectures
-
-I took down notes using a laptop. The notes are in Croatian.

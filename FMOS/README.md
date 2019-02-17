@@ -5,7 +5,7 @@ FMOS stands for "Formalne metode u oblikovanju sustava" (eng. Formal Methods in 
 ### Syllabus
 
 The following algorithms and concepts were taught during the course, but were not implemented:
-* propositional and predicate logic, fixed point theory, VHSIC Hardware Description Language and Verilog.
+* propositional and predicate logic, fixed point theory, VHSIC Hardware Description Language and Verilog
 
 ### Labs
 

@@ -1,17 +1,18 @@
 ## College Labs
 
-During my graduate studies at the University of Zagreb, Faculty of Electrical Engineering and Computing,
-I've had the pleasure of documenting, testing and implementing a plethora of algorithms.  
-The solutions are grouped into folders by course.  
-Additional information about the course or exercise can be found in its respective folder.  
+I've implemented a range of algorithms to solve a variety of problems during my graduate studies at
+the [University of Zagreb](http://www.unizg.hr/homepage/), [Faculty of Electrical Engineering and Computing](https://www.fer.unizg.hr/en).  
+If you want to learn more about a solution, visit its respective folder.  
+
+## Courses
 
 ### [APR](http://www.fer.unizg.hr/en/course/apr) (eng. Computer Aided Analysis and Design)
 
-* Solving systems of linear equations - matrix manipulation, forward and back substitution, LU and LUP decomposition
+* Solve systems of linear equations - matrix manipulation, forward and back substitution, LU and LUP decomposition
 * Single variable nonlinear function optimization - golden section search, Nealder-Mead simplex method, Hooke-Jeeves method
 * Multiple variable nonlinear function optimization - gradient descent, Newton-Raphson method
 * Constrained optimization - Box method, constrained problem transformation
-* Genetic algorithms - representation, crossover, mutation, optimal parameter search
+* Genetic/evolutionary algorithm - representation, crossover, mutation, optimal parameter search
 * Numerical integration - Runge-Kutta methods
 
 ### [FMOS](http://www.fer.unizg.hr/en/course/fmisd) (eng. Formal Methods in System Design)
@@ -55,6 +56,14 @@ Additional information about the course or exercise can be found in its respecti
 
 ### [RASSUS](https://www.fer.unizg.hr/en/course/dissys) (eng. Distributed Systems)
 
+* Distributed systems and their processes
+* Pull and push model; UDP, TCP, RPC, RMI
+* Direct and indirect process communication using messages; subscribe-publish model  
+* CGI, AJAX, SSE, WS, web services, SOAP, WSDL, UDDI, SOA and REST
+* Scalar and vector clocks
+* Byzantine fault, 2PC and 3PC, consistency and replication
+* Queue theory and PDQ simulator
+
 ### [RGKK](https://www.fer.unizg.hr/en/course/rgkk) (eng. Distributed ledgers and cryptocurrencies)
 
 * Blockchain and cryptography
@@ -78,3 +87,19 @@ AES -> Advanced Encryption Standard,
 RSA -> Rivest–Shamir–Adleman,  
 PKI -> Public Key Infrastructure,  
 RAID -> Redundant Array of Inexpensive Disks.  
+
+UDP -> User Datagram Protocol,  
+TCP -> Transmission Control Protocol,  
+RPC -> Remote Procedure Call,  
+RMI -> Remote Method Invocation,  
+CGI -> Common Gateway Interface,  
+AJAX -> Asynchronous JavaScript and XML,  
+SSE -> Server Sent Events,  
+WS -> Web Socket,  
+SOAP -> Simple Object Access Protocol,  
+WSDL -> Web Service Description Language,  
+UDDI -> Universal Description Discovery and Integration,  
+SOA -> Service Oriented Architecture,  
+REST -> Representational State Transfer,  
+2PC, 3PC -> 2/3 Phase Commit,  
+PDQ -> Pretty Damn Quick.  
