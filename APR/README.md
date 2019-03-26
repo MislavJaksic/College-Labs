@@ -2,11 +2,6 @@
 
 APR stands for "Analiza i projektiranje računalom" (eng. Computer Aided Analysis and Design).
 
-### Syllabus
-
-The following algorithms and concepts were taught during the course, but were not implemented:
-* Fibonacci section search, Gauss-Newton, Levenberg-Marquardt, determining the stability of numerical integration methods, calculating floating point precision
-
 ### Laboratory exercises
 
 * Lab_1: matrix class similar to numpy, LU and LUP decomposition, back and forward substitution
@@ -18,3 +13,8 @@ The following algorithms and concepts were taught during the course, but were no
 * Lab_4: genetic algorithm capable of finding a global minimum of Schaffer's [F6](https://www.cs.unm.edu/~neal.holts/dga/benchmarkFunction/schafferf6.html) and [F7](https://www.cs.unm.edu/~neal.holts/dga/benchmarkFunction/schafferf7.html)
 
 * Lab_5: fourth order Runge-Kutta numerical integration method
+
+### Unimplemented algorithms
+
+The following algorithms and concepts were taught during the course, but were not implemented:
+* Fibonacci section search, Gauss-Newton, Levenberg-Marquardt, determining the stability of numerical integration methods, calculating floating point precision

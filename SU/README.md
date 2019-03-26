@@ -2,11 +2,6 @@
 
 SU stands for "Strojno učenje" (eng. Machine learning).
 
-### Syllabus
-
-The following algorithms and concepts were taught during the course, but were not implemented:
-* Inductive bias, perceptron, naive Bayes.
-
 ### Laboratory exercises (Labs)
 
 Tasks such as cross validation, feature, model and hyperparameter analysis were performed in multiple labs, so
@@ -24,8 +19,7 @@ instead of writing them below in almost every lab, I've extracted those topic.
 
 * Lab_5: probabilistic graphical models, clustering with K nearest neighbours
 
-Note: because the classes were taught in Croatian, all lab assignments are also written in Croatian.
+### Unimplemented algorithms
 
-### Lectures
-
-I took down notes using a laptop. The notes are in Croatian.
+The following algorithms and concepts were taught during the course, but were not implemented:
+* Inductive bias, perceptron, naive Bayes

@@ -4,7 +4,9 @@
 
 ## College Labs
 
-I've implemented a lot of algorithms and solved many problems during my graduate studies at the [University of Zagreb](http://www.unizg.hr/homepage/), [Faculty of Electrical Engineering and Computing](https://www.fer.unizg.hr/en).  
+* College: [University of Zagreb](http://www.unizg.hr/homepage/), [Faculty of Electrical Engineering and Computing](https://www.fer.unizg.hr/en)  
+
+Each course had a series of practical laboratory exercises. Here, they are documented and stored for the future.  
 
 ## Courses
 
