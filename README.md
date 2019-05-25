@@ -1,12 +1,12 @@
 <p align="center">
-  <img width="800" src="images/cap.png" alt="College graduation cap"></a>
+  <img width="600" src="images/cap.png" alt="College graduation cap"></a>
 </p>
 
 ## College Labs
 
 * College: [University of Zagreb](http://www.unizg.hr/homepage/), [Faculty of Electrical Engineering and Computing](https://www.fer.unizg.hr/en)  
 
-Each course had a series of practical laboratory exercises. Here, they are documented and stored for the future.  
+Each course includes a number of practical laboratory exercises. Here, they are documented for the future.  
 
 ## Courses
 
