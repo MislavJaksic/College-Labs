@@ -9,7 +9,7 @@
 ## Courses
 
 Each course had a practical component.  
-Here, they are documented for the future.  
+May they help future generations and my future self.  
 
 ### [APR](http://www.fer.unizg.hr/en/course/apr) (eng. Computer Aided Analysis and Design)
 
